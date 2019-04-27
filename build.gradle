@@ -1,0 +1,20 @@
+plugins {
+    id 'eclipse'
+    id 'java'
+}
+
+test {
+    useJUnitPlatform {
+        excludeTags "accept"
+    }  
+}
+
+task acceptTests(type: Test) {
+    useJUnitPlatform {
+  	includeTags "accept"
+    }
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
