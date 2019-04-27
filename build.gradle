@@ -1,7 +1,22 @@
 plugins {
     id 'eclipse'
+	id 'io.quarkus'
     id 'java'
 }
+
+repositories {
+     mavenLocal()
+     mavenCentral()
+}
+
+dependencies {
+    implementation "io.quarkus:quarkus-resteasy:${quarkusVersion}"
+
+    testCompile "io.quarkus:quarkus-junit5:${quarkusVersion}"
+    testCompile "io.rest-assured:rest-assured:3.3.0"
+    testCompile "org.assertj:assertj-core:3.11.1"
+}
+
 
 test {
     useJUnitPlatform {
