@@ -1,0 +1,10 @@
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+pool:
+  vmImage: 'ubuntu-16.04'
+  
+steps:
+- task: Gradle@2
+  inputs:
+    jdkVersionOption: '1.11'
+    tasks: 'test'
+ 
