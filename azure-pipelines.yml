@@ -1,10 +1,22 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
-pool:
-  vmImage: 'ubuntu-16.04'
+# with inspiration from https://github.com/quarkusio/quarkus/blob/master/azure-pipelines.yml
+trigger:
+  batch: true
+  branches:
+    include:
+    - pipeline
+
   
-steps:
-- task: Gradle@2
-  inputs:
-    jdkVersionOption: '1.11'
-    tasks: 'test'
+jobs:
+ - job: Build_Linux_jar
+   timeoutInMinutes: 10
+   pool:
+     vmImage: 'ubuntu-16.04'
+   
+   steps:
+   - task: Gradle@2
+     displayName: 'Run tests'
+     inputs:
+       jdkVersionOption: '1.11'
+       tasks: 'test'
  
