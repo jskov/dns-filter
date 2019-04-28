@@ -6,7 +6,11 @@ trigger:
     include:
     - pipeline
 
-  
+pr:
+  branches:
+    include:
+    - master
+
 jobs:
  - job: Build_Linux_jar
    timeoutInMinutes: 10
