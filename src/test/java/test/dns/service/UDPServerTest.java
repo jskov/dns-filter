@@ -1,17 +1,15 @@
 package test.dns.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 
 import org.junit.jupiter.api.Test;
 
-import dk.mada.dns.service.UDPServer;
 import dk.mada.dns.service.UDPPacketHandler;
-import static org.assertj.core.api.Assertions.assertThat;
+import dk.mada.dns.service.UDPServer;
+import fixture.datagram.DatagramHelper;
 
 /**
  * Tests reception and dispatching of UDP packets.
@@ -19,8 +17,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UDPServerTest {
 	private static final int PORT = 1053;
 
+	/**
+	 * Simple round trip test.
+	 */
 	@Test
-	public void canAcceptUdpPacket() throws IOException {
+	public void canRoundTripUdpPacket() throws IOException {
 		UDPServer sut = new UDPServer(PORT);
 
 		try {
@@ -29,7 +30,7 @@ public class UDPServerTest {
 			sut.start();
 
 			ByteBuffer input = ByteBuffer.wrap("foobar".getBytes());
-			ByteBuffer reply = sendBufferToLocalUDPPort(input);
+			ByteBuffer reply = DatagramHelper.sendBufferToLocalUDPPort(PORT, input);
 
 			input.flip();
 			
@@ -38,32 +39,5 @@ public class UDPServerTest {
 		} finally {
 			sut.stop();
 		}
-
 	}
-
-	private ByteBuffer sendBufferToLocalUDPPort(ByteBuffer input) throws IOException {
-		InetSocketAddress target = getUpstreamServer();
-		
-		try (DatagramChannel channel = DatagramChannel.open()) {
-			channel.connect(target);
-			input.rewind();
-			channel.send(input, target);
-	
-			ByteBuffer reply = ByteBuffer.allocate(512);
-			channel.read(reply);
-			reply.flip();
-			
-			return reply;
-		}
-	}
-		
-	private static InetSocketAddress getUpstreamServer() {
-		try {
-			return new InetSocketAddress(Inet4Address.getByName("localhost"), PORT);
-		} catch (UnknownHostException e) {
-			throw new IllegalStateException("Bad upstream host", e);
-		}
-	}
-
-	
 }

@@ -1,10 +1,8 @@
 package dk.mada.dns.service;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.concurrent.Executor;
@@ -13,6 +11,14 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.mada.dns.net.NetworkHelper;
+
+/**
+ * UDP server listening for clients on the designated port.
+ * 
+ * Requests are passed on to packet handlers for processing.
+ * Their reply is sent back to the client.
+ */
 public class UDPServer {
 	private static final Logger logger = LoggerFactory.getLogger(UDPServer.class);
 	public static final int MIN_DNS_PACKET_SIZE = 512;
@@ -22,7 +28,7 @@ public class UDPServer {
 	private UDPPacketHandler packetHandler;
 
 	public UDPServer(int port) {
-		listenAddress = makeAddress(port);
+		listenAddress = NetworkHelper.makeLocalhostSocketAddress(port);
 	}
 
 	public void start() {
@@ -51,20 +57,11 @@ public class UDPServer {
 				}
 			}
 		} catch (IOException e) {
-			logger.error("DNS listener failed", e);
+			logger.error("UDP Server failed", e);
 		}
 	}
 
 	public void setPacketHandler(UDPPacketHandler packetHandler) {
 		this.packetHandler = packetHandler;
 	}
-
-	private InetSocketAddress makeAddress(int port) {
-		try {
-			return new InetSocketAddress(InetAddress.getByAddress(new byte[] { 127,0,0,1 }), port);
-		} catch (UnknownHostException e) {
-			throw new IllegalStateException("Bad host", e);
-		}
-	}
-
 }
