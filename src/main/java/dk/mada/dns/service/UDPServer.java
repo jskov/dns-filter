@@ -4,9 +4,13 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.DatagramChannel;
-import java.util.concurrent.Executor;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,23 +27,43 @@ public class UDPServer {
 	private static final Logger logger = LoggerFactory.getLogger(UDPServer.class);
 	public static final int MIN_DNS_PACKET_SIZE = 512;
 
-	private Executor executorService = Executors.newSingleThreadExecutor();
+	private ExecutorService executorService = Executors.newSingleThreadExecutor();
 	private InetSocketAddress listenAddress;
 	private UDPPacketHandler packetHandler;
 
+	private AtomicBoolean running = new AtomicBoolean();
+	private CountDownLatch startupLatch = new CountDownLatch(1);
+	
 	public UDPServer(int port) {
 		listenAddress = NetworkHelper.makeLocalhostSocketAddress(port);
 	}
 
 	public void start() {
         executorService.execute(this::serve);
+        try {
+			startupLatch.await();
+		} catch (InterruptedException e) {
+			throw new IllegalStateException("Interrupted while waiting for startup", e);
+		}
 	}
 
 	public void stop() {
-		
+		executorService.shutdownNow();
+		try {
+			executorService.awaitTermination(100, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			throw new IllegalStateException("Interrupted while waiting for shutdown", e);
+		}
+	}
+
+	public boolean isRunning() {
+		return running.get();
 	}
 
 	private void serve() {
+		running.set(true);
+		startupLatch.countDown();
+		
 		try (DatagramChannel channel = DatagramChannel.open()) {
 			channel.bind(listenAddress);
 			
@@ -56,8 +80,12 @@ public class UDPServer {
 					channel.send(reply, sa);
 				}
 			}
+		} catch (ClosedByInterruptException e) {
+			logger.debug("UDP server stopped", e);
 		} catch (IOException e) {
 			logger.error("UDP Server failed", e);
+		} finally {
+			running.set(false);
 		}
 	}
 

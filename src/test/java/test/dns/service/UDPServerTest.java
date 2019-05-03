@@ -18,6 +18,25 @@ public class UDPServerTest {
 	private static final int PORT = 1053;
 
 	/**
+	 * Tests that the UDP listening service can be orderly
+	 * shut down and releases the port.
+	 */
+	@Test
+	public void serverCanBeStopped() {
+		UDPServer sut = new UDPServer(PORT);
+
+		// Startup test
+		sut.start();
+		assertThat(sut.isRunning())
+			.isTrue();
+
+		// Shutdown test
+		sut.stop();
+		assertThat(sut.isRunning())
+			.isFalse();
+	}
+	
+	/**
 	 * Simple round trip test.
 	 */
 	@Test
