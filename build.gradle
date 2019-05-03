@@ -19,6 +19,7 @@ dependencies {
     testCompile "io.quarkus:quarkus-junit5:${quarkusVersion}"
     testCompile "io.rest-assured:rest-assured:3.3.0"
     testCompile "org.assertj:assertj-core:3.11.1"
+    testImplementation "dnsjava:dnsjava:2.1.8"
 }
 
 publishing {
@@ -41,6 +42,8 @@ task acceptTest(type: Test, dependsOn: "publishToMavenLocal") {
   	    includeTags "accept"
     }
 }
+
+tasks.check.dependsOn(acceptTest)
 
 sourceCompatibility = 11
 targetCompatibility = 11
