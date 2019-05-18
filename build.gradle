@@ -15,10 +15,20 @@ repositories {
 
 dependencies {
     implementation "io.quarkus:quarkus-resteasy:${quarkusVersion}"
+    implementation "dnsjava:dnsjava:${dnsJavaVersion}"
 
     testCompile "io.quarkus:quarkus-junit5:${quarkusVersion}"
     testCompile "io.rest-assured:rest-assured:3.3.0"
     testCompile "org.assertj:assertj-core:3.11.1"
+    testImplementation "dnsjava:dnsjava:${dnsJavaVersion}"
+    
+    // Required magic otherwise provided by quarkus maven plugin?!
+    testImplementation "io.quarkus:quarkus-core-deployment:${quarkusVersion}"
+    testImplementation "io.quarkus:quarkus-jaxb-deployment:${quarkusVersion}"
+    testImplementation "io.quarkus:quarkus-arc-deployment:${quarkusVersion}"
+    testImplementation "io.quarkus:quarkus-resteasy-common-deployment:${quarkusVersion}"
+    testImplementation "io.quarkus:quarkus-resteasy-deployment:${quarkusVersion}"
+    testImplementation "io.quarkus:quarkus-undertow-deployment:${quarkusVersion}"
 }
 
 publishing {
@@ -42,5 +52,28 @@ task acceptTest(type: Test, dependsOn: "publishToMavenLocal") {
     }
 }
 
+tasks.check.dependsOn(acceptTest)
+
 sourceCompatibility = 11
 targetCompatibility = 11
+
+// Make eclipse pretend to be Maven builder so bootstrap
+// finds the classes at the correct locations.
+eclipse {
+	classpath {
+		file {
+			withXml { 
+				def node = it.asNode()
+				node.findAll { it.@kind == "src" }.each { srcNode -> 
+					if (srcNode.@path.contains("main")) {
+						srcNode.@output = "target/classes"
+					} else if (srcNode.@path.contains("test")) {
+						srcNode.@output = "target/test-classes"
+					}
+				}
+      		}
+		}      
+	}
+}
+
+tasks.clean.doFirst { delete("target") }
