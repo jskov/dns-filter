@@ -76,4 +76,5 @@ eclipse {
 	}
 }
 
+tasks.eclipseClasspath.dependsOn("cleanEclipseClasspath")
 tasks.clean.doFirst { delete("target") }
