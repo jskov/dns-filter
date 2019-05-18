@@ -75,3 +75,5 @@ eclipse {
 		}      
 	}
 }
+
+tasks.clean.doFirst { delete("target") }
