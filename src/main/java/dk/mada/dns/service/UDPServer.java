@@ -23,6 +23,7 @@ import dk.mada.dns.net.NetworkHelper;
  * Requests are passed on to packet handlers for processing.
  * Their reply is sent back to the client.
  */
+
 public class UDPServer {
 	private static final Logger logger = LoggerFactory.getLogger(UDPServer.class);
 	public static final int MIN_DNS_PACKET_SIZE = 512;
@@ -67,7 +68,6 @@ public class UDPServer {
 		try (DatagramChannel channel = DatagramChannel.open()) {
 			channel.bind(listenAddress);
 			
-			// FIXME: Does this bind to only the first connecting remote? RFC says to keep connection open for at least 2 minutes
 			while (channel.isOpen()) {
 				ByteBuffer request = ByteBuffer.allocate(MIN_DNS_PACKET_SIZE);
 				SocketAddress sa = channel.receive(request);
