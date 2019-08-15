@@ -10,11 +10,6 @@ public class NetworkHelper {
 	private NetworkHelper() {}
 	
 	public static InetSocketAddress makeLocalhostSocketAddress(int port) {
-		try {
-			return new InetSocketAddress(InetAddress.getLoopbackAddress(), port);
-		} catch (Exception e) {
-			throw new IllegalStateException("Bad host", e);
-		}
+		return new InetSocketAddress(InetAddress.getLoopbackAddress(), port);
 	}
-
 }

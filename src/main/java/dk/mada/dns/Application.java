@@ -19,7 +19,7 @@ import io.quarkus.runtime.StartupEvent;
  */
 @ApplicationScoped
 public class Application {
-    private static final int DNS_LISTENING_PORT = 8053;
+    public static final int DNS_LISTENING_PORT = 8053;
 
 	private static final Logger logger = LoggerFactory.getLogger(Application.class);
 

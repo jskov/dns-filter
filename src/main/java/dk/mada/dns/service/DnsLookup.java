@@ -26,7 +26,6 @@ public class DnsLookup implements UDPPacketHandler {
 			Message m = new Message(request);
 			logger.info("LOOKUP {}", m);
 			
-			
 			InetSocketAddress target = getUpstreamServer();
 			try (DatagramChannel channel = DatagramChannel.open()) {
 				channel.connect(target);
