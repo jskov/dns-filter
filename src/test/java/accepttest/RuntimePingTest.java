@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
 
+/**
+ * Test that quarkus end-to-end testing actually works.
+ */
 @Tag("accept")
 @QuarkusTest
 public class RuntimePingTest {

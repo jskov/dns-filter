@@ -14,6 +14,8 @@ import io.quarkus.runtime.StartupEvent;
 
 /**
  * Main application.
+ * 
+ * Sets up UDP service for incoming DNS calls.
  */
 @ApplicationScoped
 public class Application {

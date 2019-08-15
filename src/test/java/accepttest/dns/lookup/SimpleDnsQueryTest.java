@@ -23,9 +23,7 @@ public class SimpleDnsQueryTest {
     @Test
     public void testDnsLookup() throws TextParseException, UnknownHostException {
     	Lookup lookup = new Lookup("github.com");
-    	SimpleResolver localhostResolver = new SimpleResolver("127.0.0.1");
-    	localhostResolver.setPort(8053);
-		lookup.setResolver(localhostResolver);
+    	lookup.setResolver(getLocalhostResolver());
     	lookup.setCache(null);
     	lookup.setSearchPath(new String[] {});
   
@@ -36,4 +34,10 @@ public class SimpleDnsQueryTest {
     		.extracting(r -> r.getName().toString())
     		.contains("github.com.");
     }
+
+	private SimpleResolver getLocalhostResolver() throws UnknownHostException, TextParseException {
+		SimpleResolver localhostResolver = new SimpleResolver("127.0.0.1");
+    	localhostResolver.setPort(8053);
+    	return localhostResolver;
+	}
 }

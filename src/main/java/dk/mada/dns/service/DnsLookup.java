@@ -12,6 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.Message;
 
+/**
+ * DNS lookup, passing request on to upstream DNS server (pass-through).
+ */
 public class DnsLookup implements UDPPacketHandler {
 	private static final Logger logger = LoggerFactory.getLogger(DnsLookup.class);
 	private static final String UPSTREAM_DNS_SERVER = "1.1.1.1";
@@ -73,5 +76,4 @@ public class DnsLookup implements UDPPacketHandler {
 			throw new IllegalStateException("Bad upstream host " + UPSTREAM_DNS_SERVER, e);
 		}
 	}
-
 }
