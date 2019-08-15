@@ -64,10 +64,11 @@ public class UDPServer {
 
 	private void serve() {
 		running.set(true);
-		startupLatch.countDown();
 		
 		try (DatagramChannel channel = DatagramChannel.open()) {
 			channel.bind(listenAddress);
+			
+			startupLatch.countDown();
 			
 			while (channel.isOpen()) {
 				ByteBuffer request = ByteBuffer.allocate(MIN_DNS_PACKET_SIZE);
