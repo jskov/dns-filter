@@ -5,8 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SimpleResolver;
@@ -17,6 +21,14 @@ import io.quarkus.test.junit.QuarkusTest;
 @Tag("accept")
 @QuarkusTest
 public class SimpleDnsQueryTest {
+	private static final Logger logger = LoggerFactory.getLogger(SimpleDnsQueryTest.class);
+	
+	@BeforeAll
+	static void info() throws UnknownHostException {
+    	InetAddress lh = InetAddress.getLocalHost();
+    	logger.info("HOST {} : {} : {}", lh.getHostName(), lh.getHostAddress(),  InetAddress.getLoopbackAddress());
+	}
+	
 	/**
 	 * Simple DNS query test which expects a reply
 	 * from looking up github.com
@@ -28,9 +40,6 @@ public class SimpleDnsQueryTest {
     	lookup.setCache(null);
     	lookup.setSearchPath(new String[] {});
   
-    	InetAddress lh = InetAddress.getLocalHost();
-		System.out.println("Running on " + lh.getHostAddress() + " : " + lh.getHostName() + " : " + InetAddress.getLoopbackAddress());
-    	
     	Record[] res = lookup.run();
     	assertThat(lookup.getResult())
     		.isEqualTo(0);
