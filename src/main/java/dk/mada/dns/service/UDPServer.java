@@ -63,11 +63,10 @@ public class UDPServer {
 	}
 
 	private void serve() {
-		running.set(true);
-		
 		try (DatagramChannel channel = DatagramChannel.open()) {
 			channel.bind(listenAddress);
 			
+			running.set(true);
 			startupLatch.countDown();
 			
 			while (channel.isOpen()) {
@@ -88,6 +87,7 @@ public class UDPServer {
 			logger.error("UDP Server failed", e);
 		} finally {
 			running.set(false);
+			startupLatch.countDown();
 		}
 	}
 
