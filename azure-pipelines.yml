@@ -23,4 +23,10 @@ jobs:
      inputs:
        jdkVersionOption: '1.11'
        tasks: 'check'
+       publishJUnitResults: false
+   - task: PublishTestResults@2
+     inputs:
+       testResultsFormat: 'JUnit'
+       failTaskOnFailedTests: true 
+       publishRunAttachments: true
  
