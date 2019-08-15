@@ -21,7 +21,7 @@ import fixture.datagram.DatagramHelper;
  */
 public class UDPServerTest {
 	private static final Logger logger = LoggerFactory.getLogger(UDPServerTest.class);
-	private static final int PORT = 2053;
+	private static final int PORT = 10053;
 
 	@BeforeAll
 	static void info() throws UnknownHostException {
