@@ -6,6 +6,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+/**
+ * Simple resource for testing access to server.
+ */
 @Path("/ping")
 public class PingResource {
     @GET
