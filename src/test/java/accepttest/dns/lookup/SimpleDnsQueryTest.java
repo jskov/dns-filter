@@ -36,7 +36,7 @@ public class SimpleDnsQueryTest {
     }
 
 	private SimpleResolver getLocalhostResolver() throws UnknownHostException, TextParseException {
-		SimpleResolver localhostResolver = new SimpleResolver("127.0.0.1");
+		SimpleResolver localhostResolver = new SimpleResolver("localhost");
     	localhostResolver.setPort(8053);
     	return localhostResolver;
 	}
