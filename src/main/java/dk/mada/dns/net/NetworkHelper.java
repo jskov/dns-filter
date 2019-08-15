@@ -1,5 +1,6 @@
 package dk.mada.dns.net;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 /**
@@ -10,8 +11,7 @@ public class NetworkHelper {
 	
 	public static InetSocketAddress makeLocalhostSocketAddress(int port) {
 		try {
-			// InetAddress.getByAddress(new byte[] { 127,0,0,1 })
-			return new InetSocketAddress("localhost", port);
+			return new InetSocketAddress(InetAddress.getLoopbackAddress(), port);
 		} catch (Exception e) {
 			throw new IllegalStateException("Bad host", e);
 		}

@@ -37,6 +37,7 @@ public class UDPServer {
 	
 	public UDPServer(int port) {
 		listenAddress = NetworkHelper.makeLocalhostSocketAddress(port);
+		logger.info("Created service on {}", listenAddress);
 	}
 
 	public void start() {

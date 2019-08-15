@@ -2,6 +2,7 @@ package accepttest.dns.lookup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.jupiter.api.Tag;
@@ -27,6 +28,9 @@ public class SimpleDnsQueryTest {
     	lookup.setCache(null);
     	lookup.setSearchPath(new String[] {});
   
+    	InetAddress lh = InetAddress.getLocalHost();
+		System.out.println("Running on " + lh.getHostAddress() + " : " + lh.getHostName() + " : " + InetAddress.getLoopbackAddress());
+    	
     	Record[] res = lookup.run();
     	assertThat(lookup.getResult())
     		.isEqualTo(0);
