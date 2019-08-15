@@ -1,3 +1,5 @@
+* websocket service with lookup events - and client to test it
+
 UDP server:
  * Test shutdown
  * Multi-thread dispatch
