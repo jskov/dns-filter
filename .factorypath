@@ -1,0 +1,4 @@
+<factorypath>
+    <factorypathentry kind="PLUGIN" id="org.eclipse.jst.ws.annotations.core" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/opt/sources/_gradle/caches/modules-2/files-2.1/org.immutables/value/2.7.5/503a9b23d8b488b68a9b00c7622825ac05fbba7c/value-2.7.5.jar" enabled="true" runInBatchMode="false"/>
+</factorypath>

@@ -13,6 +13,10 @@ repositories {
      mavenCentral()
 }
 
+configurations {
+	forEclipse
+}
+
 dependencies {
 	implementation enforcedPlatform("io.quarkus:quarkus-bom:${quarkusVersion}")
     implementation "io.quarkus:quarkus-resteasy"
@@ -20,10 +24,16 @@ dependencies {
 
     implementation "dnsjava:dnsjava:${dnsJavaVersion}"
 
+	compileOnly 'org.immutables:value-annotations:2.7.5'
+	forEclipse 'org.immutables:value:2.7.5'
+	annotationProcessor 'org.immutables:value:2.7.5'
+
     testImplementation "io.quarkus:quarkus-junit5"
     testImplementation "io.rest-assured:rest-assured"
     testImplementation "org.assertj:assertj-core:3.11.1"
     testImplementation "dnsjava:dnsjava:${dnsJavaVersion}"
+    
+//    testImplementation "io.quarkus:quarkus-undertow-websockets-deployment"
 }
 
 publishing {
@@ -55,3 +65,6 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 tasks.eclipseClasspath.dependsOn("cleanEclipseClasspath")
+tasks.eclipse.doLast {
+	println configurations.forEclipse.asPath
+}
