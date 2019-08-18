@@ -15,8 +15,12 @@ import javax.websocket.server.ServerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@ServerEndpoint("/chat/{username}")
+import dk.mada.dns.rest.dto.EventDto;
+
 @ApplicationScoped
+@ServerEndpoint(value = "/chat/{username}", encoders = {
+        MessageEncoder.class
+})
 public class EventSocket {
 	private static final Logger logger = LoggerFactory.getLogger(EventSocket.class);
 	Map<String, Session> sessions = new ConcurrentHashMap<>();
@@ -47,8 +51,12 @@ public class EventSocket {
 	}
 
 	private void broadcast(String message) {
+		EventDto dto = new EventDto();
+		dto.setName("NAME: " + message);
+		logger.info("From {} to {}", message, dto);
+		
 		sessions.values().forEach(s -> {
-			s.getAsyncRemote().sendObject(message, result -> {
+			s.getAsyncRemote().sendObject(dto, result -> {
 				if (result.getException() != null) {
 					System.out.println("Unable to send message: " + result.getException());
 				}
