@@ -15,7 +15,7 @@ import javax.websocket.server.ServerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.mada.dns.rest.dto.EventDto;
+import dk.mada.dns.websocket.dto.EventDto;
 
 // TODO: testing see https://github.com/quarkusio/quarkus-quickstarts/blob/master/using-websockets/src/test/java/org/acme/websocket/ChatTestCase.java
 
@@ -54,9 +54,14 @@ public class EventSocket {
 
 	private void broadcast(String message) {
 		EventDto dto = new EventDto();
-		dto.name = ("NAME: " + message);
+		dto.hostname = ("NAME: " + message);
 		logger.info("From {} to {}", message, dto);
 		
+		broadcast(dto);
+	}
+	
+	// FIXME: should happen async, so the caller can return asap
+	public void broadcast(EventDto dto) {
 		sessions.values().forEach(s -> {
 			s.getAsyncRemote().sendObject(dto, result -> {
 				if (result.getException() != null) {

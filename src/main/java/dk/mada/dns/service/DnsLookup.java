@@ -8,17 +8,26 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.DatagramChannel;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.Message;
 
+import dk.mada.dns.websocket.EventSocket;
+import dk.mada.dns.websocket.dto.EventDto;
+
 /**
  * DNS lookup, passing request on to upstream DNS server (pass-through).
  */
+@ApplicationScoped
 public class DnsLookup implements UDPPacketHandler {
 	private static final Logger logger = LoggerFactory.getLogger(DnsLookup.class);
 	private static final String UPSTREAM_DNS_SERVER = "1.1.1.1";
 
+	@Inject private EventSocket websocketEventNotifier;
+	
 	@Override
 	public ByteBuffer process(ByteBuffer request) {
 		try {
@@ -43,6 +52,9 @@ public class DnsLookup implements UDPPacketHandler {
 				logger.info("Upstream reply in {}ms", time);
 
 				Message r = new Message(reply);
+
+				notifyEventListeners(r);
+				
 				logger.info("REPLY {}", r);
 				reply.rewind();
 
@@ -66,6 +78,12 @@ public class DnsLookup implements UDPPacketHandler {
 		}
     	
     	return request;
+	}
+	private void notifyEventListeners(Message reply) {
+		EventDto dto = new EventDto();
+		dto.hostname = reply.getQuestion().getName().toString();
+		dto.reply = reply.sectionToString(1);
+		websocketEventNotifier.broadcast(dto);
 	}
 	
 	private static InetSocketAddress getUpstreamServer() {

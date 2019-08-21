@@ -10,7 +10,7 @@ import javax.websocket.EndpointConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.mada.dns.rest.dto.EventDto;
+import dk.mada.dns.websocket.dto.EventDto;
 
 // See http://json-b.net/docs/user-guide.html
 
