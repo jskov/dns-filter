@@ -54,7 +54,7 @@ public class EventSocket {
 
 	private void broadcast(String message) {
 		EventDto dto = new EventDto();
-		dto.setName("NAME: " + message);
+		dto.name = ("NAME: " + message);
 		logger.info("From {} to {}", message, dto);
 		
 		sessions.values().forEach(s -> {

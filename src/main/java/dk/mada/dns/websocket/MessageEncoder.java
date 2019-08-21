@@ -19,14 +19,15 @@ public class MessageEncoder implements Encoder.Text<EventDto> {
 	private Jsonb jsonb;
 
 	public MessageEncoder() {
-		var config = new JsonbConfig().withFormatting(true);
+		var config = new JsonbConfig().withFormatting(false);
 		jsonb = JsonbBuilder.create(config);
 	}
 	
 	@Override
 	public String encode(EventDto object) throws EncodeException {
-		logger.info("Try to encode {}", object);
-		return jsonb.toJson(object);
+		String str = jsonb.toJson(object);
+		logger.info("Try to encode {} -> {}", object, str);
+		return str;
 	}
 
 	@Override
