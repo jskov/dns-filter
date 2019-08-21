@@ -1,5 +1,8 @@
 package dk.mada.dns.websocket;
 
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
+import javax.json.bind.JsonbConfig;
 import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
@@ -13,11 +16,17 @@ import dk.mada.dns.rest.dto.EventDto;
 
 public class MessageEncoder implements Encoder.Text<EventDto> {
 	private static final Logger logger = LoggerFactory.getLogger(MessageEncoder.class);
+	private Jsonb jsonb;
 
+	public MessageEncoder() {
+		var config = new JsonbConfig().withFormatting(true);
+		jsonb = JsonbBuilder.create(config);
+	}
+	
 	@Override
 	public String encode(EventDto object) throws EncodeException {
 		logger.info("Try to encode {}", object);
-		return "nope";
+		return jsonb.toJson(object);
 	}
 
 	@Override

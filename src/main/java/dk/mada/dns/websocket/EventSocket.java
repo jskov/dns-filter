@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import dk.mada.dns.rest.dto.EventDto;
 
+// TODO: testing see https://github.com/quarkusio/quarkus-quickstarts/blob/master/using-websockets/src/test/java/org/acme/websocket/ChatTestCase.java
+
 @ApplicationScoped
 @ServerEndpoint(value = "/chat/{username}", encoders = {
         MessageEncoder.class
