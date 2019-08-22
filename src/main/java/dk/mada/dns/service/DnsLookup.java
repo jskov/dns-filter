@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.Message;
 
-import dk.mada.dns.websocket.EventSocket;
+import dk.mada.dns.websocket.DnsQueryEventService;
 import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 
 /**
@@ -26,7 +26,7 @@ public class DnsLookup implements UDPPacketHandler {
 	private static final Logger logger = LoggerFactory.getLogger(DnsLookup.class);
 	private static final String UPSTREAM_DNS_SERVER = "1.1.1.1";
 
-	@Inject private EventSocket websocketEventNotifier;
+	@Inject private DnsQueryEventService websocketEventNotifier;
 	
 	@Override
 	public ByteBuffer process(ByteBuffer request) {

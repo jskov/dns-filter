@@ -23,8 +23,8 @@ import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 @ServerEndpoint(value = "/chat/{username}", encoders = {
         MessageEncoder.class
 })
-public class EventSocket {
-	private static final Logger logger = LoggerFactory.getLogger(EventSocket.class);
+public class DnsQueryEventService {
+	private static final Logger logger = LoggerFactory.getLogger(DnsQueryEventService.class);
 	Map<String, Session> sessions = new ConcurrentHashMap<>();
 
 	@OnOpen
