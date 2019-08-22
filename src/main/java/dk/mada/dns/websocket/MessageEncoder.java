@@ -10,11 +10,11 @@ import javax.websocket.EndpointConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.mada.dns.websocket.dto.EventDto;
+import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 
 // See http://json-b.net/docs/user-guide.html
 
-public class MessageEncoder implements Encoder.Text<EventDto> {
+public class MessageEncoder implements Encoder.Text<DnsQueryEventDto> {
 	private static final Logger logger = LoggerFactory.getLogger(MessageEncoder.class);
 	private Jsonb jsonb;
 
@@ -24,7 +24,7 @@ public class MessageEncoder implements Encoder.Text<EventDto> {
 	}
 	
 	@Override
-	public String encode(EventDto object) throws EncodeException {
+	public String encode(DnsQueryEventDto object) throws EncodeException {
 		String str = jsonb.toJson(object);
 		logger.info("Try to encode {} -> {}", object, str);
 		return str;

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.xbill.DNS.Message;
 
 import dk.mada.dns.websocket.EventSocket;
-import dk.mada.dns.websocket.dto.EventDto;
+import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 
 /**
  * DNS lookup, passing request on to upstream DNS server (pass-through).
@@ -80,7 +80,7 @@ public class DnsLookup implements UDPPacketHandler {
     	return request;
 	}
 	private void notifyEventListeners(Message reply) {
-		EventDto dto = new EventDto();
+		DnsQueryEventDto dto = new DnsQueryEventDto();
 		dto.hostname = reply.getQuestion().getName().toString();
 		dto.reply = reply.sectionToString(1);
 		websocketEventNotifier.broadcast(dto);

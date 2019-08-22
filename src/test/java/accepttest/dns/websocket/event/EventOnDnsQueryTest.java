@@ -28,7 +28,7 @@ import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.TextParseException;
 
 import dk.mada.dns.Application;
-import dk.mada.dns.websocket.dto.EventDto;
+import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -36,7 +36,7 @@ import io.quarkus.test.junit.QuarkusTest;
 @QuarkusTest
 public class EventOnDnsQueryTest {
 	private static final Logger logger = LoggerFactory.getLogger(EventOnDnsQueryTest.class);
-	private static final LinkedBlockingDeque<EventDto> MESSAGES = new LinkedBlockingDeque<>();
+	private static final LinkedBlockingDeque<DnsQueryEventDto> MESSAGES = new LinkedBlockingDeque<>();
 
 	@TestHTTPResource("/chat/event-test")
 	URI uri;
@@ -53,14 +53,14 @@ public class EventOnDnsQueryTest {
 
 	    	 makeDnsLookup("github.com");
 
-	    	 EventDto event = nextWebsocketMessage();
+	    	 DnsQueryEventDto event = nextWebsocketMessage();
 	    	 logger.info("Got event {}", event);
 	    	 assertThat(event.reply)
 	    			 .contains("github.com.");
         }
 	}
 
-	private EventDto nextWebsocketMessage() throws InterruptedException {
+	private DnsQueryEventDto nextWebsocketMessage() throws InterruptedException {
 		return MESSAGES.poll(3, TimeUnit.SECONDS);
 	}
 	
@@ -92,7 +92,7 @@ public class EventOnDnsQueryTest {
 		@OnMessage
 		void message(String msg) {
 			Jsonb jsonb = JsonbBuilder.create();
-			MESSAGES.add(jsonb.fromJson(msg, EventDto.class));
+			MESSAGES.add(jsonb.fromJson(msg, DnsQueryEventDto.class));
 		}
 
 	}
