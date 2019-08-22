@@ -1,10 +1,16 @@
 package dk.mada.dns.websocket.dto;
 
+/**
+ * Describes a DNS lookup event for listeners.
+ */
 public class DnsQueryEventDto {
+	public EventTypeDto type;
 	public String hostname;
-	public String reply;
+	public String clientIp;
+	public long ttl;
+	public String ip;
 	@Override
 	public String toString() {
-		return "DnsQueryEventDto [hostname=" + hostname + ", reply=" + reply + "]";
+		return "DnsQueryEventDto [type=" + type + ", hostname=" + hostname + ", ttl=" + ttl + ", ip=" + ip + "]";
 	}
 }

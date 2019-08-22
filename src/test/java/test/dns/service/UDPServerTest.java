@@ -44,7 +44,7 @@ public class UDPServerTest {
 		UDPServer sut = new UDPServer(PORT);
 
 		try {
-			UDPPacketHandler echoHandler = input -> input;
+			UDPPacketHandler echoHandler = (clientIp, input) -> input;
 			sut.setPacketHandler(echoHandler);
 			sut.start();
 

@@ -2,20 +2,16 @@ package accepttest.dns.websocket.event;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
-import javax.websocket.DeploymentException;
 import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
 import javax.websocket.Session;
 
 import org.junit.jupiter.api.Tag;
@@ -42,21 +38,18 @@ public class EventOnDnsQueryTest {
 	URI uri;
 
 	/**
-	 * Tests that a websocket event is sent on a DNS request.
+	 * Tests that a DnsQueryEvent is sent over websocket as
+	 * a result of a lookup.
 	 */
 	@Test
 	public void testDnsLookup() throws Exception {
 	     try(Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, uri)) {
-	    	 
-//	    	 assertThat(nextWebsocketMessage())
-//	    	 	.isEqualTo("CONNECT");
-
-	    	 makeDnsLookup("github.com");
+	    	 makeDnsLookup("mada.dk");
 
 	    	 DnsQueryEventDto event = nextWebsocketMessage();
 	    	 logger.info("Got event {}", event);
-	    	 assertThat(event.reply)
-	    			 .contains("github.com.");
+	    	 assertThat(event.ip)
+	    			 .isEqualTo("185.17.217.100");
         }
 	}
 
@@ -72,7 +65,7 @@ public class EventOnDnsQueryTest {
 
 		Record[] res = lookup.run();
 		assertThat(lookup.getResult()).isEqualTo(0);
-		assertThat(res).extracting(r -> r.getName().toString()).contains("github.com.");
+		assertThat(res).extracting(r -> r.getName().toString()).contains(lookupHostname+".");
 	}
 
 	private SimpleResolver getLocalhostResolver() throws UnknownHostException, TextParseException {
@@ -83,11 +76,6 @@ public class EventOnDnsQueryTest {
 
 	@ClientEndpoint
 	public static class Client {
-
-		@OnOpen
-		public void open() {
-//			MESSAGES.add("CONNECT");
-		}
 
 		@OnMessage
 		void message(String msg) {

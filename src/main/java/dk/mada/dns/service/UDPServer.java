@@ -73,8 +73,18 @@ public class UDPServer {
 				ByteBuffer request = ByteBuffer.allocate(MIN_DNS_PACKET_SIZE);
 				SocketAddress sa = channel.receive(request);
 				request.flip();
+
+				if (!(sa instanceof InetSocketAddress)) {
+					logger.warn("Does not know IP of client - ignoring");
+					continue;
+				}
 				
-				ByteBuffer reply = packetHandler.process(request);
+				String clientIp = ((InetSocketAddress)sa).getAddress().getHostAddress();
+				if (clientIp == null) {
+					continue;
+				}
+				
+				ByteBuffer reply = packetHandler.process(clientIp, request);
 				if (channel.isConnected()) {
 					channel.write(reply);
 				} else {
