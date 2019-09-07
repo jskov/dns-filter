@@ -28,8 +28,8 @@ import dk.mada.dns.websocket.dto.EventTypeDto;
  * test that the event system works.
  */
 @ApplicationScoped
-public class DnsLookup implements UDPPacketHandler {
-	private static final Logger logger = LoggerFactory.getLogger(DnsLookup.class);
+public class DnsLookupService implements UDPPacketHandler {
+	private static final Logger logger = LoggerFactory.getLogger(DnsLookupService.class);
 	private static final String UPSTREAM_DNS_SERVER = "1.1.1.1";
 
 	@Inject private DnsQueryEventService websocketEventNotifier;
