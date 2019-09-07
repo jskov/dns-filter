@@ -12,10 +12,15 @@ public class DnsSection {
 		this.records = records;
 	}
 	
-	public static DnsSection make(DnsSectionType type, List<DnsRecord> records) {
+	public static DnsSection from(DnsSectionType type, List<DnsRecord> records) {
 		return new DnsSection(type, records);
 	}
 
+	public static DnsSection ofAnswers(List<DnsRecord> records) {
+		return new DnsSection(DnsSectionType.ANSWER, records);
+	}
+
+	
 	public DnsSectionType getType() {
 		return type;
 	}
@@ -26,5 +31,10 @@ public class DnsSection {
 	
 	public Stream<DnsRecord> stream() {
 		return records.stream();
+	}
+
+	@Override
+	public String toString() {
+		return "DnsSection [type=" + type + ", records=" + records + "]";
 	}
 }

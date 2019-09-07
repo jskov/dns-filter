@@ -1,12 +1,15 @@
 package dk.mada.dns.wire.model;
 
+import java.util.Optional;
+import java.util.function.Consumer;
+
 public class DnsRecord {
 	private DnsClass dnsClass;
 	private DnsRecordType recordType;
 	private DnsName name;
 	private long ttl;
 
-	private DnsRecord(DnsClass dnsClass, DnsRecordType recordType, DnsName name, long ttl) {
+	protected DnsRecord(DnsClass dnsClass, DnsRecordType recordType, DnsName name, long ttl) {
 		super();
 		this.dnsClass = dnsClass;
 		this.recordType = recordType;
@@ -14,7 +17,7 @@ public class DnsRecord {
 		this.ttl = ttl;
 	}
 	
-	public static DnsRecord from(DnsRecordType recordType, DnsName name, long ttl) {
+	public static DnsRecord unknownFrom(DnsRecordType recordType, DnsName name, long ttl) {
 		return new DnsRecord(DnsClass.IN, recordType, name, ttl);
 	}
 
@@ -48,5 +51,18 @@ public class DnsRecord {
 
 	public void setTtl(long ttl) {
 		this.ttl = ttl;
+	}
+
+	public void ifRecordA(Consumer<DnsRecordA> c) {
+	}
+	
+	public Optional<DnsRecordA> asRecordA() {
+		return Optional.empty();
+	}
+	
+	@Override
+	public String toString() {
+		return "DnsRecord [recordType=" + recordType + ", name=" + name + ", ttl=" + ttl
+				+ "]";
 	}
 }

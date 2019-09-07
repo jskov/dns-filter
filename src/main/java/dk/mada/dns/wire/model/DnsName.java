@@ -14,7 +14,7 @@ public class DnsName {
 		this.name = name;
 	}
 	
-	public DnsName fromName(String name) {
+	public static DnsName fromName(String name) {
 		return new DnsName(name);
 	}
 
@@ -24,5 +24,10 @@ public class DnsName {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Override
+	public String toString() {
+		return "DnsName [name=" + name + "]";
 	}
 }

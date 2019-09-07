@@ -21,4 +21,13 @@ public enum DnsRecordType {
 	public int getWireValue() {
 		return wireValue;
 	}
+	
+	public static DnsRecordType fromWireValue(int wireValue) {
+		for (DnsRecordType t : values()) {
+			if (t.wireValue == wireValue) {
+				return t;
+			}
+		}
+		throw new IllegalArgumentException("Unknown DNS record type with value " + wireValue);
+	}
 }

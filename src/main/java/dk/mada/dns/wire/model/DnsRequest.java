@@ -28,4 +28,8 @@ public class DnsRequest extends DnsMessage {
 	public void setAdditional(DnsSection additional) {
 		throw new IllegalStateException(NOT_PERTINENT_IN_A_REQUEST);
 	}
+	@Override
+	public String toString() {
+		return "DnsRequest [getQuestion()=" + getQuestion() + "]";
+	}
 }
