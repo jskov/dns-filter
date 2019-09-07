@@ -2,13 +2,10 @@ package accepttest.dns.lookup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.net.UnknownHostException;
-
 import javax.inject.Inject;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.xbill.DNS.TextParseException;
 
 import dk.mada.dns.wire.model.DnsReply;
 import fixture.dns.DnsPayloadHelper;
@@ -24,7 +21,7 @@ public class SimpleDnsQueryTest {
 	 * from looking up github.com
 	 */
     @Test
-    public void testDnsLookup() throws TextParseException, UnknownHostException {
+    public void testDnsLookup() {
     	DnsReply reply = dnsHelper.serviceDnsLookup("mada.dk");
     			
     	assertThat(reply.getAnswer().getRecords())
