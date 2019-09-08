@@ -60,7 +60,12 @@ task acceptTest(type: Test, dependsOn: "publishToMavenLocal") {
     ignoreFailures = true
 }
 
-tasks.check.dependsOn(acceptTest)
+task bundleTestReports(type: Zip, dependsOn: "acceptTest") {
+	archiveFile.set(file("build/test-report.zip"))
+	from "build/reports"
+}
+
+tasks.check.dependsOn(bundleTestReports)
 
 sourceCompatibility = 11
 targetCompatibility = 11
