@@ -8,7 +8,7 @@ jobs:
     name: Build and test
     runs-on: ubuntu-18.04
     steps:
-    - uses: actions/checkout@latest
+    - uses: actions/checkout@master
     - uses: actions/setup-java@v1
       with:
         java-version: '12.0.x'
