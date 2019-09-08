@@ -6,11 +6,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.TextParseException;
 
 import dk.mada.dns.Application;
+import dk.mada.dns.wire.model.DnsClass;
+import dk.mada.dns.wire.model.DnsRecordType;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.conversion.WireToModelXbill;
 
@@ -33,8 +36,13 @@ public class DnsPayloadHelper {
     	lookup.setSearchPath(new String[] {});
   
     	Record[] res = lookup.run();
+
+    	String absName = hostname.endsWith(".") ? hostname : (hostname + ".");
+    	Name name = new Name(absName);
+    	Record question = Record.newRecord(name, DnsRecordType.A.getWireValue(), DnsClass.IN.getWireValue());
     	
-    	return wireToModel.fromAnswers(res);
+    	
+    	return wireToModel.fromAnswers(question, res);
 	}
 	
 	private SimpleResolver getLocalhostResolver() throws UnknownHostException, TextParseException {

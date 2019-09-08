@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ import dk.mada.dns.wire.model.conversion.WireToModelXbill;
 public class DnsResolver {
 	private static final Logger logger = LoggerFactory.getLogger(DnsResolver.class);
 
-	private WireToModelXbill wireToModelConverter = new WireToModelXbill();
+	@Inject private WireToModelXbill wireToModelConverter;
 	
 	public Optional<DnsReply> resolve(String clientIp, DnsRequest request) {
 		Objects.requireNonNull(clientIp);

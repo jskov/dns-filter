@@ -16,6 +16,10 @@ public class DnsSection {
 		return new DnsSection(type, records);
 	}
 
+	public static DnsSection ofQuestion(DnsRecord record) {
+		return new DnsSection(DnsSectionType.QUESTION, List.of(record));
+	}
+
 	public static DnsSection ofAnswers(List<DnsRecord> records) {
 		return new DnsSection(DnsSectionType.ANSWER, records);
 	}

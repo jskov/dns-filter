@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.DatagramChannel;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -18,9 +19,13 @@ import org.xbill.DNS.ARecord;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.RRset;
 
+import dk.mada.dns.resolver.DnsResolver;
 import dk.mada.dns.websocket.DnsQueryEventService;
 import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 import dk.mada.dns.websocket.dto.EventTypeDto;
+import dk.mada.dns.wire.model.DnsReply;
+import dk.mada.dns.wire.model.DnsRequest;
+import dk.mada.dns.wire.model.conversion.WireToModelXbill;
 
 /**
  * DNS lookup, passing request on to upstream DNS server (pass-through).
@@ -33,40 +38,48 @@ public class DnsLookupService implements UDPPacketHandler {
 	private static final String UPSTREAM_DNS_SERVER = "1.1.1.1";
 
 	@Inject private DnsQueryEventService websocketEventNotifier;
+	@Inject private DnsResolver resolver;
+	@Inject private WireToModelXbill wireToModelConverter;
 	
 	@Override
-	public ByteBuffer process(String clientIp, ByteBuffer request) {
+	public ByteBuffer process(String clientIp, ByteBuffer wireRequest) {
 		Objects.requireNonNull(clientIp);
-		Objects.requireNonNull(request);
-
+		Objects.requireNonNull(wireRequest);
+		
+		DnsRequest request = wireToModelConverter.requestToModel(wireRequest);
+		wireRequest.rewind();
+		logger.info("Decoded request: {}", request);
+		Optional<DnsReply> reply = resolver.resolve(clientIp, request);
+		logger.info("Decoded reply: {}", reply);
+		
 		try {
-			Message m = new Message(request);
+			Message m = new Message(wireRequest);
 			logger.info("LOOKUP {}", m);
 			
 			InetSocketAddress target = getUpstreamServer();
 			try (DatagramChannel channel = DatagramChannel.open()) {
 				channel.connect(target);
-				request.rewind();
-				channel.send(request, target);
+				wireRequest.rewind();
+				channel.send(wireRequest, target);
 		
-				ByteBuffer reply = ByteBuffer.allocate(512);
+				ByteBuffer wireReply = ByteBuffer.allocate(512);
 		
 				long start = System.currentTimeMillis();
 
-				channel.read(reply);
-				reply.flip();
+				channel.read(wireReply);
+				wireReply.flip();
 		
 				long time = System.currentTimeMillis() - start;
 				logger.info("Upstream reply in {}ms", time);
 
-				Message r = new Message(reply);
+				Message r = new Message(wireReply);
 
 				notifyEventListeners(r);
 				
 				logger.info("REPLY {}", r);
-				reply.rewind();
+				wireReply.rewind();
 
-				return reply;
+				return wireReply;
 			} catch (ClosedByInterruptException e) {
 				try {
 					Thread.sleep(0);
@@ -85,8 +98,9 @@ public class DnsLookupService implements UDPPacketHandler {
 			e.printStackTrace();
 		}
     	
-    	return request;
+    	return wireRequest;
 	}
+	
 	private void notifyEventListeners(Message reply) {
 		DnsQueryEventDto dto = new DnsQueryEventDto();
 		dto.hostname = reply.getQuestion().getName().toString();

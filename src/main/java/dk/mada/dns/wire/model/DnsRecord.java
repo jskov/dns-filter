@@ -60,6 +60,13 @@ public class DnsRecord {
 		return Optional.empty();
 	}
 	
+	public void ifRecordQ(Consumer<DnsRecordQ> c) {
+	}
+
+	public Optional<DnsRecordQ> asRecordQ() {
+		return Optional.empty();
+	}
+	
 	@Override
 	public String toString() {
 		return "DnsRecord [recordType=" + recordType + ", name=" + name + ", ttl=" + ttl

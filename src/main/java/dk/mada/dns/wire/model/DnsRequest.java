@@ -1,8 +1,23 @@
 package dk.mada.dns.wire.model;
 
-public class DnsRequest extends DnsMessage {
+import java.nio.ByteBuffer;
 
+public class DnsRequest extends DnsMessage {
 	private static final String NOT_PERTINENT_IN_A_REQUEST = "Not pertinent in a request";
+	private final ByteBuffer baseWireRequest;
+	
+	private DnsRequest(DnsSection question, ByteBuffer baseWireRequest) {
+		super(question);
+		this.baseWireRequest = baseWireRequest.asReadOnlyBuffer();
+	}
+
+	public static DnsRequest fromWireRequest(DnsSection question, ByteBuffer wireRequest) {
+		return new DnsRequest(question, wireRequest);
+	}
+	
+	public ByteBuffer asWirePacket() {
+		return baseWireRequest.rewind();
+	}
 
 	@Override
 	public DnsSection getAnswer() {
