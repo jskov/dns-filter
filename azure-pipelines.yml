@@ -1,15 +1,15 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 # with inspiration from https://github.com/quarkusio/quarkus/blob/master/azure-pipelines.yml
-trigger:
-  batch: true
-  branches:
-    include:
-    - master
+#trigger:
+#  batch: true
+#  branches:
+#    include:
+#    - master
 
-pr:
-  branches:
-    include:
-    - master
+#pr:
+#  branches:
+#    include:
+#    - master
 
 jobs:
  - job: Build_Linux_jar
