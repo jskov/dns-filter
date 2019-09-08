@@ -1,4 +1,4 @@
-package fixture.dns;
+package fixture.dns.xbill;
 
 import java.net.UnknownHostException;
 

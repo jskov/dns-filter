@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import dk.mada.dns.wire.model.DnsReply;
-import fixture.dns.DnsPayloadHelper;
+import fixture.dns.xbill.DnsPayloadHelper;
 import io.quarkus.test.junit.QuarkusTest;
 
 @Tag("accept")

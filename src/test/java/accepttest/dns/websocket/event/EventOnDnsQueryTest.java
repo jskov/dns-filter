@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.mada.dns.websocket.dto.DnsQueryEventDto;
-import fixture.dns.DnsPayloadHelper;
+import fixture.dns.xbill.DnsPayloadHelper;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 
