@@ -51,7 +51,7 @@ public class EventOnDnsQueryTest {
 	}
 
 	private DnsQueryEventDto nextWebsocketMessage() throws InterruptedException {
-		return MESSAGES.poll(3, TimeUnit.SECONDS);
+		return MESSAGES.poll(10, TimeUnit.SECONDS);
 	}
 	
 	@ClientEndpoint
