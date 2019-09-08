@@ -24,8 +24,6 @@ import dk.mada.dns.wire.model.conversion.WireToModelConverter;
 
 /**
  * DNS lookup, passing request on to upstream DNS server (pass-through).
- * This is a very crude implementation, based on org.xbill.DNS, just to
- * test that the event system works.
  */
 @ApplicationScoped
 public class DnsLookupService implements UDPPacketHandler {
