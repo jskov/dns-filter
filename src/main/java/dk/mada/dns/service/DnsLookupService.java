@@ -25,7 +25,7 @@ import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 import dk.mada.dns.websocket.dto.EventTypeDto;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
-import dk.mada.dns.wire.model.conversion.WireToModelXbill;
+import dk.mada.dns.wire.model.conversion.WireToModelConverter;
 
 /**
  * DNS lookup, passing request on to upstream DNS server (pass-through).
@@ -39,7 +39,8 @@ public class DnsLookupService implements UDPPacketHandler {
 
 	@Inject private DnsQueryEventService websocketEventNotifier;
 	@Inject private DnsResolver resolver;
-	@Inject private WireToModelXbill wireToModelConverter;
+	@Inject private WireToModelConverter wireToModelConverter;
+	
 	
 	@Override
 	public ByteBuffer process(String clientIp, ByteBuffer wireRequest) {
@@ -51,6 +52,8 @@ public class DnsLookupService implements UDPPacketHandler {
 		logger.info("Decoded request: {}", request);
 		Optional<DnsReply> reply = resolver.resolve(clientIp, request);
 		logger.info("Decoded reply: {}", reply);
+		
+		
 		
 		try {
 			Message m = new Message(wireRequest);

@@ -16,11 +16,11 @@ import dk.mada.dns.Application;
 import dk.mada.dns.wire.model.DnsClass;
 import dk.mada.dns.wire.model.DnsRecordType;
 import dk.mada.dns.wire.model.DnsReply;
-import dk.mada.dns.wire.model.conversion.WireToModelXbill;
+import dk.mada.dns.wire.model.conversion.WireToModelConverter;
 
 @ApplicationScoped
 public class DnsPayloadHelper {
-	@Inject private WireToModelXbill wireToModel;
+	@Inject private WireToModelConverter wireToModel;
 	
 	public DnsReply serviceDnsLookup(String hostname) {
 		try {

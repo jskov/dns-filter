@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
-import dk.mada.dns.wire.model.conversion.WireToModelXbill;
+import dk.mada.dns.wire.model.conversion.WireToModelConverter;
 
 /**
  * Simple DNS resolver, asking upstream for a lookup.
@@ -26,7 +26,7 @@ import dk.mada.dns.wire.model.conversion.WireToModelXbill;
 public class DnsResolver {
 	private static final Logger logger = LoggerFactory.getLogger(DnsResolver.class);
 
-	@Inject private WireToModelXbill wireToModelConverter;
+	@Inject private WireToModelConverter wireToModelConverter;
 	
 	public Optional<DnsReply> resolve(String clientIp, DnsRequest request) {
 		Objects.requireNonNull(clientIp);

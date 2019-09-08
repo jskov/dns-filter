@@ -25,8 +25,11 @@ import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
 import dk.mada.dns.wire.model.DnsSection;
 
+/**
+ * Convert wire format to model using xbill.dns.
+ */
 @ApplicationScoped
-public class WireToModelXbill {
+public class WireToModelConverter {
 
 	public DnsReply replyToModel(ByteBuffer reply) {
 		try {

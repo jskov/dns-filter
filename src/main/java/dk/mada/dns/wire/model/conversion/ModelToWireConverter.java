@@ -18,8 +18,11 @@ import dk.mada.dns.wire.model.DnsRecord;
 import dk.mada.dns.wire.model.DnsRecordType;
 import dk.mada.dns.wire.model.DnsReply;
 
+/**
+ * Convert model to wire format using xbill.dns.
+ */
 @ApplicationScoped
-public class ModelToWireXbill {
+public class ModelToWireConverter {
 	public ByteBuffer modelToWire(DnsReply reply) throws IOException {
 		String hostname = reply.getQuestion().getName().getName();
 		
