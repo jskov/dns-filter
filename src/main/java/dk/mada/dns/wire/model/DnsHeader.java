@@ -1,11 +1,13 @@
 package dk.mada.dns.wire.model;
 
+import java.nio.ByteBuffer;
+
 /**
  * DNS message header.
  * 
  * From https://www.ietf.org/rfc/rfc1035.txt, 4.1.1. Header section format
  */
-class DnsHeader {
+public abstract class DnsHeader {
 	private final short id;
 	private final short flags;
 	private final short qdcount;
@@ -44,5 +46,17 @@ class DnsHeader {
 
 	public short getArcount() {
 		return arcount;
+	}
+	
+	public byte[] toWireFormat() {
+		var bb = ByteBuffer.allocate(12);
+		bb.putShort(id);
+		bb.putShort(flags);
+		bb.putShort(qdcount);
+		bb.putShort(ancount);
+		bb.putShort(nscount);
+		bb.putShort(arcount);
+		
+		return bb.array();
 	}
 }
