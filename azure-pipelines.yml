@@ -6,10 +6,10 @@ trigger:
     include:
     - master
 
-pr:
-  branches:
-    include:
-    - master
+#pr:
+#  branches:
+#    include:
+#    - master
 
 jobs:
  - job: Build_Linux_jar
