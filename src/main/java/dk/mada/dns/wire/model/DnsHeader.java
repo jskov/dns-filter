@@ -59,4 +59,17 @@ public abstract class DnsHeader {
 		
 		return bb.array();
 	}
+
+	public byte[] toWireFormatZeroAnswers() {
+		var bb = ByteBuffer.allocate(12);
+		bb.putShort(id);
+		bb.putShort(flags);
+		bb.putShort(qdcount);
+		bb.putShort((short)0);
+		bb.putShort(nscount);
+		bb.putShort(arcount);
+		
+		return bb.array();
+	}
+
 }
