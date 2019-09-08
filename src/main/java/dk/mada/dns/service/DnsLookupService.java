@@ -64,8 +64,6 @@ public class DnsLookupService implements UDPPacketHandler {
 	}
 
 	private void notifyEventListeners(DnsReply reply) {
-		DnsQueryEventDto dto = new DnsQueryEventDto();
-		dto.hostname = reply.getQuestion().getName().toString();
 		
 		DnsSection answers = reply.getAnswer();
 		if (answers == null) {
@@ -78,6 +76,9 @@ public class DnsLookupService implements UDPPacketHandler {
 		}
 		
 		DnsRecord firstAnswer = records.get(0);
+
+		DnsQueryEventDto dto = new DnsQueryEventDto();
+		dto.hostname = reply.getQuestion().getName().toString();
 		dto.ttl = firstAnswer.getTtl();
 		firstAnswer.asRecordA()
 			.ifPresent(dra -> dto.ip = dra.getAddress().getHostAddress());

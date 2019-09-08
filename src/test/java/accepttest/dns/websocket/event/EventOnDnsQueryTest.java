@@ -12,6 +12,7 @@ import javax.json.bind.JsonbBuilder;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
 import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
 import javax.websocket.Session;
 
 import org.junit.jupiter.api.Tag;
@@ -51,14 +52,23 @@ public class EventOnDnsQueryTest {
 	}
 
 	private DnsQueryEventDto nextWebsocketMessage() throws InterruptedException {
-		return MESSAGES.poll(10, TimeUnit.SECONDS);
+		DnsQueryEventDto res = MESSAGES.poll(10, TimeUnit.SECONDS);
+		if (res == null) {
+			throw new IllegalStateException("Websocket message timeout");
+		}
+		return res;
 	}
 	
 	@ClientEndpoint
 	public static class Client {
-
+		@OnOpen
+		void onOpen(Session session) {
+			logger.info("Test client WebSocket connection on {}", session);
+		}
+		
 		@OnMessage
 		void message(String msg) {
+			logger.info("WebSocket message {}", msg);
 			Jsonb jsonb = JsonbBuilder.create();
 			MESSAGES.add(jsonb.fromJson(msg, DnsQueryEventDto.class));
 		}
