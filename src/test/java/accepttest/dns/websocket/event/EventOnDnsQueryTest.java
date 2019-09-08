@@ -3,28 +3,25 @@ package accepttest.dns.websocket.event;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
 import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
 import javax.websocket.Session;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xbill.DNS.Lookup;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.SimpleResolver;
-import org.xbill.DNS.TextParseException;
 
-import dk.mada.dns.Application;
 import dk.mada.dns.websocket.dto.DnsQueryEventDto;
+import fixture.dns.xbill.DnsPayloadHelper;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -34,6 +31,7 @@ public class EventOnDnsQueryTest {
 	private static final Logger logger = LoggerFactory.getLogger(EventOnDnsQueryTest.class);
 	private static final LinkedBlockingDeque<DnsQueryEventDto> MESSAGES = new LinkedBlockingDeque<>();
 
+	@Inject private DnsPayloadHelper dnsHelper;
 	@TestHTTPResource("/chat/event-test")
 	URI uri;
 
@@ -44,7 +42,7 @@ public class EventOnDnsQueryTest {
 	@Test
 	public void testDnsLookup() throws Exception {
 	     try(Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, uri)) {
-	    	 makeDnsLookup("mada.dk");
+	    	 dnsHelper.serviceDnsLookup("mada.dk");
 
 	    	 DnsQueryEventDto event = nextWebsocketMessage();
 	    	 logger.info("Got event {}", event);
@@ -54,34 +52,25 @@ public class EventOnDnsQueryTest {
 	}
 
 	private DnsQueryEventDto nextWebsocketMessage() throws InterruptedException {
-		return MESSAGES.poll(3, TimeUnit.SECONDS);
+		DnsQueryEventDto res = MESSAGES.poll(10, TimeUnit.SECONDS);
+		if (res == null) {
+			throw new IllegalStateException("Websocket message timeout");
+		}
+		return res;
 	}
 	
-	private void makeDnsLookup(String lookupHostname) throws Exception {
-		Lookup lookup = new Lookup(lookupHostname);
-		lookup.setResolver(getLocalhostResolver());
-		lookup.setCache(null);
-		lookup.setSearchPath(new String[] {});
-
-		Record[] res = lookup.run();
-		assertThat(lookup.getResult()).isEqualTo(0);
-		assertThat(res).extracting(r -> r.getName().toString()).contains(lookupHostname+".");
-	}
-
-	private SimpleResolver getLocalhostResolver() throws UnknownHostException, TextParseException {
-		SimpleResolver localhostResolver = new SimpleResolver("localhost");
-		localhostResolver.setPort(Application.DNS_LISTENING_PORT);
-		return localhostResolver;
-	}
-
 	@ClientEndpoint
 	public static class Client {
-
+		@OnOpen
+		void onOpen(Session session) {
+			logger.info("Test client WebSocket connection on {}", session);
+		}
+		
 		@OnMessage
 		void message(String msg) {
+			logger.info("WebSocket message {}", msg);
 			Jsonb jsonb = JsonbBuilder.create();
 			MESSAGES.add(jsonb.fromJson(msg, DnsQueryEventDto.class));
 		}
-
 	}
 }

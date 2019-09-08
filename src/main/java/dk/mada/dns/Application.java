@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.mada.dns.service.DnsLookup;
+import dk.mada.dns.service.DnsLookupService;
 import dk.mada.dns.service.UDPServer;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
@@ -26,7 +26,7 @@ public class Application {
 
     private UDPServer server;
 
-    @Inject private DnsLookup resolver;
+    @Inject private DnsLookupService resolver;
     
     void onStart(@Observes StartupEvent ev) {
         logger.info("The application is starting...");
