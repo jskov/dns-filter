@@ -34,6 +34,8 @@ public class SimpleDnsQueryTest {
     	assertThat(res)
     		.extracting(r -> r.getName().toString())
     		.contains("github.com.");
+    	assertThat(res)
+    	    .isNull();
     }
 
 	private SimpleResolver getLocalhostResolver() throws UnknownHostException, TextParseException {
