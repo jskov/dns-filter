@@ -49,7 +49,7 @@ test {
     useJUnitPlatform {
         excludeTags "accept"
     }  
-    ignoreFailures = true
+    ignoreFailures = false
 }
 
 // Need to publish to MavenLocal because @QuarkusTest does not yet handle Gradle
@@ -57,7 +57,7 @@ task acceptTest(type: Test, dependsOn: "publishToMavenLocal") {
     useJUnitPlatform {
   	    includeTags "accept"
     }
-    ignoreFailures = true
+    ignoreFailures = false
 }
 
 tasks.check.dependsOn(acceptTest)
