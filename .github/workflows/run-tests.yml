@@ -1,7 +1,6 @@
 # From https://help.github.com/en/articles/workflow-syntax-for-github-actions
 # Find actions in https://github.com/actions
 
-
 name: Build and run tests
 
 on: push
