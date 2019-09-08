@@ -1,5 +1,5 @@
 # From https://help.github.com/en/articles/workflow-syntax-for-github-actions
-name: Actions test
+name: Build and run tests
 
 on: push
 
@@ -8,14 +8,10 @@ jobs:
     name: Build and test
     runs-on: ubuntu-18.04
     steps:
-    - name: print greeting
-      env:
-        MY_VAR: Hi there! My name is
-        FIRST_NAME: Mona
-        MIDDLE_NAME: The
-        LAST_NAME: Octocat
-      run: |
-        echo $MY_VAR $FIRST_NAME $MIDDLE_NAME $LAST_NAME.
-        ls
-        ./gradlew check
+    - uses: actions/checkout@latest
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '11.0.2'
+        architecture: x64 // (x64 or x86) - defaults to x64
+    - run: ./gradlew check
         
