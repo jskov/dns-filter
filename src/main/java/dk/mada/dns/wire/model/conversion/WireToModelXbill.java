@@ -10,10 +10,12 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.xbill.DNS.ARecord;
+import org.xbill.DNS.Header;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
 
+import dk.mada.dns.wire.model.DnsHeaderReply;
 import dk.mada.dns.wire.model.DnsName;
 import dk.mada.dns.wire.model.DnsRecord;
 import dk.mada.dns.wire.model.DnsRecordA;
@@ -45,22 +47,34 @@ public class WireToModelXbill {
 	private DnsRequest _requestToModel(ByteBuffer request) throws IOException {
 		var message = new Message(request);
 		var question = message.getQuestion();
-		return DnsRequest.fromWireRequest(DnsSection.ofQuestion(toModelRecord(question, true)), request);
+		var header = message.getHeader();
+		return DnsRequest.fromWireRequest(toReplyHeader(header, 0), DnsSection.ofQuestion(toModelRecord(question, true)), request);
 	}
 
 	private DnsReply _replyToModel(ByteBuffer reply) throws IOException {
 		var message = new Message(reply);
-		return fromAnswers(message.getQuestion(), message.getSectionArray(Section.ANSWER));
+		
+		return fromAnswers(message.getHeader(), message.getQuestion(), message.getSectionArray(Section.ANSWER));
 	}
 	
-	public DnsReply fromAnswers(Record _question, Record[] _answerRecords) {
+	public DnsReply fromAnswers(Header _header, Record _question, Record[] _answerRecords) {
+		Header header = Objects.requireNonNull(_header, "Must provide header");
 		Record question = Objects.requireNonNull(_question, "Must provide question");
     	Record[] answerRecords = Objects.requireNonNull(_answerRecords, "Must provide answers");
 		List<DnsRecord> answers = Arrays.stream(answerRecords)
     		.map(r -> toModelRecord(r, false))
     		.collect(Collectors.toList());
 		
-    	return DnsReply.fromAnswer(DnsSection.ofQuestion(toModelRecord(question, true)), DnsSection.ofAnswers(answers));
+    	return DnsReply.fromAnswer(toReplyHeader(header, answers.size()), DnsSection.ofQuestion(toModelRecord(question, true)), DnsSection.ofAnswers(answers));
+	}
+	
+	private DnsHeaderReply toReplyHeader(Header h, int ancount) {
+		short flags = 0;
+		short qdcount = 1;
+		short nscount = 0;
+		short arcount = 0;
+		
+		return new DnsHeaderReply((short)h.getID(), flags, qdcount, (short)ancount, nscount, arcount);
 	}
 	
 	private DnsRecord toModelRecord(Record r, boolean isQuestion) {

@@ -5,12 +5,12 @@ package dk.mada.dns.wire.model;
  */
 public class DnsReply extends DnsMessage {
 
-	private DnsReply(DnsSection request) {
-		super(request);
+	private DnsReply(DnsHeader header, DnsSection request) {
+		super(header, request);
 	}
 	
-	public static DnsReply fromAnswer(DnsSection question, DnsSection answer) {
-		var res = new DnsReply(question);
+	public static DnsReply fromAnswer(DnsHeader header, DnsSection question, DnsSection answer) {
+		var res = new DnsReply(header, question);
 		res.setAnswer(answer);
 		return res;
 	}

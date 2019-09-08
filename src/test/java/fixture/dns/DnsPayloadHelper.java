@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Message;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SimpleResolver;
@@ -41,8 +42,9 @@ public class DnsPayloadHelper {
     	Name name = new Name(absName);
     	Record question = Record.newRecord(name, DnsRecordType.A.getWireValue(), DnsClass.IN.getWireValue());
     	
+    	Message message = Message.newQuery(question);
     	
-    	return wireToModel.fromAnswers(question, res);
+    	return wireToModel.fromAnswers(message.getHeader(), question, res);
 	}
 	
 	private SimpleResolver getLocalhostResolver() throws UnknownHostException, TextParseException {

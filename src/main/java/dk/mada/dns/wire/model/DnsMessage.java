@@ -8,15 +8,21 @@ import java.util.Objects;
  * DNS message - containing both question and answers.
  */
 class DnsMessage {
-	private DnsSection questionSection;
+	private final DnsHeader header;
+	private final DnsSection questionSection;
 	private DnsSection answer;
 	private DnsSection authority;
 	private DnsSection additional;
 
-	protected DnsMessage(DnsSection questionSection) {
+	protected DnsMessage(DnsHeader header, DnsSection questionSection) {
+		this.header = Objects.requireNonNull(header);
 		this.questionSection = Objects.requireNonNull(questionSection);
 	}
 	
+	public DnsHeader getHeader() {
+		return header;
+	}
+
 	public DnsSection getQuestionSection() {
 		return questionSection;
 	}
