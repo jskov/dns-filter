@@ -33,6 +33,7 @@ public class DnsLookupService implements UDPPacketHandler {
 	@Inject private DnsResolver resolver;
 	@Inject private WireToModelConverter wireToModelConverter;
 	@Inject private ModelToWireConverter modelToWireConverter;
+	@Inject private DevelopmentDebugging devDebugging;
 
 	@Override
 	public ByteBuffer process(String clientIp, ByteBuffer wireRequest) {
@@ -45,10 +46,11 @@ public class DnsLookupService implements UDPPacketHandler {
 		Optional<DnsReply> reply = resolver.resolve(clientIp, request);
 		logger.info("Decoded reply: {}", reply);
 
+		devDebugging.devOutputRequest(request);
+		
 		ByteBuffer replyBuffer = reply
 				.map(this::reportAndConvertReply)
 				.orElseGet(() -> doFallbackUpstreamRequest(request));
-
 		
 		return replyBuffer;
 	}

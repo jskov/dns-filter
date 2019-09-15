@@ -30,7 +30,6 @@ import dk.mada.dns.wire.model.DnsSection;
  */
 @ApplicationScoped
 public class WireToModelConverter {
-
 	public DnsReply replyToModel(ByteBuffer reply) {
 		try {
 			return _replyToModel(reply);
@@ -48,10 +47,14 @@ public class WireToModelConverter {
 	}
 
 	private DnsRequest _requestToModel(ByteBuffer request) throws IOException {
+		var wireBytes = request.duplicate();
+		wireBytes.rewind();
+		
 		var message = new Message(request);
 		var question = message.getQuestion();
 		var header = message.getHeader();
-		return DnsRequest.fromWireRequest(toReplyHeader(header, 0), DnsSection.ofQuestion(toModelRecord(question, true)), request);
+
+		return DnsRequest.fromWireRequest(toReplyHeader(header, 0), DnsSection.ofQuestion(toModelRecord(question, true)), wireBytes);
 	}
 
 	private DnsReply _replyToModel(ByteBuffer reply) throws IOException {
