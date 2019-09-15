@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.mada.dns.resolver.DnsResolver;
+import dk.mada.dns.util.Hexer;
 import dk.mada.dns.websocket.DnsQueryEventService;
 import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 import dk.mada.dns.websocket.dto.EventTypeDto;
@@ -45,6 +46,8 @@ public class DnsLookupService implements UDPPacketHandler {
 		Optional<DnsReply> reply = resolver.resolve(clientIp, request);
 		logger.info("Decoded reply: {}", reply);
 
+		Hexer.printForDevelopment(request);
+		
 		ByteBuffer replyBuffer = reply
 				.map(this::reportAndConvertReply)
 				.orElseGet(() -> doFallbackUpstreamRequest(request));
