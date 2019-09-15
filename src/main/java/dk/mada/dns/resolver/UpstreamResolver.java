@@ -23,11 +23,12 @@ import dk.mada.dns.wire.model.conversion.WireToModelConverter;
  * Both input and output are model based.
  */
 @ApplicationScoped
-public class DnsResolver {
-	private static final Logger logger = LoggerFactory.getLogger(DnsResolver.class);
+public class UpstreamResolver implements Resolver {
+	private static final Logger logger = LoggerFactory.getLogger(UpstreamResolver.class);
 
 	@Inject private WireToModelConverter wireToModelConverter;
 	
+	@Override
 	public Optional<DnsReply> resolve(String clientIp, DnsRequest request) {
 		Objects.requireNonNull(clientIp);
 		Objects.requireNonNull(request);

@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.mada.dns.resolver.DnsResolver;
+import dk.mada.dns.resolver.UpstreamResolver;
 import dk.mada.dns.websocket.DnsQueryEventService;
 import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 import dk.mada.dns.websocket.dto.EventTypeDto;
@@ -30,7 +30,7 @@ public class DnsLookupService implements UDPPacketHandler {
 	private static final Logger logger = LoggerFactory.getLogger(DnsLookupService.class);
 
 	@Inject private DnsQueryEventService websocketEventNotifier;
-	@Inject private DnsResolver resolver;
+	@Inject private UpstreamResolver resolver;
 	@Inject private WireToModelConverter wireToModelConverter;
 	@Inject private ModelToWireConverter modelToWireConverter;
 	@Inject private DevelopmentDebugging devDebugging;
