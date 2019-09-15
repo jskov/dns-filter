@@ -18,10 +18,21 @@ import dk.mada.dns.wire.model.DnsRecordType;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.conversion.WireToModelConverter;
 
+/**
+ * DNS lookup via DNS Filter.
+ * 
+ * Facilitates end-to-end test.
+ */
 @ApplicationScoped
-public class DnsPayloadHelper {
+public class DnfFilterLocalHostLookup {
 	@Inject private WireToModelConverter wireToModel;
 	
+	/**
+	 * Makes a dns hostname request to the service running on localhost.
+	 * 
+	 * @param hostname name to lookup
+	 * @return reply
+	 */
 	public DnsReply serviceDnsLookup(String hostname) {
 		try {
 			return xbillDnsLookup(hostname);

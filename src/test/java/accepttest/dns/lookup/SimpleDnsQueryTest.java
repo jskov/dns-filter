@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import dk.mada.dns.wire.model.DnsReply;
-import fixture.dns.xbill.DnsPayloadHelper;
+import fixture.dns.xbill.DnfFilterLocalHostLookup;
 import io.quarkus.test.junit.QuarkusTest;
 
 @Tag("accept")
 @QuarkusTest
 public class SimpleDnsQueryTest {
-	@Inject private DnsPayloadHelper dnsHelper;
+	@Inject private DnfFilterLocalHostLookup dnsFilterLookup;
 
 	/**
 	 * Simple DNS query test which expects a reply
@@ -22,7 +22,7 @@ public class SimpleDnsQueryTest {
 	 */
     @Test
     public void testDnsLookup() {
-    	DnsReply reply = dnsHelper.serviceDnsLookup("mada.dk");
+    	DnsReply reply = dnsFilterLookup.serviceDnsLookup("mada.dk");
     			
     	assertThat(reply.getAnswer().getRecords())
     		.allSatisfy(dr -> {
