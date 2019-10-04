@@ -86,7 +86,9 @@ public class WireToModelConverter {
 	}
 
 	private DnsHeaderQuery toRequestHeader(Header h, int ancount) {
-		short flags = 0;
+		byte[] bytes = h.toWire();
+		
+		short flags = (short)(bytes[2] << 8 | bytes[3]);
 		short qdcount = 1;
 		short nscount = 0;
 		short arcount = 0;
