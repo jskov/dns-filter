@@ -44,8 +44,8 @@ public class LookupStateEngineTest {
 	}
 	
 	
-	private Query makeTestQuery(String hostname) {
-		var query = new Query("127.0.0.1");
+	private Query makeTestQuery(String lookupHostname) {
+		var query = new Query("127.0.0.1", lookupHostname);
 		return query;
 	}
 	

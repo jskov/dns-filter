@@ -6,7 +6,7 @@ public class DnsHeaderReply extends DnsHeader {
 	public DnsHeaderReply(short id, short flags, short qdcount, short ancount, short nscount, short arcount) {
 		super(id, flags, qdcount, ancount, nscount, arcount);
 		
-		if ((flags & 0x8000) != 0) {
+		if ((flags & 0x8000) == 0) {
 			throw new IllegalStateException("Not a reply header with flags " + Hexer.hexShort(flags));
 		}
 	}

@@ -6,7 +6,7 @@ public class Query {
 	private final String clientIp;
 	private LookupState state;
 
-	public Query(String clientIp) {
+	public Query(String clientIp, String hostQuery) {
 		this.clientIp = clientIp;
 		state = LookupState.QUERY;
 	}

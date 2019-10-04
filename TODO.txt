@@ -1,3 +1,8 @@
+state: better header toDevelopString
+ -> query/reply assertions wrong
+ -> many tests failing
+
+
 * websocket service with lookup events - and client to test it
 
 UDP server:

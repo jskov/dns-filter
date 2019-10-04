@@ -43,10 +43,11 @@ public class DnsLookupService implements UDPPacketHandler {
 		DnsRequest request = wireToModelConverter.requestToModel(wireRequest);
 		wireRequest.rewind();
 		logger.info("Decoded request: {}", request);
+		devDebugging.devOutputRequest(request);
+		
 		Optional<DnsReply> reply = resolver.resolve(clientIp, request);
 		logger.info("Decoded reply: {}", reply);
 
-		devDebugging.devOutputRequest(request);
 		
 		ByteBuffer replyBuffer = reply
 				.map(this::reportAndConvertReply)
