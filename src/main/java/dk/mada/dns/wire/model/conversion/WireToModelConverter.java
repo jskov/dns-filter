@@ -15,6 +15,8 @@ import org.xbill.DNS.Message;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
 
+import dk.mada.dns.wire.model.DnsHeader;
+import dk.mada.dns.wire.model.DnsHeaderQuery;
 import dk.mada.dns.wire.model.DnsHeaderReply;
 import dk.mada.dns.wire.model.DnsName;
 import dk.mada.dns.wire.model.DnsRecord;
@@ -54,7 +56,7 @@ public class WireToModelConverter {
 		var question = message.getQuestion();
 		var header = message.getHeader();
 
-		return DnsRequest.fromWireRequest(toReplyHeader(header, 0), DnsSection.ofQuestion(toModelRecord(question, true)), wireBytes);
+		return DnsRequest.fromWireRequest(toRequestHeader(header, 0), DnsSection.ofQuestion(toModelRecord(question, true)), wireBytes);
 	}
 
 	private DnsReply _replyToModel(ByteBuffer reply) throws IOException {
@@ -75,14 +77,23 @@ public class WireToModelConverter {
 	}
 	
 	private DnsHeaderReply toReplyHeader(Header h, int ancount) {
-		short flags = 0;
+		short flags = DnsHeader.FLAGS_QR;
 		short qdcount = 1;
 		short nscount = 0;
 		short arcount = 0;
 		
 		return new DnsHeaderReply((short)h.getID(), flags, qdcount, (short)ancount, nscount, arcount);
 	}
-	
+
+	private DnsHeaderQuery toRequestHeader(Header h, int ancount) {
+		short flags = 0;
+		short qdcount = 1;
+		short nscount = 0;
+		short arcount = 0;
+		
+		return new DnsHeaderQuery((short)h.getID(), flags, qdcount, (short)ancount, nscount, arcount);
+	}
+
 	private DnsRecord toModelRecord(Record r, boolean isQuestion) {
 		var type = DnsRecordType.fromWireValue(r.getType());
 		var name = DnsName.fromName(r.getName().toString(true));
