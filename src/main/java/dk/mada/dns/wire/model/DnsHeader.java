@@ -88,7 +88,6 @@ public abstract class DnsHeader {
 		String qr = ((flags & 0x8000) == 0) ? "Q" : "R";
 		int rcode = flags & 0x000f;
 		String status = rcode == 0 ? "OK" : ("ERR(" + String.format("0x%01x", rcode) + ")");
-		System.out.println("GOT " + ((flags >> 8) & 0x0001));
 		
 		String aa = ((flags & FLAGS_AA) != 0) ? "aa" : "";
 		String tc = ((flags & FLAGS_TC) != 0) ? "tc" : "";
