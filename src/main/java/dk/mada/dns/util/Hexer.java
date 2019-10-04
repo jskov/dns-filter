@@ -66,15 +66,15 @@ public class Hexer {
 	}
 	
 	public static String hexPosition(ByteBuffer bb) {
-		return hexShort(bb.position());
+		return hexShort((short)bb.position());
 	}
 
-	public static String hexShort(int offset) {
-		return String.format("0x%04x", offset);
+	public static String hexShort(short value) {
+		return String.format("0x%04x", value);
 	}
 
 	public static void printForDevelopment(DnsRequest request) {
-		String title = "Request " + request.getQuestion().getName().getName() + " : " + hexShort(request.getHeader().getFlags());
+		String title = "Query " + request.getQuestion().getName().getName() + ", " + request.getHeader().toDebugString();
 		printForDevelopment(title, request.asWirePacket());
 	}
 	
