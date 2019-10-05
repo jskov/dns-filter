@@ -50,6 +50,7 @@ public class EventOnDnsQueryTest {
 	    	 if (!websocketClientReady.await(3, TimeUnit.SECONDS)) {
 	    		 throw new IllegalStateException("Failed waiting for websocket client to connect");
 	    	 }
+	    	 logger.info("Websocket reported ready");
 	    	 
 	    	 dnsHelper.serviceDnsLookup("mada.dk");
 
