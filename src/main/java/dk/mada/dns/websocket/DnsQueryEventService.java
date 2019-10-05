@@ -1,7 +1,5 @@
 package dk.mada.dns.websocket;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,7 +25,10 @@ import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 })
 public class DnsQueryEventService {
 	private static final Logger logger = LoggerFactory.getLogger(DnsQueryEventService.class);
-	Map<String, Session> sessions = new ConcurrentHashMap<>();
+	
+	public static final String HELLO_MESSAGE = "Hello DNS client";
+	
+	private Map<String, Session> sessions = new ConcurrentHashMap<>();
 
 	@OnOpen
 	public void onOpen(Session session, @PathParam("username") String username) {
@@ -35,8 +36,8 @@ public class DnsQueryEventService {
 		logger.info("User {} joined with {}", username, session);
 		
 		try {
-			session.getAsyncRemote().sendObject("hello");
-			logger.info("Hello sent to new client");
+			session.getAsyncRemote().sendObject(HELLO_MESSAGE);
+			logger.debug("Hello sent to new client");
 		} catch (Exception e) {
 			logger.warn("Failed sending ping to client", e);
 		}

@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.mada.dns.websocket.DnsQueryEventService;
 import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 import fixture.dns.xbill.DnsPayloadHelper;
 import io.quarkus.test.common.http.TestHTTPResource;
@@ -47,12 +48,7 @@ public class EventOnDnsQueryTest {
 	@Test
 	public void testDnsLookup() throws Exception {
 	     try(Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, uri)) {
-	    	 
-	    	 if (!websocketClientReady.await(6, TimeUnit.SECONDS)) {
-	    		 throw new IllegalStateException("Failed waiting for websocket client to connect");
-	    	 }
-	    	 logger.info("Websocket reported ready, isOpen:{}", session.isOpen());
-	    	 
+	    	 waitForWebsocketHello(session);
 	    	 
 	    	 dnsHelper.serviceDnsLookup("mada.dk");
 
@@ -61,6 +57,16 @@ public class EventOnDnsQueryTest {
 	    	 assertThat(event.ip)
 	    			 .isEqualTo("185.17.217.100");
         }
+	}
+
+	// Without this - even though connection opened - server would never process
+	// client connection until after first websocket event was sent.
+	// Workaround by sending a hello to new clients.
+	private void waitForWebsocketHello(Session session) throws InterruptedException {
+		if (!websocketClientReady.await(6, TimeUnit.SECONDS)) {
+			 throw new IllegalStateException("Failed waiting for websocket client to connect");
+		 }
+		 logger.info("Websocket reported ready, isOpen:{}", session.isOpen());
 	}
 
 	private DnsQueryEventDto nextWebsocketMessage() throws InterruptedException {
@@ -83,13 +89,14 @@ public class EventOnDnsQueryTest {
 		void message(String msg) {
 			logger.info("WebSocket message {}", msg);
 			
-			if ("hello".equals(msg)) {
-				logger.info("GOT PING");
+			if (DnsQueryEventService.HELLO_MESSAGE.equals(msg)) {
+				logger.info("Got hello from server");
 				websocketClientReady.countDown();
-			} else {
-				Jsonb jsonb = JsonbBuilder.create();
-				MESSAGES.add(jsonb.fromJson(msg, DnsQueryEventDto.class));
+				return;
 			}
+			
+			Jsonb jsonb = JsonbBuilder.create();
+			MESSAGES.add(jsonb.fromJson(msg, DnsQueryEventDto.class));
 		}
 		
 		@OnClose
