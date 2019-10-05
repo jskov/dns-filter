@@ -1,5 +1,6 @@
 * websocket service with lookup events - and client to test it
 
+
 UDP server:
  * Test shutdown
  * Multi-thread dispatch
@@ -9,3 +10,7 @@ UDP server:
 
 curl localhost:8080 > /dev/null
 dig @localhost -p 8053 mada.dk && dig @localhost -p 8053 +nocookie +noadflag jp.dk
+
+https://tools.ietf.org/html/rfc6891#section-6.1.1
+ OPT record
+
