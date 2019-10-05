@@ -6,10 +6,16 @@
 
 name: Build and run tests
 
+
+#on:
+#  push
+#  schedule:
+#      - cron: '28 11 * * *'
+
 on:
   push
   schedule:
-      - cron: '28 11 * * *'
+      - cron: '0 0 * * *' # Once per day at midnight
 
 jobs:
   build-job:
