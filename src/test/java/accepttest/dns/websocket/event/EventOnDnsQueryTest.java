@@ -13,6 +13,7 @@ import javax.json.bind.JsonbBuilder;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
 import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
@@ -50,7 +51,8 @@ public class EventOnDnsQueryTest {
 	    	 if (!websocketClientReady.await(3, TimeUnit.SECONDS)) {
 	    		 throw new IllegalStateException("Failed waiting for websocket client to connect");
 	    	 }
-	    	 logger.info("Websocket reported ready");
+	    	 logger.info("Websocket reported ready, isOpen:{}", session.isOpen());
+	    	 
 	    	 
 	    	 dnsHelper.serviceDnsLookup("mada.dk");
 
@@ -88,6 +90,11 @@ public class EventOnDnsQueryTest {
 		@OnClose
 		void onClose() {
 			logger.info("Websocket client closing");
+		}
+		
+		@OnError
+		void onError(Session session, Throwable cause) {
+			logger.error("Websocket client error", cause);
 		}
 	}
 }

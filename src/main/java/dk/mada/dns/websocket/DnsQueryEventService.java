@@ -62,6 +62,10 @@ public class DnsQueryEventService {
 	
 	// FIXME: should happen async, so the caller can return asap
 	public void broadcast(DnsQueryEventDto dto) {
+		if (sessions.isEmpty()) {
+			logger.info("Websocket has no clients!");
+		}
+		
 		sessions.values().forEach(s -> {
 			s.getAsyncRemote().sendObject(dto, result -> {
 				if (result.getException() != null) {
