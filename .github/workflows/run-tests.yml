@@ -6,8 +6,10 @@
 
 name: Build and run tests
 
-on: [push, schedule]
-  - cron:  '18 11 * * *'
+on:
+  push
+  schedule:
+    - cron: '28 11 * * *'
 
 jobs:
   build-job:
