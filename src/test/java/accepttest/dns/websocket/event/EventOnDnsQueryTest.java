@@ -62,7 +62,8 @@ public class EventOnDnsQueryTest {
 	}
 
 	private DnsQueryEventDto nextWebsocketMessage() throws InterruptedException {
-		DnsQueryEventDto res = MESSAGES.poll(10, TimeUnit.SECONDS);
+		logger.info("Polling for websocket message");
+		DnsQueryEventDto res = MESSAGES.poll(8, TimeUnit.SECONDS);
 		if (res == null) {
 			throw new IllegalStateException("Websocket message timeout");
 		}
