@@ -85,6 +85,8 @@ public class DnsLookupService implements UDPPacketHandler {
 		firstAnswer.asRecordA()
 			.ifPresent(dra -> dto.ip = dra.getAddress().getHostAddress());
 		dto.type = EventTypeDto.PASSTHROUGH;
+
+		logger.info("Notify listeners about {}", dto);
 		
 		websocketEventNotifier.broadcast(dto);
 	}
