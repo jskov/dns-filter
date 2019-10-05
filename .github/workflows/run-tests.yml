@@ -1,6 +1,9 @@
 # From https://help.github.com/en/articles/workflow-syntax-for-github-actions
 # Find actions in https://github.com/actions
 
+# Gradle check does not return error on test failures.
+# This allows test report to be collected before checking for success
+
 name: Build and run tests
 
 on: push
@@ -20,4 +23,5 @@ jobs:
       with:
         name: test-report
         path: build/reports
+    - run: test -f build/all-tests-passed
         
