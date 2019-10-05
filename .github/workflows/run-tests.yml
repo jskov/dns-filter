@@ -7,15 +7,13 @@
 name: Build and run tests
 
 
-#on:
-#  push
-#  schedule:
-#      - cron: '28 11 * * *'
+# Should work with both push and schedule, as per below, but does not.
+# https://github.community/t5/GitHub-Actions/Multiple-event-triggers-with-config/m-p/33258
 
 on:
   push
-  schedule:
-      - cron: '0 0 * * *' # Once per day at midnight
+#  schedule:
+#      - cron: '28 11 * * *'
 
 jobs:
   build-job:
