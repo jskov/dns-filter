@@ -1,9 +1,19 @@
 # From https://help.github.com/en/articles/workflow-syntax-for-github-actions
 # Find actions in https://github.com/actions
 
+# Gradle check does not return error on test failures.
+# This allows test report to be collected before checking for success
+
 name: Build and run tests
 
-on: push
+
+# Should work with both push and schedule, as per below, but does not.
+# https://github.community/t5/GitHub-Actions/Multiple-event-triggers-with-config/m-p/33258
+
+on:
+  push
+#  schedule:
+#      - cron: '28 11 * * *'
 
 jobs:
   build-job:
@@ -20,4 +30,5 @@ jobs:
       with:
         name: test-report
         path: build/reports
+    - run: test -f build/all-tests-passed
         
