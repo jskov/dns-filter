@@ -48,7 +48,7 @@ public class EventOnDnsQueryTest {
 	public void testDnsLookup() throws Exception {
 	     try(Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, uri)) {
 	    	 
-	    	 if (!websocketClientReady.await(3, TimeUnit.SECONDS)) {
+	    	 if (!websocketClientReady.await(6, TimeUnit.SECONDS)) {
 	    		 throw new IllegalStateException("Failed waiting for websocket client to connect");
 	    	 }
 	    	 logger.info("Websocket reported ready, isOpen:{}", session.isOpen());
@@ -77,14 +77,19 @@ public class EventOnDnsQueryTest {
 		@OnOpen
 		void onOpen(Session session) {
 			logger.info("Test client WebSocket connection on {}", session);
-			websocketClientReady.countDown();
 		}
 		
 		@OnMessage
 		void message(String msg) {
 			logger.info("WebSocket message {}", msg);
-			Jsonb jsonb = JsonbBuilder.create();
-			MESSAGES.add(jsonb.fromJson(msg, DnsQueryEventDto.class));
+			
+			if ("hello".equals(msg)) {
+				logger.info("GOT PING");
+				websocketClientReady.countDown();
+			} else {
+				Jsonb jsonb = JsonbBuilder.create();
+				MESSAGES.add(jsonb.fromJson(msg, DnsQueryEventDto.class));
+			}
 		}
 		
 		@OnClose
