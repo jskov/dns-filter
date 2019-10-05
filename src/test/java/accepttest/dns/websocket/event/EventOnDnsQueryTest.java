@@ -3,6 +3,7 @@ package accepttest.dns.websocket.event;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URI;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
@@ -11,6 +12,7 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
+import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
@@ -34,6 +36,8 @@ public class EventOnDnsQueryTest {
 	@Inject private DnsPayloadHelper dnsHelper;
 	@TestHTTPResource("/chat/event-test")
 	URI uri;
+	
+	private static CountDownLatch websocketClientReady = new CountDownLatch(1);
 
 	/**
 	 * Tests that a DnsQueryEvent is sent over websocket as
@@ -42,6 +46,11 @@ public class EventOnDnsQueryTest {
 	@Test
 	public void testDnsLookup() throws Exception {
 	     try(Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, uri)) {
+	    	 
+	    	 if (!websocketClientReady.await(3, TimeUnit.SECONDS)) {
+	    		 throw new IllegalStateException("Failed waiting for websocket client to connect");
+	    	 }
+	    	 
 	    	 dnsHelper.serviceDnsLookup("mada.dk");
 
 	    	 DnsQueryEventDto event = nextWebsocketMessage();
@@ -64,6 +73,7 @@ public class EventOnDnsQueryTest {
 		@OnOpen
 		void onOpen(Session session) {
 			logger.info("Test client WebSocket connection on {}", session);
+			websocketClientReady.countDown();
 		}
 		
 		@OnMessage
@@ -71,6 +81,11 @@ public class EventOnDnsQueryTest {
 			logger.info("WebSocket message {}", msg);
 			Jsonb jsonb = JsonbBuilder.create();
 			MESSAGES.add(jsonb.fromJson(msg, DnsQueryEventDto.class));
+		}
+		
+		@OnClose
+		void onClose() {
+			logger.info("Websocket client closing");
 		}
 	}
 }
