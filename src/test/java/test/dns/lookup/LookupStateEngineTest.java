@@ -39,6 +39,40 @@ public class LookupStateEngineTest {
 			.isFalse();
 	}
 	
+	/*
+	 * A query for an innocent name may resolve to a chain of C-names
+	 * before ending in an A-record. Any element in the chain may be
+	 * blacklisted.
+	 */
+	@Test
+	public void blacklistedChainEntriesShouldBlock() {
+		// TODO: write test
+	}
+
+	/**
+	 * A whitelisted query (or element in c-name chain) should
+	 * return resolved IP, even if the query/chain also contains
+	 * blacklisted entries.
+	 * Note that a cache/upstream resolve is always needed (the
+	 * IP is needed, after all).
+	 */
+	@Test
+	public void whitelistedEntriesShouldBeResolved() {
+		// TODO: write test
+	}
+	
+	/**
+	 * All lookups (including whitelisted and blacklisted) should
+	 * be cached, observing TTL.
+	 * The cache should be preferred to upstream lookup.
+	 */
+	@Test
+	public void resolvedRepliesShouldBeCached() {
+		// TODO: write test
+	}
+	
+	
+	
 	private Query makeTestQuery(byte[] data) {
 		var req = DnsRequests.fromWireData(data);
 		
