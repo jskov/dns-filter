@@ -11,6 +11,7 @@
 
 	<logger name="org.jboss.logging" level="WARN" />
 	<logger name="org.jboss.weld" level="WARN" />
+	<logger name="io.quarkus" level="INFO" />
 
 	<logger name="dk.mada.dns" level="INFO" />
 

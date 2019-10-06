@@ -25,12 +25,22 @@ import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 })
 public class DnsQueryEventService {
 	private static final Logger logger = LoggerFactory.getLogger(DnsQueryEventService.class);
-	Map<String, Session> sessions = new ConcurrentHashMap<>();
+	
+	public static final String HELLO_MESSAGE = "Hello DNS client";
+	
+	private Map<String, Session> sessions = new ConcurrentHashMap<>();
 
 	@OnOpen
 	public void onOpen(Session session, @PathParam("username") String username) {
 		sessions.put(username, session);
 		logger.info("User {} joined with {}", username, session);
+		
+		try {
+			session.getAsyncRemote().sendObject(HELLO_MESSAGE);
+			logger.debug("Hello sent to new client");
+		} catch (Exception e) {
+			logger.warn("Failed sending ping to client", e);
+		}
 	}
 
 	@OnClose

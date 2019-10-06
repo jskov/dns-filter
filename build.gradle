@@ -5,6 +5,10 @@ plugins {
     id 'maven-publish'
 }
 
+ext {
+	successMarker = project.file("build/all-tests-passed")
+}
+
 group = "dk.mada.dns"
 version = "1-SNAPSHOT"
 
@@ -45,22 +49,42 @@ publishing {
     }
 }
 
+task makeSuccessMarker() {
+	doFirst {
+		project.mkdir("build")
+		successMarker.createNewFile()
+	}
+}
+
 test {
+	dependsOn(makeSuccessMarker)
     useJUnitPlatform {
         excludeTags "accept"
     }  
-    ignoreFailures = false
+    ignoreFailures = true
+    afterTest { td, tr ->
+		if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
+			successMarker.delete()
+		}
+    }
 }
 
 // Need to publish to MavenLocal because @QuarkusTest does not yet handle Gradle
 task acceptTest(type: Test, dependsOn: "publishToMavenLocal") {
+	dependsOn(makeSuccessMarker)
     useJUnitPlatform {
   	    includeTags "accept"
     }
-    ignoreFailures = false
+    ignoreFailures = true
+    afterTest { td, tr ->
+		if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
+			successMarker.delete()
+		}
+    }
 }
 
 tasks.check.dependsOn(acceptTest)
+
 
 sourceCompatibility = 11
 targetCompatibility = 11

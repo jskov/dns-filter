@@ -2,6 +2,7 @@ package dk.mada.dns.util;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
+import java.util.Set;
 
 import dk.mada.dns.wire.model.DnsRequest;
 
@@ -29,6 +30,10 @@ public class Hexer {
 	}
 	
 	public static String toHexBlock(String prefix, ByteBuffer bb) {
+		return toHexBlockWithBreaks(prefix, bb, Set.of());
+	}
+	
+	public static String toHexBlockWithBreaks(String prefix, ByteBuffer bb, Set<Integer> breakOffsets) {
 		int pos = bb.position();
 		bb.rewind();
 		StringBuilder sb = new StringBuilder();
@@ -43,7 +48,13 @@ public class Hexer {
 			}
 			byte b = bb.get();
 			i++;
-			sb.append(String.format("%02x ", b));
+			sb.append(String.format("%02x", b));
+			if (breakOffsets.contains(i)) {
+				sb.append('|');
+			} else {
+				sb.append(' ');
+			}
+			
 			int bint = Byte.toUnsignedInt(b);
 			ascii.append(bint >= 32 && bint < 127 ? (char)b : ".");
 			if (i % 16 == 0) {
@@ -66,21 +77,21 @@ public class Hexer {
 	}
 	
 	public static String hexPosition(ByteBuffer bb) {
-		return hexShort(bb.position());
+		return hexShort((short)bb.position());
 	}
 
-	public static String hexShort(int offset) {
-		return String.format("0x%04x", offset);
+	public static String hexShort(short value) {
+		return String.format("0x%04x", value);
 	}
 
 	public static void printForDevelopment(DnsRequest request) {
-		String title = "Request " + request.getQuestion().getName().getName() + " : " + hexShort(request.getHeader().getFlags());
-		printForDevelopment(title, request.asWirePacket());
+		String title = "Query " + request.getQuestion().getName().getName() + ", " + request.getHeader().toDebugString();
+		printForDevelopment(title, request.asWirePacket(), Set.of(12));
 	}
 	
-	public static void printForDevelopment(String title, ByteBuffer bb) {
+	public static void printForDevelopment(String title, ByteBuffer bb, Set<Integer> breakOffsets) {
 		System.out.println("/* " + title);
-		System.out.println(toHexBlock(" * ", bb));
+		System.out.println(toHexBlockWithBreaks("* ", bb, breakOffsets));
 		System.out.println(" */");
 		System.out.println("byte[] req = new byte[] {" + toHexLine(bb) + "};");
 	}

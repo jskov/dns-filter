@@ -50,12 +50,14 @@ public class UDPServer {
 	}
 
 	public void stop() {
+		logger.info("Telling UDP server to shut down");
 		executorService.shutdownNow();
 		try {
 			executorService.awaitTermination(100, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			throw new IllegalStateException("Interrupted while waiting for shutdown", e);
 		}
+		logger.info("UDP server has terminated");
 	}
 
 	public boolean isRunning() {
