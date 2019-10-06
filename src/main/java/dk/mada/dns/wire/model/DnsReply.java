@@ -4,8 +4,16 @@ package dk.mada.dns.wire.model;
  * The domain model reply from a DNS request.
  */
 public class DnsReply extends DnsMessage {
-	DnsReply(DnsHeader header, DnsSection request) {
-		super(header, request);
+	private DnsHeaderReply header;
+
+	DnsReply(DnsHeaderReply header, DnsSection request) {
+		super(request);
+		this.header = header;
+	}
+
+	@Override
+	public DnsHeaderReply getHeader() {
+		return header;
 	}
 	
 	@Override
@@ -13,4 +21,5 @@ public class DnsReply extends DnsMessage {
 		return "DnsReply [getQuestion()=" + getQuestion() + ", getAnswer()=" + getAnswer() + ", getAuthority()="
 				+ getAuthority() + "]";
 	}
+
 }

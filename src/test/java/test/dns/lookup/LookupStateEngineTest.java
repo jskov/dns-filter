@@ -2,9 +2,6 @@ package test.dns.lookup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
 import org.junit.jupiter.api.Test;
 
 import dk.mada.dns.filter.Blacklist;
@@ -13,11 +10,7 @@ import dk.mada.dns.lookup.LookupEngine;
 import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.LookupState;
 import dk.mada.dns.lookup.Query;
-import dk.mada.dns.resolver.Resolver;
-import dk.mada.dns.service.UDPPacketHandler;
-import dk.mada.dns.service.UDPServer;
 import dk.mada.dns.wire.model.DnsRequests;
-import fixture.datagram.DatagramHelper;
 import fixture.dns.wiredata.TestQueries;
 import fixture.resolver.TestResolver;
 
@@ -26,11 +19,12 @@ import fixture.resolver.TestResolver;
  */
 public class LookupStateEngineTest {
 	/**
+	 * A query for a blacklisted entry should not cause
+	 * upstream resolve.
 	 */
 	@Test
 	public void blacklistedEntriesShouldNotBeResolved() {
-		
-		Query q = makeTestQuery();
+		Query q = makeTestQuery(TestQueries.GOOGLEADSERVICES_COM);
 		
 		TestResolver resolver = new TestResolver();
 		Blacklist blacklist = h -> h.contains("ads");
@@ -40,16 +34,15 @@ public class LookupStateEngineTest {
 		LookupResult result = sut.lookup(q);
 		
 		assertThat(result.getState())
-			.isEqualTo(LookupState.WHITELISTED);
+			.isEqualTo(LookupState.BLACKLISTED);
 		assertThat(resolver.hasBeenCalled())
-			.isTrue();
+			.isFalse();
 	}
 	
-	
-	private Query makeTestQuery() {
-		var req = DnsRequests.fromWireData(TestQueries.MADA_DK);
+	private Query makeTestQuery(byte[] data) {
+		var req = DnsRequests.fromWireData(data);
 		
-		var query = new Query(req, "127.0.0.1", "mada.dk");
+		var query = new Query(req, "127.0.0.1");
 		return query;
 	}
 	

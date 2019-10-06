@@ -4,9 +4,14 @@ import dk.mada.dns.wire.model.DnsReply;
 
 public class LookupResult {
 	private DnsReply reply;
+	private LookupState state;
 
 	public LookupState getState() {
-		return LookupState.FAILED;
+		return state;
+	}
+
+	public void setState(LookupState state) {
+		this.state = state;
 	}
 
 	public void setReply(DnsReply reply) {

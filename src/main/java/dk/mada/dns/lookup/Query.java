@@ -3,17 +3,15 @@ package dk.mada.dns.lookup;
 import dk.mada.dns.wire.model.DnsRequest;
 
 /**
- * Represents a DNS query on its way through the lookup state machine.
+ * Represents a DNS query from a client.
  */
 public class Query {
 	private final String clientIp;
-	private LookupState state;
 	private DnsRequest request;
 
-	public Query(DnsRequest request, String clientIp, String hostQuery) {
+	public Query(DnsRequest request, String clientIp) {
 		this.request = request;
 		this.clientIp = clientIp;
-		state = LookupState.QUERY;
 	}
 	
 	public String getRequestName() {
@@ -26,13 +24,5 @@ public class Query {
 
 	public DnsRequest getRequest() {
 		return request;
-	}
-
-	public void setState(LookupState state) {
-		this.state = state;
-	}
-
-	public LookupState getState() {
-		return state;
 	}
 }
