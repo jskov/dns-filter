@@ -6,15 +6,11 @@ public class DnsRequest extends DnsMessage {
 	private static final String NOT_PERTINENT_IN_A_REQUEST = "Not pertinent in a request";
 	private final ByteBuffer baseWireRequest;
 	
-	private DnsRequest(DnsHeader header, DnsSection question, ByteBuffer baseWireRequest) {
+	public DnsRequest(DnsHeader header, DnsSection question, ByteBuffer baseWireRequest) {
 		super(header, question);
 		this.baseWireRequest = baseWireRequest.asReadOnlyBuffer();
 	}
 
-	public static DnsRequest fromWireRequest(DnsHeader header, DnsSection question, ByteBuffer wireRequest) {
-		return new DnsRequest(header, question, wireRequest);
-	}
-	
 	public ByteBuffer asWirePacket() {
 		return baseWireRequest.rewind();
 	}

@@ -9,14 +9,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
-import dk.mada.dns.wire.model.conversion.WireToModelConverter;
 
 /**
  * Simple DNS resolver, asking upstream for a lookup.
@@ -26,8 +25,6 @@ import dk.mada.dns.wire.model.conversion.WireToModelConverter;
 public class UpstreamResolver implements Resolver {
 	private static final Logger logger = LoggerFactory.getLogger(UpstreamResolver.class);
 
-	@Inject private WireToModelConverter wireToModelConverter;
-	
 	@Override
 	public Optional<DnsReply> resolve(String clientIp, DnsRequest request) {
 		Objects.requireNonNull(clientIp);
@@ -49,7 +46,7 @@ public class UpstreamResolver implements Resolver {
 				long time = System.currentTimeMillis() - start;
 				logger.info("Upstream reply in {}ms", time);
 
-				return Optional.of(wireToModelConverter.replyToModel(reply));
+				return Optional.of(DnsReplies.fromWireData(reply));
 			} catch (ClosedByInterruptException e) {
 				try {
 					Thread.sleep(0);

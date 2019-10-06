@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.Header;
 import org.xbill.DNS.Message;
@@ -16,23 +14,27 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
 
 import dk.mada.dns.wire.model.DnsHeader;
+import dk.mada.dns.wire.model.DnsHeaderQueries;
 import dk.mada.dns.wire.model.DnsHeaderQuery;
+import dk.mada.dns.wire.model.DnsHeaderReplies;
 import dk.mada.dns.wire.model.DnsHeaderReply;
 import dk.mada.dns.wire.model.DnsName;
 import dk.mada.dns.wire.model.DnsRecord;
 import dk.mada.dns.wire.model.DnsRecordA;
 import dk.mada.dns.wire.model.DnsRecordQ;
 import dk.mada.dns.wire.model.DnsRecordType;
+import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
-import dk.mada.dns.wire.model.DnsSection;
+import dk.mada.dns.wire.model.DnsRequests;
+import dk.mada.dns.wire.model.DnsSections;
 
 /**
  * Convert wire format to model using xbill.dns.
  */
-@ApplicationScoped
 public class WireToModelConverter {
-	public DnsReply replyToModel(ByteBuffer reply) {
+	
+	public static DnsReply replyToModel(ByteBuffer reply) {
 		try {
 			return _replyToModel(reply);
 		} catch (Exception e) {
@@ -40,7 +42,7 @@ public class WireToModelConverter {
 		}
 	}
 
-	public DnsRequest requestToModel(ByteBuffer request) {
+	public static DnsRequest requestToModel(ByteBuffer request) {
 		try {
 			return _requestToModel(request);
 		} catch (Exception e) {
@@ -48,7 +50,7 @@ public class WireToModelConverter {
 		}
 	}
 
-	private DnsRequest _requestToModel(ByteBuffer request) throws IOException {
+	private static DnsRequest _requestToModel(ByteBuffer request) throws IOException {
 		var wireBytes = request.duplicate();
 		wireBytes.rewind();
 		
@@ -56,16 +58,16 @@ public class WireToModelConverter {
 		var question = message.getQuestion();
 		var header = message.getHeader();
 
-		return DnsRequest.fromWireRequest(toRequestHeader(header, 0), DnsSection.ofQuestion(toModelRecord(question, true)), wireBytes);
+		return DnsRequests.fromWireRequest(toRequestHeader(header, 0), DnsSections.ofQuestion(toModelRecord(question, true)), wireBytes);
 	}
 
-	private DnsReply _replyToModel(ByteBuffer reply) throws IOException {
+	private static DnsReply _replyToModel(ByteBuffer reply) throws IOException {
 		var message = new Message(reply);
 		
 		return fromAnswers(message.getHeader(), message.getQuestion(), message.getSectionArray(Section.ANSWER));
 	}
 	
-	public DnsReply fromAnswers(Header _header, Record _question, Record[] _answerRecords) {
+	public static DnsReply fromAnswers(Header _header, Record _question, Record[] _answerRecords) {
 		Header header = Objects.requireNonNull(_header, "Must provide header");
 		Record question = Objects.requireNonNull(_question, "Must provide question");
     	Record[] answerRecords = Objects.requireNonNull(_answerRecords, "Must provide answers");
@@ -73,10 +75,10 @@ public class WireToModelConverter {
     		.map(r -> toModelRecord(r, false))
     		.collect(Collectors.toList());
 		
-    	return DnsReply.fromAnswer(toReplyHeader(header, answers.size()), DnsSection.ofQuestion(toModelRecord(question, true)), DnsSection.ofAnswers(answers));
+    	return DnsReplies.fromAnswer(toReplyHeader(header, answers.size()), DnsSections.ofQuestion(toModelRecord(question, true)), DnsSections.ofAnswers(answers));
 	}
 
-	private DnsHeaderQuery toQueryHeader(Header h, int ancount) {
+	private static DnsHeaderQuery toQueryHeader(Header h, int ancount) {
 		byte[] wire = h.toWire();
 		
 		short flags = (short)(wire[2] << 8 | wire[3]);
@@ -84,19 +86,19 @@ public class WireToModelConverter {
 		short nscount = 0;
 		short arcount = 0;
 		
-		return new DnsHeaderQuery((short)h.getID(), flags, qdcount, (short)ancount, nscount, arcount);
+		return DnsHeaderQueries.newObsoleted((short)h.getID(), flags, qdcount, (short)ancount, nscount, arcount);
 	}
 
-	private DnsHeaderReply toReplyHeader(Header h, int ancount) {
+	private static DnsHeaderReply toReplyHeader(Header h, int ancount) {
 		short flags = DnsHeader.FLAGS_QR;
 		short qdcount = 1;
 		short nscount = 0;
 		short arcount = 0;
 		
-		return new DnsHeaderReply((short)h.getID(), flags, qdcount, (short)ancount, nscount, arcount);
+		return DnsHeaderReplies.newObsoleted((short)h.getID(), flags, qdcount, (short)ancount, nscount, arcount);
 	}
 
-	private DnsHeaderQuery toRequestHeader(Header h, int ancount) {
+	private static DnsHeaderQuery toRequestHeader(Header h, int ancount) {
 		byte[] bytes = h.toWire();
 		
 		short flags = (short)(bytes[2] << 8 | bytes[3]);
@@ -104,10 +106,10 @@ public class WireToModelConverter {
 		short nscount = 0;
 		short arcount = 0;
 		
-		return new DnsHeaderQuery((short)h.getID(), flags, qdcount, (short)ancount, nscount, arcount);
+		return DnsHeaderQueries.newObsoleted((short)h.getID(), flags, qdcount, (short)ancount, nscount, arcount);
 	}
 
-	private DnsRecord toModelRecord(Record r, boolean isQuestion) {
+	private static DnsRecord toModelRecord(Record r, boolean isQuestion) {
 		var type = DnsRecordType.fromWireValue(r.getType());
 		var name = DnsName.fromName(r.getName().toString(true));
 		long ttl = r.getTTL();

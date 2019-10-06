@@ -3,7 +3,6 @@ package dk.mada.dns.lookup;
 import dk.mada.dns.wire.model.DnsReply;
 
 public class LookupResult {
-
 	private DnsReply reply;
 
 	public LookupState getState() {

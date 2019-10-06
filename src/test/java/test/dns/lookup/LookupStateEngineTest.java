@@ -16,7 +16,9 @@ import dk.mada.dns.lookup.Query;
 import dk.mada.dns.resolver.Resolver;
 import dk.mada.dns.service.UDPPacketHandler;
 import dk.mada.dns.service.UDPServer;
+import dk.mada.dns.wire.model.DnsRequests;
 import fixture.datagram.DatagramHelper;
+import fixture.dns.wiredata.TestQueries;
 import fixture.resolver.TestResolver;
 
 /**
@@ -28,7 +30,7 @@ public class LookupStateEngineTest {
 	@Test
 	public void blacklistedEntriesShouldNotBeResolved() {
 		
-		Query q = makeTestQuery("ads.com");
+		Query q = makeTestQuery();
 		
 		TestResolver resolver = new TestResolver();
 		Blacklist blacklist = h -> h.contains("ads");
@@ -44,9 +46,13 @@ public class LookupStateEngineTest {
 	}
 	
 	
-	private Query makeTestQuery(String lookupHostname) {
-		var query = new Query("127.0.0.1", lookupHostname);
+	private Query makeTestQuery() {
+		var req = DnsRequests.fromWireData(TestQueries.MADA_DK);
+		
+		var query = new Query(req, "127.0.0.1", "mada.dk");
 		return query;
 	}
+	
+	
 	
 }
