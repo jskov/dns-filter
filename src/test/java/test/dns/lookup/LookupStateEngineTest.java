@@ -103,6 +103,29 @@ public class LookupStateEngineTest {
 		assertThat(result.getState())
 			.isEqualTo(LookupState.WHITELISTED);
 	}
+
+	/**
+	 * Same test as whitelistedEntriesShouldBeResolved, but query
+	 * is blacklisted, overriding the white listing.
+	 */
+	@Test
+	public void blackListTrumpsWhiteListInQuery() throws UnknownHostException {
+		Query q = makeTestQuery(TestQueries.DETECTPORTAL_FIREFOX_COM);
+		DnsReply reply = TestQueries.getDetectportalFirefoxChainedReply(q);
+		
+		TestResolver resolver = new TestResolver(reply);
+		Blacklist blacklist = h -> h.contains("firefox.com");
+		Whitelist whitelist = h -> h.contains("akamai.net");
+		Blockedlist blockedlist = h -> false;
+
+		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
+		LookupResult result = sut.lookup(q);
+
+		assertThat(result.getState())
+			.isEqualTo(LookupState.BLACKLISTED);
+	}
+	
+
 	
 	// FIXME: what if first name is blacklisted - never resolved
 	// ok for google ads, but not for block list entries - want to override those

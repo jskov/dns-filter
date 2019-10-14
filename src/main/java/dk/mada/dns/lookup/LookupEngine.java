@@ -16,6 +16,20 @@ import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsSection;
 
+/**
+ * Looks up query via upstream, applying white list, 
+ * black list and blocked list to the result.
+ * 
+ * The lists take priority like this:
+ *  - white list (locally defined)
+ *  - black list (locally defined)
+ *  - blocked list (externally defined)
+ *  
+ * But as an optimization, a black listed query
+ * will block without upstream lookup.
+ * This means that the white list cannot override
+ * in this case.
+ */
 public class LookupEngine {
 	private static final Logger logger = LoggerFactory.getLogger(LookupEngine.class);
 	
