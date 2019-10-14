@@ -99,10 +99,20 @@ public class LookupEngine {
 			return makeBlockedReply(q, LookupState.BLOCKED, blockedName);
 		}
 
-		var result = new LookupResult();
-		return result;
+		return makePassthroughReply(q, reply.getAnswer());
 	}
 
+	private LookupResult makePassthroughReply(Query q, DnsSection answer) {
+		var result = new LookupResult();
+		logger.info(" is passed through");
+		result.setState(LookupState.PASSTHROUGH);
+
+		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), answer);
+
+		result.setReply(reply);
+		return result;
+	}
+	
 	private LookupResult makeWhitelistReply(Query q, DnsSection answer, String passedDueTo) {
 		var result = new LookupResult();
 		logger.info(" {} is whitelisted", passedDueTo);
@@ -113,7 +123,7 @@ public class LookupEngine {
 		result.setReply(reply);
 		return result;
 	}
-	
+
 	private LookupResult makeBlockedReply(Query q, LookupState state, String blockedDueTo) {
 		var result = new LookupResult();
 		logger.info(" {} is blacklisted", blockedDueTo);

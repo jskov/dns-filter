@@ -125,6 +125,10 @@ public class LookupStateEngineTest {
 			.isEqualTo(LookupState.BLACKLISTED);
 	}
 	
+	/**
+	 * If query has not been affected by white list or black list,
+	 * it will be checked against blocked list from external.
+	 */
 	@Test
 	public void blockageOnlyIfOtherListsDidNotTrigger() throws UnknownHostException {
 		Query q = makeTestQuery(TestQueries.DETECTPORTAL_FIREFOX_COM);
@@ -140,6 +144,26 @@ public class LookupStateEngineTest {
 
 		assertThat(result.getState())
 			.isEqualTo(LookupState.BLOCKED);
+	}
+
+	/**
+	 * If none of the lists affect a query, it should be returned.
+	 */
+	@Test
+	public void unfilteredRepliesAreReturned() throws UnknownHostException {
+		Query q = makeTestQuery(TestQueries.DETECTPORTAL_FIREFOX_COM);
+		DnsReply reply = TestQueries.getDetectportalFirefoxChainedReply(q);
+		
+		TestResolver resolver = new TestResolver(reply);
+		Blacklist blacklist = h -> false;
+		Whitelist whitelist = h -> false;
+		Blockedlist blockedlist = h -> false;
+
+		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
+		LookupResult result = sut.lookup(q);
+		
+		assertThat(result.getState())
+			.isEqualTo(LookupState.PASSTHROUGH);
 	}
 
 	/**

@@ -5,5 +5,6 @@ public enum LookupState {
 	WHITELISTED,
 	BLACKLISTED,
 	BLOCKED,
+	PASSTHROUGH, // 
 	FAILED
 }
