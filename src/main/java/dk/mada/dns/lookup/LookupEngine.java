@@ -1,5 +1,8 @@
 package dk.mada.dns.lookup;
 
+import static java.util.stream.Collectors.toList;
+
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -8,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import dk.mada.dns.filter.Blacklist;
 import dk.mada.dns.filter.Whitelist;
 import dk.mada.dns.resolver.Resolver;
+import dk.mada.dns.wire.model.DnsName;
 import dk.mada.dns.wire.model.DnsRecord;
 import dk.mada.dns.wire.model.DnsRecordA;
 import dk.mada.dns.wire.model.DnsReplies;
@@ -29,35 +33,54 @@ public class LookupEngine {
 	}
 
 	public LookupResult lookup(Query q) {
-		var result = new LookupResult();
-		
 		String name = q.getRequestName();
 		
 		logger.info("Look up {}", name);
 		
 		if (blacklist.test(name)) {
-			logger.info(" {} is blacklisted", name);
-			result.setState(LookupState.BLACKLISTED);
-			result.setReply(makeBlockedReply(q));
-			return result;
+			return makeBlockedReply(q, name);
 		}
 		
-		Optional<DnsReply> reply = resolver.resolve(q.getClientIp(), q.getRequest());
-		
+		var result = new LookupResult();
+		DnsReply reply = resolver.resolve(q.getClientIp(), q.getRequest())
+				.orElse(null);
+
 		logger.info("Got resolved {}", reply);
+
+		if (reply == null) {
+			result.setState(LookupState.FAILED);
+			return result;
+		}
+
+		List<String> intermediateNames = reply.getAnswer().getRecords().stream()
+			.map(r -> r.getName())
+			.map(n -> n.getName())
+			.collect(toList());
 		
+		String blacklistedName = intermediateNames.stream()
+				.filter(blacklist::test)
+				.findFirst()
+				.orElse(null);
 		
-		result.setReply(reply.orElse(null));
+		if (blacklistedName != null) {
+			return makeBlockedReply(q, blacklistedName);
+		}
+		
 		
 		return result;
 	}
 
-	
-	private DnsReply makeBlockedReply(Query q) {
-		
+	private LookupResult makeBlockedReply(Query q, String blockedDueTo) {
+		var result = new LookupResult();
+		logger.info(" {} is blacklisted", blockedDueTo);
+		result.setState(LookupState.BLACKLISTED);
+
 		var name = q.getRequest().getQuestion().getName();
 		var deadend = DnsRecordA.blindFrom(name, BLOCKED_TTL_SECONDS);
 		
-		return DnsReplies.fromRequestWithAnswer(q.getRequest(), deadend);
+		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), deadend);
+
+		result.setReply(reply);
+		return result;
 	}
 }

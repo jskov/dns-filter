@@ -8,11 +8,19 @@ import dk.mada.dns.wire.model.DnsRequest;
 
 public class TestResolver implements Resolver {
 	private int callCount;
+	private DnsReply firstReply;
+
+	public TestResolver() {
+	}
+	
+	public TestResolver(DnsReply firstReply) {
+		this.firstReply = firstReply;
+	}
 	
 	@Override
 	public Optional<DnsReply> resolve(String clientIp, DnsRequest request) {
 		callCount++;
-		return Optional.empty();
+		return Optional.ofNullable(firstReply);
 	}
 	
 	public boolean hasBeenCalled() {
