@@ -3,7 +3,6 @@ package dk.mada.dns.lookup;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +10,7 @@ import org.slf4j.LoggerFactory;
 import dk.mada.dns.filter.Blacklist;
 import dk.mada.dns.filter.Whitelist;
 import dk.mada.dns.resolver.Resolver;
-import dk.mada.dns.wire.model.DnsName;
-import dk.mada.dns.wire.model.DnsRecord;
-import dk.mada.dns.wire.model.DnsRecordA;
+import dk.mada.dns.wire.model.DnsRecords;
 import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
 
@@ -76,7 +73,7 @@ public class LookupEngine {
 		result.setState(LookupState.BLACKLISTED);
 
 		var name = q.getRequest().getQuestion().getName();
-		var deadend = DnsRecordA.blindFrom(name, BLOCKED_TTL_SECONDS);
+		var deadend = DnsRecords.aRecordBlindFrom(name, BLOCKED_TTL_SECONDS);
 		
 		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), deadend);
 

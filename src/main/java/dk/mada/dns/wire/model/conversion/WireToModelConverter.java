@@ -23,10 +23,8 @@ import dk.mada.dns.wire.model.DnsHeaderReplies;
 import dk.mada.dns.wire.model.DnsHeaderReply;
 import dk.mada.dns.wire.model.DnsName;
 import dk.mada.dns.wire.model.DnsRecord;
-import dk.mada.dns.wire.model.DnsRecordA;
-import dk.mada.dns.wire.model.DnsRecordC;
-import dk.mada.dns.wire.model.DnsRecordQ;
 import dk.mada.dns.wire.model.DnsRecordType;
+import dk.mada.dns.wire.model.DnsRecords;
 import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
@@ -120,16 +118,16 @@ public class WireToModelConverter {
 		long ttl = r.getTTL();
 
 		if (isQuestion) {
-			return DnsRecordQ.from(name);
+			return DnsRecords.qRecordFrom(name);
 		}
 		
 		if (r instanceof ARecord) {
 			var address = ((ARecord)r).getAddress();
-			return DnsRecordA.from(name, address, ttl);
+			return DnsRecords.aRecordFrom(name, address, ttl);
 		} else if (r instanceof CNAMERecord) {
 			var alias = ((CNAMERecord)r).getAlias();
 			logger.info("CRecord {} -> {}", name, alias);
-			return DnsRecordC.from(name, DnsName.fromName(alias.toString(true)), ttl);
+			return DnsRecords.cRecordFrom(name, DnsName.fromName(alias.toString(true)), ttl);
 		}
 		
 		return DnsRecord.unknownFrom(type, name, ttl);

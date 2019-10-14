@@ -14,11 +14,9 @@ import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.LookupState;
 import dk.mada.dns.lookup.Query;
 import dk.mada.dns.wire.model.DnsName;
-import dk.mada.dns.wire.model.DnsRecordA;
-import dk.mada.dns.wire.model.DnsRecordC;
+import dk.mada.dns.wire.model.DnsRecords;
 import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsRequests;
-import dk.mada.dns.wire.model.DnsSections;
 import fixture.dns.wiredata.TestQueries;
 import fixture.resolver.TestResolver;
 
@@ -51,26 +49,25 @@ public class LookupStateEngineTest {
 	 * A query for an innocent name may resolve to a chain of C-names
 	 * before ending in an A-record. Any element in the chain may be
 	 * blacklisted.
+	 * 
+	 * Use example of detectportal.firefox.com which replies
+	 * 	 detectportal.firefox.com.       11      IN      CNAME                                                    
+	 *   detectportal.prod.mozaws.net.   60      IN      CNAME                                                    
+	 *   detectportal.firefox.com-v2.edgesuite.net 9999 IN CNAME
+     *   a1089.dscd.akamai.net.  10      IN      A       95.101.142.120                                           
+     *   a1089.dscd.akamai.net.  10      IN      A       104.84.152.177
 	 */
 	@Test
 	public void blacklistedChainEntriesShouldBlock() throws UnknownHostException {
-		// ;; ANSWERS:                                                                                                                                                                                                        
-//		detectportal.firefox.com.       11      IN      CNAME                                                    
-//		detectportal.prod.mozaws.net.   60      IN      CNAME                                                    
-//		detectportal.firefox.com-v2.edgesuite.net.      9590    IN      CNAME                                    
-//		a1089.dscd.akamai.net.  10      IN      A       95.101.142.120                                           
-//		a1089.dscd.akamai.net.  10      IN      A       104.84.152.177
-
-
 		Query q = makeTestQuery(TestQueries.DETECTPORTAL_FIREFOX_COM);
 		
 		var firefoxCom = DnsName.fromName("detectportal.firefox.com");
 		var mozawsNet = DnsName.fromName("detectportal.prod.mozaws.net");
 		var akamaiNet = DnsName.fromName("a1089.dscd.akamai.net");
 		
-		var firefoxC = DnsRecordC.from(firefoxCom, mozawsNet,  100);
-		var mozawsC = DnsRecordC.from(mozawsNet, akamaiNet, 100);
-		var akamaiA = DnsRecordA.from(akamaiNet, InetAddress.getByName("95.101.142.120"), 100);
+		var firefoxC = DnsRecords.cRecordFrom(firefoxCom, mozawsNet,  100);
+		var mozawsC = DnsRecords.cRecordFrom(mozawsNet, akamaiNet, 100);
+		var akamaiA = DnsRecords.aRecordFrom(akamaiNet, InetAddress.getByName("95.101.142.120"), 100);
 		
 		var reply = DnsReplies.fromRequestWithAnswers(q.getRequest(), firefoxC, mozawsC, akamaiA);
 		
@@ -83,7 +80,7 @@ public class LookupStateEngineTest {
 
 		assertThat(result.getState())
 			.isEqualTo(LookupState.BLACKLISTED);
-}
+	}
 
 	/**
 	 * A whitelisted query (or element in c-name chain) should

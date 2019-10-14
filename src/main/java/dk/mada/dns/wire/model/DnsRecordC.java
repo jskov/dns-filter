@@ -6,16 +6,12 @@ import java.util.function.Consumer;
 public class DnsRecordC extends DnsRecord {
 	private final DnsName aliasName;
 	
-	private DnsRecordC(DnsName name, DnsName aliasName, long ttl) {
+	DnsRecordC(DnsName name, DnsName aliasName, long ttl) {
 		super(DnsClass.IN, DnsRecordType.CNAME, name, ttl);
 		
 		this.aliasName = aliasName;
 	}
 	
-	public static DnsRecordC from(DnsName name, DnsName aliasName, long ttl) {
-		return new DnsRecordC(name, aliasName, ttl);
-	}
-
 	@Override
 	public void ifRecordC(Consumer<DnsRecordC> c) {
 		c.accept(this);
