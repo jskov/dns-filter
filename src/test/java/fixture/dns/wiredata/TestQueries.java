@@ -1,5 +1,14 @@
 package fixture.dns.wiredata;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import dk.mada.dns.lookup.Query;
+import dk.mada.dns.wire.model.DnsName;
+import dk.mada.dns.wire.model.DnsRecords;
+import dk.mada.dns.wire.model.DnsReplies;
+import dk.mada.dns.wire.model.DnsReply;
+
 public class TestQueries {
 
 	// dig @localhost -p 8053 +nocookie +noadflag +nodnssec jp.dk
@@ -28,4 +37,19 @@ public class TestQueries {
 	 */                                                                                                                                                                                                                
 	public static byte[] DETECTPORTAL_FIREFOX_COM = new byte[] {(byte)0x9c, (byte)0xc9, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x0c, 0x64, 0x65, 0x74, 0x65, 0x63, 0x74, 0x70, 0x6f, 0x72, 0x74, 0x61, 0x6c, 0x07, 0x66, 0x69, 0x72, 
 	0x65, 0x66, 0x6f, 0x78, 0x03, 0x63, 0x6f, 0x6d, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x29, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };                                                                 
+
+	public static DnsReply getDetectportalFirefoxChainedReply(Query q) throws UnknownHostException {
+		var firefoxCom = DnsName.fromName("detectportal.firefox.com");
+		var mozawsNet = DnsName.fromName("detectportal.prod.mozaws.net");
+		var akamaiNet = DnsName.fromName("a1089.dscd.akamai.net");
+		
+		var firefoxC = DnsRecords.cRecordFrom(firefoxCom, mozawsNet,  100);
+		var mozawsC = DnsRecords.cRecordFrom(mozawsNet, akamaiNet, 100);
+		var akamaiA = DnsRecords.aRecordFrom(akamaiNet, InetAddress.getByName("95.101.142.120"), 100);
+		
+		return DnsReplies.fromRequestWithAnswers(q.getRequest(), firefoxC, mozawsC, akamaiA);
+	}
+
+
+
 }

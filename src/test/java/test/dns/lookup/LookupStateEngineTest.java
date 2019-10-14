@@ -2,7 +2,6 @@ package test.dns.lookup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,7 @@ import dk.mada.dns.lookup.LookupEngine;
 import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.LookupState;
 import dk.mada.dns.lookup.Query;
-import dk.mada.dns.wire.model.DnsName;
-import dk.mada.dns.wire.model.DnsRecords;
-import dk.mada.dns.wire.model.DnsReplies;
+import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequests;
 import fixture.dns.wiredata.TestQueries;
 import fixture.resolver.TestResolver;
@@ -60,16 +57,7 @@ public class LookupStateEngineTest {
 	@Test
 	public void blacklistedChainEntriesShouldBlock() throws UnknownHostException {
 		Query q = makeTestQuery(TestQueries.DETECTPORTAL_FIREFOX_COM);
-		
-		var firefoxCom = DnsName.fromName("detectportal.firefox.com");
-		var mozawsNet = DnsName.fromName("detectportal.prod.mozaws.net");
-		var akamaiNet = DnsName.fromName("a1089.dscd.akamai.net");
-		
-		var firefoxC = DnsRecords.cRecordFrom(firefoxCom, mozawsNet,  100);
-		var mozawsC = DnsRecords.cRecordFrom(mozawsNet, akamaiNet, 100);
-		var akamaiA = DnsRecords.aRecordFrom(akamaiNet, InetAddress.getByName("95.101.142.120"), 100);
-		
-		var reply = DnsReplies.fromRequestWithAnswers(q.getRequest(), firefoxC, mozawsC, akamaiA);
+		DnsReply reply = TestQueries.getDetectportalFirefoxChainedReply(q);
 		
 		TestResolver resolver = new TestResolver(reply);
 		Blacklist blacklist = h -> h.contains("mozaws.net");
