@@ -1,3 +1,8 @@
+state: better header toDevelopString
+ -> query/reply assertions wrong
+ -> many tests failing
+
+
 * websocket service with lookup events - and client to test it
 
 
@@ -13,4 +18,45 @@ dig @localhost -p 8053 mada.dk && dig @localhost -p 8053 +nocookie +noadflag jp.
 
 https://tools.ietf.org/html/rfc6891#section-6.1.1
  OPT record
+
+
+
+
+Good overview
+https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml
+
+Scapy looks interesting for dissecting packets
+
+
+Reply on port 8053 (UDP)
+
+Kill libvirt, which also runs dnsmasq.
+
+sudo systemctl stop libvirtd.service
+
+And make sure no lingering dnsmasq is running
+
+
+
+Setup dnsmasq to pass requests first to this service,
+then fallback to external server in case of failure
+
+
+/etc/resolv-dnsmasq.conf
+# Specify timeout for dnsmasq requests                                                                                                      
+options timeout:1
+
+/etc/dnsmasq.conf configured with:
+resolv-file=/etc/resolv-dnsmasq.conf
+strict-order
+no-resolv
+no-poll
+server=1.1.1.1
+server=127.0.0.1#8053 
+ 
+ 
+
+Kick dnsmasq after redeployment:
+
+sudo systemctl restart dnsmasq
 

@@ -1,5 +1,7 @@
 package dk.mada.dns.websocket;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,6 +32,19 @@ public class DnsQueryEventService {
 	
 	private Map<String, Session> sessions = new ConcurrentHashMap<>();
 
+	public void close() {
+		logger.info("Closing websocket event service");
+		sessions.values().forEach(s -> closeSession(s));
+	}
+
+	private void closeSession(Session s) {
+		try {
+			s.close();
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
+	
 	@OnOpen
 	public void onOpen(Session session, @PathParam("username") String username) {
 		sessions.put(username, session);

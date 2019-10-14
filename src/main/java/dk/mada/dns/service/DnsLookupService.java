@@ -11,16 +11,16 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.mada.dns.resolver.DnsResolver;
+import dk.mada.dns.resolver.UpstreamResolver;
 import dk.mada.dns.websocket.DnsQueryEventService;
 import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 import dk.mada.dns.websocket.dto.EventTypeDto;
 import dk.mada.dns.wire.model.DnsRecord;
+import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
+import dk.mada.dns.wire.model.DnsRequests;
 import dk.mada.dns.wire.model.DnsSection;
-import dk.mada.dns.wire.model.conversion.ModelToWireConverter;
-import dk.mada.dns.wire.model.conversion.WireToModelConverter;
 
 /**
  * DNS lookup, passing request on to upstream DNS server (pass-through).
@@ -30,9 +30,7 @@ public class DnsLookupService implements UDPPacketHandler {
 	private static final Logger logger = LoggerFactory.getLogger(DnsLookupService.class);
 
 	@Inject private DnsQueryEventService websocketEventNotifier;
-	@Inject private DnsResolver resolver;
-	@Inject private WireToModelConverter wireToModelConverter;
-	@Inject private ModelToWireConverter modelToWireConverter;
+	@Inject private UpstreamResolver resolver;
 	@Inject private DevelopmentDebugging devDebugging;
 
 	@Override
@@ -40,13 +38,14 @@ public class DnsLookupService implements UDPPacketHandler {
 		Objects.requireNonNull(clientIp);
 		Objects.requireNonNull(wireRequest);
 		
-		DnsRequest request = wireToModelConverter.requestToModel(wireRequest);
+		DnsRequest request = DnsRequests.fromWireData(wireRequest);
 		wireRequest.rewind();
 		logger.info("Decoded request: {}", request);
+		devDebugging.devOutputRequest(request);
+		
 		Optional<DnsReply> reply = resolver.resolve(clientIp, request);
 		logger.info("Decoded reply: {}", reply);
 
-		devDebugging.devOutputRequest(request);
 		
 		ByteBuffer replyBuffer = reply
 				.map(this::reportAndConvertReply)
@@ -58,7 +57,7 @@ public class DnsLookupService implements UDPPacketHandler {
 	private ByteBuffer reportAndConvertReply(DnsReply reply) {
 		notifyEventListeners(reply);
 
-		return modelToWireConverter.modelToWire(reply);
+		return DnsReplies.toWireFormat(reply);
 	}
 	
 	private ByteBuffer doFallbackUpstreamRequest(DnsRequest request) {

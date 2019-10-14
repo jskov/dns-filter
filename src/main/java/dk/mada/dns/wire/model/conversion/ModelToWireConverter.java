@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.ARecord;
@@ -25,10 +23,9 @@ import dk.mada.dns.wire.model.DnsReply;
 /**
  * Convert model to wire format using xbill.dns.
  */
-@ApplicationScoped
 public class ModelToWireConverter {
 	private static final Logger logger = LoggerFactory.getLogger(ModelToWireConverter.class);
-	public ByteBuffer modelToWire(DnsReply reply) {
+	public static ByteBuffer modelToWire(DnsReply reply) {
 		try {
 			return _modelToWire(reply);
 		} catch (IOException e) {
@@ -36,7 +33,7 @@ public class ModelToWireConverter {
 		}
 	}
 
-	public ByteBuffer _modelToWire(DnsReply reply) throws IOException {
+	public static ByteBuffer _modelToWire(DnsReply reply) throws IOException {
 		String hostname = reply.getQuestion().getName().getName();
 		
     	String absName = hostname.endsWith(".") ? hostname : (hostname + ".");
@@ -49,7 +46,7 @@ public class ModelToWireConverter {
     	message.setHeader(new Header(header.toWireFormatZeroAnswers()));
     	
     	reply.getAnswer().stream()
-    		.map(this::toRecord)
+    		.map(a -> toRecord(a))
     		.forEach(r -> message.addRecord(r, Section.ANSWER));
     
     	logger.info("Converted {} to\n{}", reply, message);
@@ -57,7 +54,7 @@ public class ModelToWireConverter {
     	return ByteBuffer.wrap(message.toWire());
 	}
 	
-	private Record toRecord(DnsRecord r) {
+	private static Record toRecord(DnsRecord r) {
 		if (r instanceof DnsRecordA) {
 			return toRecord((DnsRecordA)r);
 		}
@@ -72,7 +69,7 @@ public class ModelToWireConverter {
 		}
 	}
 
-	private Record toRecord(DnsRecordA r) {
+	private static Record toRecord(DnsRecordA r) {
 		try {
 			String n = r.getName().getName();
 			String absName = n.endsWith(".") ? n : (n + ".");

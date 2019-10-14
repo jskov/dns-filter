@@ -3,7 +3,6 @@ package fixture.dns.xbill;
 import java.net.UnknownHostException;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Message;
@@ -18,10 +17,19 @@ import dk.mada.dns.wire.model.DnsRecordType;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.conversion.WireToModelConverter;
 
+/**
+ * DNS lookup via DNS Filter.
+ * 
+ * Facilitates end-to-end test.
+ */
 @ApplicationScoped
-public class DnsPayloadHelper {
-	@Inject private WireToModelConverter wireToModel;
-	
+public class DnfFilterLocalHostLookup {
+	/**
+	 * Makes a dns hostname request to the service running on localhost.
+	 * 
+	 * @param hostname name to lookup
+	 * @return reply
+	 */
 	public DnsReply serviceDnsLookup(String hostname) {
 		try {
 			return xbillDnsLookup(hostname);
@@ -44,7 +52,7 @@ public class DnsPayloadHelper {
     	
     	Message message = Message.newQuery(question);
     	
-    	return wireToModel.fromAnswers(message.getHeader(), question, res);
+    	return WireToModelConverter.fromAnswers(message.getHeader(), question, res);
 	}
 	
 	private SimpleResolver getLocalhostResolver() throws UnknownHostException, TextParseException {

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import dk.mada.dns.websocket.DnsQueryEventService;
 import dk.mada.dns.websocket.dto.DnsQueryEventDto;
-import fixture.dns.xbill.DnsPayloadHelper;
+import fixture.dns.xbill.DnfFilterLocalHostLookup;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -35,7 +35,7 @@ public class EventOnDnsQueryTest {
 	private static final Logger logger = LoggerFactory.getLogger(EventOnDnsQueryTest.class);
 	private static final LinkedBlockingDeque<DnsQueryEventDto> MESSAGES = new LinkedBlockingDeque<>();
 
-	@Inject private DnsPayloadHelper dnsHelper;
+	@Inject private DnfFilterLocalHostLookup dnsFilterLookup;
 	@TestHTTPResource("/chat/event-test")
 	URI uri;
 	
@@ -50,7 +50,7 @@ public class EventOnDnsQueryTest {
 	     try(Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, uri)) {
 	    	 waitForWebsocketHello(session);
 	    	 
-	    	 dnsHelper.serviceDnsLookup("mada.dk");
+	    	 dnsFilterLookup.serviceDnsLookup("mada.dk");
 
 	    	 DnsQueryEventDto event = nextWebsocketMessage();
 	    	 logger.info("Got event {}", event);

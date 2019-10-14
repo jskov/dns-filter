@@ -8,14 +8,10 @@ import java.util.function.Consumer;
  * Simplified with canned types for now - not sure if needed.
  */
 public class DnsRecordQ extends DnsRecord {
-	private DnsRecordQ(DnsName name) {
+	DnsRecordQ(DnsName name) {
 		super(DnsClass.IN, DnsRecordType.A, name, 0);
 	}
 	
-	public static DnsRecordQ from(DnsName name) {
-		return new DnsRecordQ(name);
-	}
-
 	@Override
 	public void ifRecordQ(Consumer<DnsRecordQ> c) {
 		c.accept(this);

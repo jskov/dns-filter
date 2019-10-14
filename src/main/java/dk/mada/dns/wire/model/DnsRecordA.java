@@ -7,16 +7,12 @@ import java.util.function.Consumer;
 public class DnsRecordA extends DnsRecord {
 	private final InetAddress address;
 	
-	private DnsRecordA(DnsName name, InetAddress address, long ttl) {
+	DnsRecordA(DnsName name, InetAddress address, long ttl) {
 		super(DnsClass.IN, DnsRecordType.A, name, ttl);
 		
 		this.address = address;
 	}
 	
-	public static DnsRecordA from(DnsName name, InetAddress address, long ttl) {
-		return new DnsRecordA(name, address, ttl);
-	}
-
 	@Override
 	public void ifRecordA(Consumer<DnsRecordA> c) {
 		c.accept(this);

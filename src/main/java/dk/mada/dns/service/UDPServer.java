@@ -86,11 +86,15 @@ public class UDPServer {
 					continue;
 				}
 				
+				try {
 				ByteBuffer reply = packetHandler.process(clientIp, request);
 				if (channel.isConnected()) {
 					channel.write(reply);
 				} else {
 					channel.send(reply, sa);
+				}
+				} catch (Exception e) {
+					logger.warn("FIXME: bad exception handling, Failed to lookup", e);
 				}
 			}
 		} catch (ClosedByInterruptException e) {

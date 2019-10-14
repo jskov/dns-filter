@@ -5,16 +5,19 @@ import java.nio.ByteBuffer;
 public class DnsRequest extends DnsMessage {
 	private static final String NOT_PERTINENT_IN_A_REQUEST = "Not pertinent in a request";
 	private final ByteBuffer baseWireRequest;
+	private final DnsHeaderQuery header;
 	
-	private DnsRequest(DnsHeader header, DnsSection question, ByteBuffer baseWireRequest) {
-		super(header, question);
+	public DnsRequest(DnsHeaderQuery header, DnsSection question, ByteBuffer baseWireRequest) {
+		super(question);
+		this.header = header;
 		this.baseWireRequest = baseWireRequest.asReadOnlyBuffer();
 	}
 
-	public static DnsRequest fromWireRequest(DnsHeader header, DnsSection question, ByteBuffer wireRequest) {
-		return new DnsRequest(header, question, wireRequest);
+	@Override
+	public DnsHeaderQuery getHeader() {
+		return header;
 	}
-	
+
 	public ByteBuffer asWirePacket() {
 		return baseWireRequest.rewind();
 	}

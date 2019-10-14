@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import dk.mada.dns.service.DnsLookupService;
 import dk.mada.dns.service.UDPServer;
+import dk.mada.dns.websocket.DnsQueryEventService;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
 
@@ -24,9 +25,10 @@ public class Application {
 
 	private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
-    private UDPServer server;
-
     @Inject private DnsLookupService resolver;
+    @Inject private DnsQueryEventService websocketService;
+
+    private UDPServer server;
     
     void onStart(@Observes StartupEvent ev) {
         logger.info("The application is starting...");
@@ -39,5 +41,6 @@ public class Application {
     void onStop(@Observes ShutdownEvent ev) {
     	logger.info("Container wants to shut down...");
     	server.stop();
+    	websocketService.close();
     }
 }
