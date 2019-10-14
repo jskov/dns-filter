@@ -38,6 +38,15 @@ public class TestQueries {
 	public static byte[] DETECTPORTAL_FIREFOX_COM = new byte[] {(byte)0x9c, (byte)0xc9, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x0c, 0x64, 0x65, 0x74, 0x65, 0x63, 0x74, 0x70, 0x6f, 0x72, 0x74, 0x61, 0x6c, 0x07, 0x66, 0x69, 0x72, 
 	0x65, 0x66, 0x6f, 0x78, 0x03, 0x63, 0x6f, 0x6d, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x29, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };                                                                 
 
+	/*
+	 * 
+	 * Make canned reply for detectportal.firefox.com, based on real reply:
+	 * 	 detectportal.firefox.com.       11      IN      CNAME                                                    
+	 *   detectportal.prod.mozaws.net.   60      IN      CNAME                                                    
+	 *   detectportal.firefox.com-v2.edgesuite.net 9999 IN CNAME
+     *   a1089.dscd.akamai.net.  10      IN      A       95.101.142.120                                           
+     *   a1089.dscd.akamai.net.  10      IN      A       104.84.152.177
+	*/
 	public static DnsReply getDetectportalFirefoxChainedReply(Query q) throws UnknownHostException {
 		var firefoxCom = DnsName.fromName("detectportal.firefox.com");
 		var mozawsNet = DnsName.fromName("detectportal.prod.mozaws.net");

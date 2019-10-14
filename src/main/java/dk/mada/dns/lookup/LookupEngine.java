@@ -8,11 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.mada.dns.filter.Blacklist;
+import dk.mada.dns.filter.Blockedlist;
 import dk.mada.dns.filter.Whitelist;
 import dk.mada.dns.resolver.Resolver;
 import dk.mada.dns.wire.model.DnsRecords;
 import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
+import dk.mada.dns.wire.model.DnsSection;
 
 public class LookupEngine {
 	private static final Logger logger = LoggerFactory.getLogger(LookupEngine.class);
@@ -21,10 +23,12 @@ public class LookupEngine {
 	
 	private final Resolver resolver;
 	private final Blacklist blacklist;
+	private final Blockedlist blockedlist;
 	private final Whitelist whitelist;
 
-	public LookupEngine(Resolver resolver, Blacklist blacklist, Whitelist whitelist) {
+	public LookupEngine(Resolver resolver, Blockedlist blockedlist, Blacklist blacklist, Whitelist whitelist) {
 		this.resolver = resolver;
+		this.blockedlist = blockedlist;
 		this.blacklist = blacklist;
 		this.whitelist = whitelist;
 	}
@@ -32,11 +36,11 @@ public class LookupEngine {
 	public LookupResult lookup(Query q) {
 		String name = q.getRequestName();
 		
-		logger.info("Look up {}", name);
-		
 		if (blacklist.test(name)) {
 			return makeBlockedReply(q, name);
 		}
+
+		logger.info("Look up {}", name);
 		
 		var result = new LookupResult();
 		DnsReply reply = resolver.resolve(q.getClientIp(), q.getRequest())
@@ -53,6 +57,15 @@ public class LookupEngine {
 			.map(r -> r.getName())
 			.map(n -> n.getName())
 			.collect(toList());
+
+		String whitelistedName = intermediateNames.stream()
+				.filter(whitelist::test)
+				.findFirst()
+				.orElse(null);
+		
+		if (whitelistedName != null) {
+			return makeWhitelistReply(q, reply.getAnswer(), whitelistedName);
+		}
 		
 		String blacklistedName = intermediateNames.stream()
 				.filter(blacklist::test)
@@ -67,6 +80,17 @@ public class LookupEngine {
 		return result;
 	}
 
+	private LookupResult makeWhitelistReply(Query q, DnsSection answer, String passedDueTo) {
+		var result = new LookupResult();
+		logger.info(" {} is whitelisted", passedDueTo);
+		result.setState(LookupState.WHITELISTED);
+
+		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), answer);
+
+		result.setReply(reply);
+		return result;
+	}
+	
 	private LookupResult makeBlockedReply(Query q, String blockedDueTo) {
 		var result = new LookupResult();
 		logger.info(" {} is blacklisted", blockedDueTo);

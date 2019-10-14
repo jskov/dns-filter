@@ -21,9 +21,17 @@ public class DnsReplies {
 		return DnsReplies.fromAnswer(header, request.getQuestionSection(), DnsSections.from(DnsSectionType.ANSWER, List.of(answer)));
 	}
 
+	public static DnsReply fromRequestWithAnswer(DnsRequest request, DnsSection answer) {
+		var qheader = request.getHeader();
+		var header = DnsHeaderReplies.fromRequest(qheader, (short)answer.getRecords().size(), (short)0, (short)0);
+		// FIXME: copy AR
+		
+		return DnsReplies.fromAnswer(header, request.getQuestionSection(), answer);
+	}
+
 	public static DnsReply fromRequestWithAnswers(DnsRequest request, DnsRecord... answers) {
 		var qheader = request.getHeader();
-		var header = DnsHeaderReplies.fromRequest(qheader, (short)1, (short)0, (short)0);
+		var header = DnsHeaderReplies.fromRequest(qheader, (short)answers.length, (short)0, (short)0);
 		// FIXME: copy AR
 		
 		return DnsReplies.fromAnswer(header, request.getQuestionSection(), DnsSections.ofAnswers(answers));
