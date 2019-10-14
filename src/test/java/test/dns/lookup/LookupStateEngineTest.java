@@ -46,8 +46,28 @@ public class LookupStateEngineTest {
 	 */
 	@Test
 	public void blacklistedChainEntriesShouldBlock() {
-		// TODO: write test
-	}
+		// ;; ANSWERS:                                                                                                                                                                                                        
+//		detectportal.firefox.com.       11      IN      CNAME                                                    
+//		detectportal.prod.mozaws.net.   60      IN      CNAME                                                    
+//		detectportal.firefox.com-v2.edgesuite.net.      9590    IN      CNAME                                    
+//		a1089.dscd.akamai.net.  10      IN      A       95.101.142.120                                           
+//		a1089.dscd.akamai.net.  10      IN      A       104.84.152.177
+
+
+		Query q = makeTestQuery(TestQueries.DETECTPORTAL_FIREFOX_COM);
+		
+		TestResolver resolver = new TestResolver();
+		Blacklist blacklist = h -> h.contains("ads");
+		Whitelist whitelist = h -> false;
+
+		var sut = new LookupEngine(resolver, blacklist, whitelist);
+		LookupResult result = sut.lookup(q);
+
+		System.out.println(result);
+
+		assertThat(result.getState())
+			.isEqualTo(LookupState.BLACKLISTED);
+}
 
 	/**
 	 * A whitelisted query (or element in c-name chain) should

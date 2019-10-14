@@ -44,6 +44,9 @@ public class LookupEngine {
 		
 		Optional<DnsReply> reply = resolver.resolve(q.getClientIp(), q.getRequest());
 		
+		logger.info("Got resolved {}", reply);
+		
+		
 		result.setReply(reply.orElse(null));
 		
 		return result;

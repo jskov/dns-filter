@@ -18,4 +18,8 @@ public class LookupResult {
 		this.reply = reply;
 	}
 
+	@Override
+	public String toString() {
+		return "LookupResult [state=" + state + ", reply=" + reply + "]";
+	}
 }

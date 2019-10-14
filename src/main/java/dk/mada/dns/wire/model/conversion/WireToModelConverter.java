@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xbill.DNS.ARecord;
+import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.Header;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Record;
@@ -21,6 +24,7 @@ import dk.mada.dns.wire.model.DnsHeaderReply;
 import dk.mada.dns.wire.model.DnsName;
 import dk.mada.dns.wire.model.DnsRecord;
 import dk.mada.dns.wire.model.DnsRecordA;
+import dk.mada.dns.wire.model.DnsRecordC;
 import dk.mada.dns.wire.model.DnsRecordQ;
 import dk.mada.dns.wire.model.DnsRecordType;
 import dk.mada.dns.wire.model.DnsReplies;
@@ -33,6 +37,7 @@ import dk.mada.dns.wire.model.DnsSections;
  * Convert wire format to model using xbill.dns.
  */
 public class WireToModelConverter {
+	private static final Logger logger = LoggerFactory.getLogger(WireToModelConverter.class);
 	
 	public static DnsReply replyToModel(ByteBuffer reply) {
 		try {
@@ -121,6 +126,10 @@ public class WireToModelConverter {
 		if (r instanceof ARecord) {
 			var address = ((ARecord)r).getAddress();
 			return DnsRecordA.from(name, address, ttl);
+		} else if (r instanceof CNAMERecord) {
+			var alias = ((CNAMERecord)r).getAlias();
+			logger.info("CRecord {} -> {}", name, alias);
+			return DnsRecordC.from(name, DnsName.fromName(alias.toString(true)), ttl);
 		}
 		
 		return DnsRecord.unknownFrom(type, name, ttl);
