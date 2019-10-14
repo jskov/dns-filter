@@ -125,18 +125,23 @@ public class LookupStateEngineTest {
 			.isEqualTo(LookupState.BLACKLISTED);
 	}
 	
+	@Test
+	public void blockageOnlyIfOtherListsDidNotTrigger() throws UnknownHostException {
+		Query q = makeTestQuery(TestQueries.DETECTPORTAL_FIREFOX_COM);
+		DnsReply reply = TestQueries.getDetectportalFirefoxChainedReply(q);
+		
+		TestResolver resolver = new TestResolver(reply);
+		Blacklist blacklist = h -> false;
+		Whitelist whitelist = h -> false;
+		Blockedlist blockedlist = h -> h.contains("akamai");
 
-	
-	// FIXME: what if first name is blacklisted - never resolved
-	// ok for google ads, but not for block list entries - want to override those
-	// so maybye blacklist, blocklist, whitelist.
-	//   blacklist: ok to block wo upstream resolve
-	//   resolve:
-	//     if whitelisted, pass
-	//     if blacklisted, stop
-	//     if blocklisted, stop
-	
-	
+		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
+		LookupResult result = sut.lookup(q);
+
+		assertThat(result.getState())
+			.isEqualTo(LookupState.BLOCKED);
+	}
+
 	/**
 	 * All lookups (including whitelisted and blacklisted) should
 	 * be cached, observing TTL.

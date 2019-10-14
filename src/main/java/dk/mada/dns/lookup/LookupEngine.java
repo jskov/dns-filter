@@ -51,18 +51,18 @@ public class LookupEngine {
 		String name = q.getRequestName();
 		
 		if (blacklist.test(name)) {
-			return makeBlockedReply(q, name);
+			return makeBlockedReply(q, LookupState.BLACKLISTED, name);
 		}
 
 		logger.info("Look up {}", name);
 		
-		var result = new LookupResult();
 		DnsReply reply = resolver.resolve(q.getClientIp(), q.getRequest())
 				.orElse(null);
 
 		logger.info("Got resolved {}", reply);
 
 		if (reply == null) {
+			var result = new LookupResult();
 			result.setState(LookupState.FAILED);
 			return result;
 		}
@@ -87,10 +87,19 @@ public class LookupEngine {
 				.orElse(null);
 		
 		if (blacklistedName != null) {
-			return makeBlockedReply(q, blacklistedName);
+			return makeBlockedReply(q, LookupState.BLACKLISTED, blacklistedName);
 		}
+
+		String blockedName = intermediateNames.stream()
+				.filter(blockedlist::test)
+				.findFirst()
+				.orElse(null);
 		
-		
+		if (blockedName != null) {
+			return makeBlockedReply(q, LookupState.BLOCKED, blockedName);
+		}
+
+		var result = new LookupResult();
 		return result;
 	}
 
@@ -105,10 +114,10 @@ public class LookupEngine {
 		return result;
 	}
 	
-	private LookupResult makeBlockedReply(Query q, String blockedDueTo) {
+	private LookupResult makeBlockedReply(Query q, LookupState state, String blockedDueTo) {
 		var result = new LookupResult();
 		logger.info(" {} is blacklisted", blockedDueTo);
-		result.setState(LookupState.BLACKLISTED);
+		result.setState(state);
 
 		var name = q.getRequest().getQuestion().getName();
 		var deadend = DnsRecords.aRecordBlindFrom(name, BLOCKED_TTL_SECONDS);
