@@ -59,8 +59,21 @@ task makeSuccessMarker() {
 test {
 	dependsOn(makeSuccessMarker)
     useJUnitPlatform {
-        excludeTags "accept"
+        excludeTags "accept", "integration"
     }  
+    ignoreFailures = true
+    afterTest { td, tr ->
+		if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
+			successMarker.delete()
+		}
+    }
+}
+
+task integrationTest(type: Test) {
+	dependsOn(makeSuccessMarker)
+    useJUnitPlatform {
+  	    includeTags "integration"
+    }
     ignoreFailures = true
     afterTest { td, tr ->
 		if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
@@ -83,7 +96,7 @@ task acceptTest(type: Test, dependsOn: "publishToMavenLocal") {
     }
 }
 
-tasks.check.dependsOn(acceptTest)
+tasks.check.dependsOn(acceptTest, integrationTest)
 
 
 sourceCompatibility = 11

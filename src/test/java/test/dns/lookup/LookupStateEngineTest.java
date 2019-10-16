@@ -1,5 +1,9 @@
 package test.dns.lookup;
 
+import static fixture.dns.wiredata.TestQueries.DETECTPORTAL_FIREFOX_COM;
+import static fixture.dns.wiredata.TestQueries.GOOGLEADSERVICES_COM;
+import static fixture.dns.wiredata.TestQueries.getDetectportalFirefoxChainedReply;
+import static fixture.dns.wiredata.TestQueries.makeTestQuery;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.UnknownHostException;
@@ -14,8 +18,6 @@ import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.LookupState;
 import dk.mada.dns.lookup.Query;
 import dk.mada.dns.wire.model.DnsReply;
-import dk.mada.dns.wire.model.DnsRequests;
-import fixture.dns.wiredata.TestQueries;
 import fixture.resolver.TestResolver;
 
 /**
@@ -28,7 +30,7 @@ public class LookupStateEngineTest {
 	 */
 	@Test
 	public void blacklistedEntriesShouldNotBeResolved() {
-		Query q = makeTestQuery(TestQueries.GOOGLEADSERVICES_COM);
+		Query q = makeTestQuery(GOOGLEADSERVICES_COM);
 		
 		TestResolver resolver = new TestResolver();
 		Blacklist blacklist = h -> h.contains("ads");
@@ -58,8 +60,8 @@ public class LookupStateEngineTest {
 	 */
 	@Test
 	public void blacklistedChainEntriesShouldBlock() throws UnknownHostException {
-		Query q = makeTestQuery(TestQueries.DETECTPORTAL_FIREFOX_COM);
-		DnsReply reply = TestQueries.getDetectportalFirefoxChainedReply(q);
+		Query q = makeTestQuery(DETECTPORTAL_FIREFOX_COM);
+		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		TestResolver resolver = new TestResolver(reply);
 		Blacklist blacklist = h -> h.contains("mozaws.net");
@@ -89,8 +91,8 @@ public class LookupStateEngineTest {
 	 */
 	@Test
 	public void whitelistedEntriesShouldBeResolved() throws UnknownHostException {
-		Query q = makeTestQuery(TestQueries.DETECTPORTAL_FIREFOX_COM);
-		DnsReply reply = TestQueries.getDetectportalFirefoxChainedReply(q);
+		Query q = makeTestQuery(DETECTPORTAL_FIREFOX_COM);
+		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		TestResolver resolver = new TestResolver(reply);
 		Blacklist blacklist = h -> h.contains("mozaws.net");
@@ -110,8 +112,8 @@ public class LookupStateEngineTest {
 	 */
 	@Test
 	public void blackListTrumpsWhiteListInQuery() throws UnknownHostException {
-		Query q = makeTestQuery(TestQueries.DETECTPORTAL_FIREFOX_COM);
-		DnsReply reply = TestQueries.getDetectportalFirefoxChainedReply(q);
+		Query q = makeTestQuery(DETECTPORTAL_FIREFOX_COM);
+		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		TestResolver resolver = new TestResolver(reply);
 		Blacklist blacklist = h -> h.contains("firefox.com");
@@ -131,8 +133,8 @@ public class LookupStateEngineTest {
 	 */
 	@Test
 	public void blockageOnlyIfOtherListsDidNotTrigger() throws UnknownHostException {
-		Query q = makeTestQuery(TestQueries.DETECTPORTAL_FIREFOX_COM);
-		DnsReply reply = TestQueries.getDetectportalFirefoxChainedReply(q);
+		Query q = makeTestQuery(DETECTPORTAL_FIREFOX_COM);
+		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		TestResolver resolver = new TestResolver(reply);
 		Blacklist blacklist = h -> false;
@@ -151,8 +153,8 @@ public class LookupStateEngineTest {
 	 */
 	@Test
 	public void unfilteredRepliesAreReturned() throws UnknownHostException {
-		Query q = makeTestQuery(TestQueries.DETECTPORTAL_FIREFOX_COM);
-		DnsReply reply = TestQueries.getDetectportalFirefoxChainedReply(q);
+		Query q = makeTestQuery(DETECTPORTAL_FIREFOX_COM);
+		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		TestResolver resolver = new TestResolver(reply);
 		Blacklist blacklist = h -> false;
@@ -175,16 +177,4 @@ public class LookupStateEngineTest {
 	public void resolvedRepliesShouldBeCached() {
 		// TODO: write test
 	}
-	
-	
-	
-	private Query makeTestQuery(byte[] data) {
-		var req = DnsRequests.fromWireData(data);
-		
-		var query = new Query(req, "127.0.0.1");
-		return query;
-	}
-	
-	
-	
 }
