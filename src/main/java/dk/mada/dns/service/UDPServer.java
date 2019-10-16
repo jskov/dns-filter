@@ -6,6 +6,7 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.DatagramChannel;
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.mada.dns.net.NetworkHelper;
+import dk.mada.dns.util.Hexer;
 
 /**
  * UDP server listening for clients on the designated port.
@@ -94,7 +96,9 @@ public class UDPServer {
 					channel.send(reply, sa);
 				}
 				} catch (Exception e) {
+					request.rewind();
 					logger.warn("FIXME: bad exception handling, Failed to lookup", e);
+					Hexer.printForDevelopment("Bad handling: " + e.getMessage(), request, Collections.emptySet());
 				}
 			}
 		} catch (ClosedByInterruptException e) {
