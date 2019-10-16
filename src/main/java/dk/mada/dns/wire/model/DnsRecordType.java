@@ -10,7 +10,8 @@ public enum DnsRecordType {
 	NS(2),		// authoritative nameserver
 	CNAME(5),	// c-name, alias
 	MX(15),
-	TXT(16);
+	TXT(16),
+	AAAA(28);	// AAAA IPV6 https://tools.ietf.org/html/rfc3596
 	
 	private final int wireValue;
 	
