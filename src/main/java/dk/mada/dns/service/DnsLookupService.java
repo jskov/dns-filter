@@ -3,7 +3,6 @@ package dk.mada.dns.service;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -11,7 +10,10 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.mada.dns.resolver.UpstreamResolver;
+import dk.mada.dns.lookup.FilteredLookup;
+import dk.mada.dns.lookup.LookupResult;
+import dk.mada.dns.lookup.LookupState;
+import dk.mada.dns.lookup.Query;
 import dk.mada.dns.websocket.DnsQueryEventService;
 import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 import dk.mada.dns.websocket.dto.EventTypeDto;
@@ -30,7 +32,7 @@ public class DnsLookupService implements UDPPacketHandler {
 	private static final Logger logger = LoggerFactory.getLogger(DnsLookupService.class);
 
 	@Inject private DnsQueryEventService websocketEventNotifier;
-	@Inject private UpstreamResolver resolver;
+	@Inject private FilteredLookup lookup;
 	@Inject private DevelopmentDebugging devDebugging;
 
 	@Override
@@ -43,14 +45,20 @@ public class DnsLookupService implements UDPPacketHandler {
 		logger.info("Decoded request: {}", request);
 		devDebugging.devOutputRequest(request);
 		
-		Optional<DnsReply> reply = resolver.resolve(clientIp, request);
-		logger.info("Decoded reply: {}", reply);
+		Query q = new Query(request, clientIp);
+		
+		LookupResult res = lookup.lookup(q);
 
-		
-		ByteBuffer replyBuffer = reply
-				.map(this::reportAndConvertReply)
-				.orElseGet(() -> doFallbackUpstreamRequest(request));
-		
+		ByteBuffer replyBuffer;
+		if (res.getState() == LookupState.FAILED) {
+			logger.warn("Failed lookup");
+			replyBuffer = doFallbackUpstreamRequest(request);
+		} else {
+			DnsReply reply = res.getReply();
+			logger.info("Decoded reply: {}", reply);
+
+			replyBuffer = reportAndConvertReply(reply);
+		}
 		return replyBuffer;
 	}
 	
