@@ -28,7 +28,9 @@ import fixture.resolver.TestResolver;
 public class FilterImportIntTest {
 	@Test
 	public void hostnamesShouldMatchDirectly() throws UnknownHostException {
-		Blockedlist blockedlist = new BlockedListCacher().get();
+		BlockedListCacher cacher = new BlockedListCacher();
+		cacher.preloadCache();
+		Blockedlist blockedlist = cacher.get();
 
 		Query q = makeTestQuery(ADNXS_COM);
 		DnsReply reply = getAdnxsChainedReply(q);

@@ -37,7 +37,9 @@ public class BlockedListCacher {
 	private static final String ADDRESS_PREFIX = "address=/";
 	private static final String IP_PREFIX = "0.0.0.0 ";
 	
-	private static final Path CACHE_DIR = Paths.get("/opt/data/dns-filter");
+	private static final boolean isGradleTestEnv = Boolean.parseBoolean(System.getenv("GRADLE_TEST"));
+	private static final Path TEST_CACHE_DIR = Paths.get(System.getProperty("java.io.tmpdir")).resolve("_dns-filter");
+	private static final Path CACHE_DIR = isGradleTestEnv ? TEST_CACHE_DIR : Paths.get("/opt/data/dns-filter");
 	private static final Path CACHED_DOMAINNAMES = CACHE_DIR.resolve("_cached_domainnames.txt");
 	private static final Path CACHED_HOSTNAMES = CACHE_DIR.resolve("_cached_hostnames.txt");
 	
@@ -47,7 +49,7 @@ public class BlockedListCacher {
 	private List<String> domainNames = Collections.emptyList();
 
 	public void preloadCache() {
-		logger.info("Preloading cache of blocked domain/host names...");
+		logger.info("Preloading cache of blocked domain/host names from {}", CACHE_DIR);
 
 		if (Files.notExists(CACHED_HOSTNAMES) || Files.notExists(CACHED_DOMAINNAMES)) {
 			refreshCaches();
