@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +24,7 @@ import dk.mada.dns.filter.Blockedlist;
 /**
  * Fetches host and domain names from https://github.com/notracking/hosts-blocklists
  */
+@ApplicationScoped
 public class FetchLists {
 	private static final Logger logger = LoggerFactory.getLogger(FetchLists.class);
 	private static final String ADDRESS_SUFFIX = "/::";

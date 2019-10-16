@@ -17,6 +17,10 @@ public class LookupResult {
 	public void setReply(DnsReply reply) {
 		this.reply = reply;
 	}
+	
+	public DnsReply getReply() {
+		return reply;
+	}
 
 	@Override
 	public String toString() {
