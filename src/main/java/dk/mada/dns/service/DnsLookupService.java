@@ -76,12 +76,12 @@ public class DnsLookupService implements UDPPacketHandler {
 		
 		DnsSection answers = reply.getAnswer();
 		if (answers == null) {
-			throw new IllegalStateException("No answers");
+			return;
 		}
 		
 		List<DnsRecord> records = answers.getRecords();
 		if (records == null || records.isEmpty()) {
-			throw new IllegalStateException("No usable answer records");
+			return;
 		}
 		
 		DnsRecord firstAnswer = records.get(0);

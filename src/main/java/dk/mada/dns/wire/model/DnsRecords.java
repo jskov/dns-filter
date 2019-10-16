@@ -18,14 +18,15 @@ public class DnsRecords {
 		}
 	}
 
+	public static DnsRecordAAAA aaaaRecordFrom(DnsName name, InetAddress address, long ttl) {
+		return new DnsRecordAAAA(name, address, ttl);
+	}
 
 	public static DnsRecordC cRecordFrom(DnsName name, DnsName aliasName, long ttl) {
 		return new DnsRecordC(name, aliasName, ttl);
 	}
 	
-	public static DnsRecordQ qRecordFrom(DnsName name) {
-		return new DnsRecordQ(name);
+	public static DnsRecordQ qRecordFrom(DnsName name, DnsRecordType type) {
+		return new DnsRecordQ(name, type);
 	}
-
-
 }

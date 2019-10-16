@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.DatagramChannel;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -13,6 +14,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.mada.dns.util.Hexer;
 import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
@@ -31,6 +33,8 @@ public class UpstreamResolver implements Resolver {
 		Objects.requireNonNull(request);
 
 		try {
+			logger.info("Contact upstream server");
+			
 			InetSocketAddress target = UpsteamDnsServer.getActive();
 			try (DatagramChannel channel = DatagramChannel.open()) {
 				channel.connect(target);
@@ -46,6 +50,10 @@ public class UpstreamResolver implements Resolver {
 				long time = System.currentTimeMillis() - start;
 				logger.info("Upstream reply in {}ms", time);
 
+				
+				Hexer.printForDevelopment("Reply", reply, Collections.emptySet());
+				reply.rewind();
+				
 				return Optional.of(DnsReplies.fromWireData(reply));
 			} catch (ClosedByInterruptException e) {
 				try {

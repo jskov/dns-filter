@@ -60,6 +60,13 @@ public class DnsRecord {
 		return Optional.empty();
 	}
 
+	public void ifRecordAAAA(Consumer<DnsRecordAAAA> c) {
+	}
+
+	public Optional<DnsRecordAAAA> asRecordAAAA() {
+		return Optional.empty();
+	}
+
 	public void ifRecordC(Consumer<DnsRecordC> c) {
 	}
 	

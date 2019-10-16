@@ -32,23 +32,32 @@ public class DnfFilterLocalHostLookup {
 	 */
 	public DnsReply serviceDnsLookup(String hostname) {
 		try {
-			return xbillDnsLookup(hostname);
+			return xbillDnsLookup(hostname, DnsRecordType.A);
 		} catch (TextParseException | UnknownHostException e) {
-			throw new IllegalStateException("Failed to make DNS lookup for " + hostname, e);
+			throw new IllegalStateException("Failed to make DNS A lookup for " + hostname, e);
 		}
 	}
 	
-	private DnsReply xbillDnsLookup(String hostname) throws TextParseException, UnknownHostException {
-    	Lookup lookup = new Lookup(hostname);
+	public DnsReply serviceDnsLookupIpv6(String hostname) {
+		try {
+			return xbillDnsLookup(hostname, DnsRecordType.AAAA);
+		} catch (TextParseException | UnknownHostException e) {
+			throw new IllegalStateException("Failed to make DNS AAAA lookup for " + hostname, e);
+		}
+	}
+
+	private DnsReply xbillDnsLookup(String hostname, DnsRecordType type) throws TextParseException, UnknownHostException {
+    	Lookup lookup = new Lookup(hostname, type.getWireValue());
     	lookup.setResolver(getLocalhostResolver());
     	lookup.setCache(null);
+//    	Lookup.setPacketLogger((a, b, c, d) -> Hexer.printForDevelopment("xbill", ByteBuffer.wrap(d), Collections.emptySet()));
     	lookup.setSearchPath(new String[] {});
   
     	Record[] res = lookup.run();
 
     	String absName = hostname.endsWith(".") ? hostname : (hostname + ".");
     	Name name = new Name(absName);
-    	Record question = Record.newRecord(name, DnsRecordType.A.getWireValue(), DnsClass.IN.getWireValue());
+    	Record question = Record.newRecord(name, type.getWireValue(), DnsClass.IN.getWireValue());
     	
     	Message message = Message.newQuery(question);
     	
