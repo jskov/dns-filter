@@ -5,11 +5,10 @@ import java.util.function.Consumer;
 
 /**
  * A question record, as per https://www.ietf.org/rfc/rfc1035.txt, 4.1.2. Question section format
- * Simplified with canned types for now - not sure if needed.
  */
 public class DnsRecordQ extends DnsRecord {
-	DnsRecordQ(DnsName name) {
-		super(DnsClass.IN, DnsRecordType.A, name, 0);
+	DnsRecordQ(DnsName name, DnsRecordType type) {
+		super(DnsClass.IN, type, name, 0);
 	}
 	
 	@Override

@@ -33,4 +33,13 @@ public class SimpleDnsQueryTest {
     				.isEqualTo("185.17.217.100");
     		});
     }
+    
+    @Test
+    public void testIpv6NoAnswerLookup() {
+    	DnsReply reply = dnsFilterLookup.serviceDnsLookupIpv6("mada.dk");
+    			
+    	assertThat(reply.getAnswer().getRecords())
+    		.isEmpty();
+    }
+    
 }

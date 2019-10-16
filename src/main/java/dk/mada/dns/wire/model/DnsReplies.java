@@ -37,6 +37,10 @@ public class DnsReplies {
 		return DnsReplies.fromAnswer(header, request.getQuestionSection(), DnsSections.ofAnswers(answers));
 	}
 
+	public static DnsReply fromWireData(byte[] data) {
+		return WireToModelConverter.replyToModel(ByteBuffer.wrap(data));
+	}
+	
 	public static DnsReply fromWireData(ByteBuffer data) {
 		return WireToModelConverter.replyToModel(data);
 	}

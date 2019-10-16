@@ -33,6 +33,8 @@ public class UpstreamResolver implements Resolver {
 		Objects.requireNonNull(request);
 
 		try {
+			logger.info("Contact upstream server");
+			
 			InetSocketAddress target = UpsteamDnsServer.getActive();
 			try (DatagramChannel channel = DatagramChannel.open()) {
 				channel.connect(target);

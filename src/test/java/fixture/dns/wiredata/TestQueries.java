@@ -26,6 +26,11 @@ public class TestQueries {
 	 */
 	public static byte[] MOZILLA_ORG_AAAA = new byte[] {(byte)0xb4, 0x30, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x6d, 0x6f, 0x7a, 0x69, 0x6c, 0x6c, 0x61, 0x03, 0x6f, 0x72, 0x67, 0x00, 0x00, 0x1c, 0x00, 0x01, };
 
+	public static DnsReply getMozillaOrgEmptyReply(Query q) throws UnknownHostException {
+		return DnsReplies.fromRequestWithAnswers(q.getRequest());
+	}
+
+	
 	/* Reply mozilla.org AAAA
 	* 0x0000 b4 30 81 80 00 01 00 00  00 01 00 00 07 6d 6f 7a .0...........moz
 	* 0x0010 69 6c 6c 61 03 6f 72 67  00 00 1c 00 01 c0 0c 00 illa.org........

@@ -3,12 +3,14 @@ package dk.mada.dns.wire.model.conversion;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.Header;
@@ -70,13 +72,18 @@ public class WireToModelConverter {
 		return fromAnswers(message.getHeader(), message.getQuestion(), message.getSectionArray(Section.ANSWER));
 	}
 	
-	public static DnsReply fromAnswers(Header _header, Record _question, Record[] _answerRecords) {
+	public static DnsReply fromAnswers(Header _header, Record _question, Record[] answerRecords) {
 		Header header = Objects.requireNonNull(_header, "Must provide header");
 		Record question = Objects.requireNonNull(_question, "Must provide question");
-    	Record[] answerRecords = Objects.requireNonNull(_answerRecords, "Must provide answers");
-		List<DnsRecord> answers = Arrays.stream(answerRecords)
-    		.map(r -> toModelRecord(r, false))
-    		.collect(Collectors.toList());
+
+    	List<DnsRecord> answers;
+    	if (answerRecords == null) {
+    		answers = Collections.emptyList();
+    	} else {
+    		answers = Arrays.stream(answerRecords)
+			    		.map(r -> toModelRecord(r, false))
+			    		.collect(Collectors.toList());
+    	}
 		
     	return DnsReplies.fromAnswer(toReplyHeader(header, answers.size()), DnsSections.ofQuestion(toModelRecord(question, true)), DnsSections.ofAnswers(answers));
 	}
@@ -118,12 +125,15 @@ public class WireToModelConverter {
 		long ttl = r.getTTL();
 
 		if (isQuestion) {
-			return DnsRecords.qRecordFrom(name);
+			return DnsRecords.qRecordFrom(name, type);
 		}
 		
 		if (r instanceof ARecord) {
 			var address = ((ARecord)r).getAddress();
 			return DnsRecords.aRecordFrom(name, address, ttl);
+		} else if (r instanceof AAAARecord) {
+			var address = ((AAAARecord)r).getAddress();
+			return DnsRecords.aaaaRecordFrom(name, address, ttl);
 		} else if (r instanceof CNAMERecord) {
 			var alias = ((CNAMERecord)r).getAlias();
 			logger.info("CRecord {} -> {}", name, alias);
