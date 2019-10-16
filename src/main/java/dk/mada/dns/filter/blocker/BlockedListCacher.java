@@ -42,14 +42,17 @@ public class BlockedListCacher {
 	private static final Path CACHED_HOSTNAMES = CACHE_DIR.resolve("_cached_hostnames.txt");
 	
 	private static Predicate<String> VALID_DOMAIN_PATTERN = Pattern.compile("[a-z0-9.-_]+").asPredicate();
-	
-	public Blockedlist get() {
+
+	private List<String> hostNames = Collections.emptyList();
+	private List<String> domainNames = Collections.emptyList();
+
+	public void preloadCache() {
+		logger.info("Preloading cache of blocked domain/host names...");
+
 		if (Files.notExists(CACHED_HOSTNAMES) || Files.notExists(CACHED_DOMAINNAMES)) {
 			refreshCaches();
 		}
 
-		List<String> hostNames = Collections.emptyList();
-		List<String> domainNames = Collections.emptyList();
 		try {
 			hostNames = Files.readAllLines(CACHED_HOSTNAMES);
 		} catch (IOException e) {
@@ -60,9 +63,10 @@ public class BlockedListCacher {
 		} catch (IOException e) {
 			logger.warn("Failed to read cache of blocked domain names", e);
 		}
-
-		logger.info("Got {} host names and {} domain names", hostNames.size(), domainNames.size());
-
+	}
+	
+	public Blockedlist get() {
+		logger.info("Provide blocked list of {} host names and {} domain names", hostNames.size(), domainNames.size());
 		return new UpstreamBlocklist(hostNames, domainNames);
 	}
 
@@ -75,6 +79,11 @@ public class BlockedListCacher {
 				.sorted()
 				.collect(toList());
 
+		if (hostNames.isEmpty() || domainNames.isEmpty()) {
+			logger.warn("Upstream provided empty domain/host list, so not updating local cache");
+			return;
+		}
+		
 		try {
 			Files.createDirectories(CACHE_DIR);
 			Files.writeString(CACHED_DOMAINNAMES, String.join("\n", domainNames));
