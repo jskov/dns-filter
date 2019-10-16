@@ -126,7 +126,7 @@ public class LookupEngine {
 
 	private LookupResult makeBlockedReply(Query q, LookupState state, String blockedDueTo) {
 		var result = new LookupResult();
-		logger.info(" {} is blacklisted", blockedDueTo);
+		logger.info(" {} is blocked", blockedDueTo);
 		result.setState(state);
 
 		var name = q.getRequest().getQuestion().getName();

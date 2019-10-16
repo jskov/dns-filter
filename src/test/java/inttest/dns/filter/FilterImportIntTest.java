@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.UnknownHostException;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import dk.mada.dns.filter.Blacklist;
@@ -23,6 +24,7 @@ import fixture.resolver.TestResolver;
 /**
  * Tests that external filters can be loaded and provide some filtering.
  */
+@Tag("integration")
 public class FilterImportIntTest {
 	@Test
 	public void hostnamesShouldMatchDirectly() throws UnknownHostException {
@@ -39,6 +41,6 @@ public class FilterImportIntTest {
 		LookupResult result = sut.lookup(q);
 
 		assertThat(result.getState())
-			.isEqualTo(LookupState.BLACKLISTED);
+			.isEqualTo(LookupState.BLOCKED);
 	}
 }
