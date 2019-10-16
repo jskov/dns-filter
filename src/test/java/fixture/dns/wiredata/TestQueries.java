@@ -8,6 +8,7 @@ import dk.mada.dns.wire.model.DnsName;
 import dk.mada.dns.wire.model.DnsRecords;
 import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
+import dk.mada.dns.wire.model.DnsRequests;
 
 public class TestQueries {
 
@@ -29,6 +30,32 @@ public class TestQueries {
 	 */
 	public static byte[] GOOGLEADSERVICES_COM = new byte[] {0x0f, 0x52, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x10, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x64, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x03, 0x63, 0x6f, 0x6d, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x29, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
 
+	// dig @localhost -p 8053 +nocookie +noadflag +nodnssec acdn.adnxs.com
+	/* Query acdn.adnxs.com, id:0x45eb, flags:0x0100 (Q,query,,,rd,,,,OK)
+	* 0x0000 45 eb 01 00 00 01 00 00  00 00 00 01|04 61 63 64 E............acd
+	* 0x0010 6e 05 61 64 6e 78 73 03  63 6f 6d 00 00 01 00 01 n.adnxs.com.....
+	* 0x0020 00 00 29 10 00 00 00 00  00 00 00                ..)........
+	 */
+	public static byte[] ADNXS_COM = new byte[] {0x45, (byte)0xeb, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x04, 0x61, 0x63, 0x64, 0x6e, 0x05, 0x61, 0x64, 0x6e, 0x78, 0x73, 0x03, 0x63, 0x6f, 0x6d, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x29, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
+
+	/**
+	 * Canned reply for acdn.adnxs.com, really:
+	 * acdn.adnxs.com.		774	IN	CNAME	secure-adnxs.edgekey.net.
+	 * secure-adnxs.edgekey.net. 2068	IN	CNAME	e6115.g.akamaiedge.net.
+	 * e6115.g.akamaiedge.net.	20	IN	A	95.101.172.253
+	 */
+	public static DnsReply getAdnxsChainedReply(Query q) throws UnknownHostException {
+		var adnxsCom = DnsName.fromName("acdn.adnxs.com");
+		var edgekeyNet = DnsName.fromName("secure-adnxs.edgekey.net");
+		var akamaiNet = DnsName.fromName("e6115.g.akamaiedge.net");
+		
+		var adnxsC = DnsRecords.cRecordFrom(adnxsCom, edgekeyNet,  100);
+		var edgekeyC = DnsRecords.cRecordFrom(edgekeyNet, akamaiNet, 100);
+		var akamaiA = DnsRecords.aRecordFrom(akamaiNet, InetAddress.getByName("95.101.172.253"), 100);
+		
+		return DnsReplies.fromRequestWithAnswers(q.getRequest(), adnxsC, edgekeyC, akamaiA);
+	}
+	
 	/* Query detectportal.firefox.com, id:0x9cc9, flags:0x0100 (Q,query,,,rd,,,,OK)                                                                                                                                    
 	* 0x0000 9c c9 01 00 00 01 00 00  00 00 00 01|0c 64 65 74 .............det                                                                                                                                         
 	* 0x0010 65 63 74 70 6f 72 74 61  6c 07 66 69 72 65 66 6f ectportal.firefo                               
@@ -60,5 +87,11 @@ public class TestQueries {
 	}
 
 
+	public static Query makeTestQuery(byte[] data) {
+		var req = DnsRequests.fromWireData(data);
+		
+		var query = new Query(req, "127.0.0.1");
+		return query;
+	}
 
 }
