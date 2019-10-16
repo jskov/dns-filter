@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import dk.mada.dns.filter.Blacklist;
 import dk.mada.dns.filter.Blockedlist;
 import dk.mada.dns.filter.Whitelist;
-import dk.mada.dns.filter.blocker.FetchLists;
+import dk.mada.dns.filter.blocker.BlockedListCacher;
 import dk.mada.dns.lookup.LookupEngine;
 import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.LookupState;
@@ -28,7 +28,9 @@ import fixture.resolver.TestResolver;
 public class FilterImportIntTest {
 	@Test
 	public void hostnamesShouldMatchDirectly() throws UnknownHostException {
-		Blockedlist blockedlist = new FetchLists().fetch();
+		BlockedListCacher cacher = new BlockedListCacher();
+		cacher.preloadCache();
+		Blockedlist blockedlist = cacher.get();
 
 		Query q = makeTestQuery(ADNXS_COM);
 		DnsReply reply = getAdnxsChainedReply(q);

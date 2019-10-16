@@ -67,6 +67,8 @@ test {
 			successMarker.delete()
 		}
     }
+
+    environment("GRADLE_TEST", "true")
 }
 
 task integrationTest(type: Test) {
@@ -80,6 +82,8 @@ task integrationTest(type: Test) {
 			successMarker.delete()
 		}
     }
+    
+    environment("GRADLE_TEST", "true")
 }
 
 // Need to publish to MavenLocal because @QuarkusTest does not yet handle Gradle
@@ -94,6 +98,8 @@ task acceptTest(type: Test, dependsOn: "publishToMavenLocal") {
 			successMarker.delete()
 		}
     }
+
+    environment("GRADLE_TEST", "true")
 }
 
 tasks.check.dependsOn(acceptTest, integrationTest)
