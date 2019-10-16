@@ -1,12 +1,18 @@
 package dk.mada.dns.filter.blocker;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -25,27 +31,63 @@ import dk.mada.dns.filter.Blockedlist;
  * Fetches host and domain names from https://github.com/notracking/hosts-blocklists
  */
 @ApplicationScoped
-public class FetchLists {
-	private static final Logger logger = LoggerFactory.getLogger(FetchLists.class);
+public class BlockedListCacher {
+	private static final Logger logger = LoggerFactory.getLogger(BlockedListCacher.class);
 	private static final String ADDRESS_SUFFIX = "/::";
 	private static final String ADDRESS_PREFIX = "address=/";
 	private static final String IP_PREFIX = "0.0.0.0 ";
 	
+	private static final Path CACHE_DIR = Paths.get("/opt/data/dns-filter");
+	private static final Path CACHED_DOMAINNAMES = CACHE_DIR.resolve("_cached_domainnames.txt");
+	private static final Path CACHED_HOSTNAMES = CACHE_DIR.resolve("_cached_hostnames.txt");
+	
 	private static Predicate<String> VALID_DOMAIN_PATTERN = Pattern.compile("[a-z0-9.-_]+").asPredicate();
 	
-	public Blockedlist fetch() {
-		Set<String> hostNames = readUrl(getHostsUrl(), this::filterHostNames);
-		Set<String> domainNames = readUrl(getDomainsUrl(), this::filterDomainNames);
+	public Blockedlist get() {
+		if (Files.notExists(CACHED_HOSTNAMES) || Files.notExists(CACHED_DOMAINNAMES)) {
+			refreshCaches();
+		}
+
+		List<String> hostNames = Collections.emptyList();
+		List<String> domainNames = Collections.emptyList();
+		try {
+			hostNames = Files.readAllLines(CACHED_HOSTNAMES);
+		} catch (IOException e) {
+			logger.warn("Failed to read cache of blocked host names", e);
+		}
+		try {
+			domainNames = Files.readAllLines(CACHED_DOMAINNAMES);
+		} catch (IOException e) {
+			logger.warn("Failed to read cache of blocked domain names", e);
+		}
 
 		logger.info("Got {} host names and {} domain names", hostNames.size(), domainNames.size());
 
 		return new UpstreamBlocklist(hostNames, domainNames);
 	}
+
+	private void refreshCaches() {
+		logger.info("Refreshing lists of blocked host and domain names");
+		List<String> hostNames = readUrl(getHostsUrl(), this::filterHostNames).stream()
+				.sorted()
+				.collect(toList());
+		List<String> domainNames = readUrl(getDomainsUrl(), this::filterDomainNames).stream()
+				.sorted()
+				.collect(toList());
+
+		try {
+			Files.createDirectories(CACHE_DIR);
+			Files.writeString(CACHED_DOMAINNAMES, String.join("\n", domainNames));
+			Files.writeString(CACHED_HOSTNAMES, String.join("\n", hostNames));
+		} catch (IOException e) {
+			logger.warn("Failed to cache list of blocked host/domain names", e);
+		}
+	}
 	
 	private Set<String> filterHostNames(Stream<String> lines) {
 		return lines.filter(l -> l.startsWith(IP_PREFIX))
 				.map(l -> l.substring(IP_PREFIX.length()))
-				.filter(FetchLists.VALID_DOMAIN_PATTERN)
+				.filter(BlockedListCacher.VALID_DOMAIN_PATTERN)
 				.collect(Collectors.toSet());
 	}
 
@@ -54,7 +96,7 @@ public class FetchLists {
 				.filter(l -> l.endsWith(ADDRESS_SUFFIX))
 				.filter(l -> l.startsWith(ADDRESS_PREFIX))
 				.map(l -> l.substring(ADDRESS_PREFIX.length(), l.length()-ADDRESS_SUFFIX.length()))
-				.filter(FetchLists.VALID_DOMAIN_PATTERN)
+				.filter(BlockedListCacher.VALID_DOMAIN_PATTERN)
 				.collect(Collectors.toSet());
 	}
 

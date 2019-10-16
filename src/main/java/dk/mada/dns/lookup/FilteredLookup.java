@@ -5,13 +5,13 @@ import javax.inject.Inject;
 
 import dk.mada.dns.filter.Blacklist;
 import dk.mada.dns.filter.Whitelist;
-import dk.mada.dns.filter.blocker.FetchLists;
+import dk.mada.dns.filter.blocker.BlockedListCacher;
 import dk.mada.dns.resolver.UpstreamResolver;
 
 @ApplicationScoped
 public class FilteredLookup {
 	@Inject private UpstreamResolver resolver;
-	@Inject private FetchLists fetchLists;
+	@Inject private BlockedListCacher fetchLists;
 	
 	private LookupEngine engine;
 	
@@ -21,7 +21,7 @@ public class FilteredLookup {
 	
 	private synchronized LookupEngine getEngine() {
 		if (engine == null) {
-			var blockedlist = fetchLists.fetch();
+			var blockedlist = fetchLists.get();
 			Whitelist whitelist = h -> false;
 			Blacklist blacklist = h -> false;
 			engine = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
