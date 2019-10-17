@@ -113,7 +113,7 @@ public class ExternalDnsGateway {
 //	reply.rewind();
 
 	
-	public ByteBuffer passOnToUpstreamServerWithTimeout(ByteBuffer bb) throws ClosedByInterruptException {
+	private ByteBuffer passOnToUpstreamServerWithTimeout(ByteBuffer bb) throws ClosedByInterruptException {
 		long start = System.currentTimeMillis();
 		try (DatagramChannel channel = DatagramChannel.open()) {
 			channel.connect(target);
