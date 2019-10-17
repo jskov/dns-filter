@@ -17,7 +17,6 @@ import dk.mada.dns.wire.model.DnsClass;
 import dk.mada.dns.wire.model.DnsHeader;
 import dk.mada.dns.wire.model.DnsRecord;
 import dk.mada.dns.wire.model.DnsRecordA;
-import dk.mada.dns.wire.model.DnsRecordType;
 import dk.mada.dns.wire.model.DnsReply;
 
 /**
@@ -38,7 +37,8 @@ public class ModelToWireConverter {
 		
     	String absName = hostname.endsWith(".") ? hostname : (hostname + ".");
     	Name name = new Name(absName);
-    	Record question = Record.newRecord(name, DnsRecordType.A.getWireValue(), DnsClass.IN.getWireValue());
+    	int type = reply.getQuestion().getRecordType().getWireValue();
+    	Record question = Record.newRecord(name, type, DnsClass.IN.getWireValue());
 
     	Message message = Message.newQuery(question);
 
