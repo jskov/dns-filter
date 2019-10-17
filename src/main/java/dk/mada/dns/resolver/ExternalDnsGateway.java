@@ -45,17 +45,17 @@ public class ExternalDnsGateway {
 	
 	private void startReaper() {
 		int i = 0;
-		logger.info("Reaper started...");
+		logger.info("Reaper started in {}", Thread.currentThread());
 		while(true) {
 			
 			try {
 				logger.debug("Reaper waiting for action...");
 				boolean gotIt = actionSemaphore.tryAcquire(10, TimeUnit.MINUTES);
 				if (!gotIt) {
-					logger.info("Hunting without semaphore");
+					logger.debug("Hunting without semaphore");
 				}
 				
-				logger.info("Reaper hunting...");
+				logger.debug("Reaper hunting...");
 				while (!queue.isEmpty()) {
 					try {
 						Thread.sleep(100);
@@ -135,7 +135,7 @@ public class ExternalDnsGateway {
 			reply.flip();
 	
 			long time = System.currentTimeMillis() - start;
-			logger.info("Upstream reply in {}ms", time);
+			logger.debug("Upstream reply in {}ms", time);
 			
 			return reply;
 		} catch (ClosedByInterruptException e) {

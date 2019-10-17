@@ -136,7 +136,7 @@ public class WireToModelConverter {
 			return DnsRecords.aaaaRecordFrom(name, address, ttl);
 		} else if (r instanceof CNAMERecord) {
 			var alias = ((CNAMERecord)r).getAlias();
-			logger.info("CRecord {} -> {}", name, alias);
+			logger.debug("CRecord {} -> {}", name, alias);
 			return DnsRecords.cRecordFrom(name, DnsName.fromName(alias.toString(true)), ttl);
 		}
 		

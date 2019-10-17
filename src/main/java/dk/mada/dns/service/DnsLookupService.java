@@ -42,7 +42,7 @@ public class DnsLookupService implements UDPPacketHandler {
 		
 		DnsRequest request = DnsRequests.fromWireData(wireRequest);
 		wireRequest.rewind();
-		logger.info("Decoded request: {}", request);
+		logger.debug("Decoded request: {}", request);
 		devDebugging.devOutputRequest(request);
 		
 		Query q = new Query(request, clientIp);
@@ -55,7 +55,7 @@ public class DnsLookupService implements UDPPacketHandler {
 			replyBuffer = doFallbackUpstreamRequest(request);
 		} else {
 			DnsReply reply = res.getReply();
-			logger.info("Decoded reply: {}", reply);
+			logger.debug("Decoded reply: {}", reply);
 
 			replyBuffer = reportAndConvertReply(reply);
 		}
@@ -93,7 +93,7 @@ public class DnsLookupService implements UDPPacketHandler {
 			.ifPresent(dra -> dto.ip = dra.getAddress().getHostAddress());
 		dto.type = EventTypeDto.PASSTHROUGH;
 
-		logger.info("Notify listeners about {}", dto);
+		logger.debug("Notify listeners about {}", dto);
 		
 		websocketEventNotifier.broadcast(dto);
 	}

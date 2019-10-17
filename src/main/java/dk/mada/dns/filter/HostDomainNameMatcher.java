@@ -30,15 +30,15 @@ public class HostDomainNameMatcher {
 	}
 	
 	public boolean test(String domainName) {
-		logger.info("{} processing {}", matcherName, domainName);
+		logger.debug("{} processing {}", matcherName, domainName);
 		if (hosts.contains(domainName)) {
-			logger.info(" matches host name {}", domainName);
+			logger.debug(" matches host name {}", domainName);
 			return true;
 		}
 		
 		List<String> parts = Arrays.asList(domainName.split("\\."));
 		if (parts.size() == 1) {
-			logger.info(" no match");
+			logger.debug(" no match");
 			return false;
 		}
 		
@@ -50,12 +50,12 @@ public class HostDomainNameMatcher {
 			logger.debug(" looking for domain matching {}", name);
 			
 			if (domains.contains(name)) {
-				logger.info(" matching domain name {} due to blocked parent {}", domainName, name);
+				logger.debug(" matching domain name {} due to blocked parent {}", domainName, name);
 				return true;
 			}
 		}
 		
-		logger.info(" no domain match");
+		logger.debug(" no domain match");
 		
 		return false;
 	}
