@@ -54,12 +54,12 @@ public class LookupEngine {
 			return makeBlockedReply(q, LookupState.BLACKLISTED, name);
 		}
 
-		logger.info("Look up {}", name);
+		logger.debug("Look up {}", name);
 		
 		DnsReply reply = resolver.resolve(q.getClientIp(), q.getRequest())
 				.orElse(null);
 
-		logger.info("Got resolved {}", reply);
+		logger.debug("Got resolved {}", reply);
 
 		if (reply == null) {
 			var result = new LookupResult();
@@ -104,7 +104,7 @@ public class LookupEngine {
 
 	private LookupResult makePassthroughReply(Query q, DnsSection answer) {
 		var result = new LookupResult();
-		logger.info(" is passed through");
+		logger.info("{} is passed through", q.getRequestName());
 		result.setState(LookupState.PASSTHROUGH);
 
 		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), answer);
@@ -115,7 +115,7 @@ public class LookupEngine {
 	
 	private LookupResult makeWhitelistReply(Query q, DnsSection answer, String passedDueTo) {
 		var result = new LookupResult();
-		logger.info(" {} is whitelisted", passedDueTo);
+		logger.info("{} is whitelisted due to {}", q.getRequestName(), passedDueTo);
 		result.setState(LookupState.WHITELISTED);
 
 		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), answer);
@@ -126,7 +126,7 @@ public class LookupEngine {
 
 	private LookupResult makeBlockedReply(Query q, LookupState state, String blockedDueTo) {
 		var result = new LookupResult();
-		logger.info(" {} is blocked", blockedDueTo);
+		logger.info("{} is blocked due to {}", q.getRequestName(), blockedDueTo);
 		result.setState(state);
 
 		var name = q.getRequest().getQuestion().getName();
