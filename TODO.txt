@@ -2,6 +2,15 @@ state: better header toDevelopString
  -> query/reply assertions wrong
  -> many tests failing
 
+* Browsing bbc.co.uk does not work
+* dig @localhost -p 8053 imgs.xkcd.com
+; WARNING: recursion requested but not available
+;; WARNING: Message has 49 extra bytes at end
+
+;; QUESTION SECTION:
+;imgs.xkcd.com.			IN	A
+
+
 * Timeout when contacting upstream server
   - look at keeping connection?
 
