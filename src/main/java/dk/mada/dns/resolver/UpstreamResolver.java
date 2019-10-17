@@ -17,7 +17,12 @@ import dk.mada.dns.wire.model.DnsRequest;
  */
 @ApplicationScoped
 public class UpstreamResolver implements Resolver {
-	@Inject private ExternalDnsGateway dnsGateway;
+	private ExternalDnsGateway dnsGateway;
+	
+	@Inject
+	public UpstreamResolver(ExternalDnsGateway dnsGateway) {
+		this.dnsGateway = dnsGateway;
+	}
 	
 	@Override
 	public Optional<DnsReply> resolve(String clientIp, DnsRequest request) {

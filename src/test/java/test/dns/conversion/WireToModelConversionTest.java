@@ -1,5 +1,9 @@
 package test.dns.conversion;
 
+import static fixture.dns.wiredata.TestQueries.MOZILLA_ORG_AAAA;
+import static fixture.dns.wiredata.TestQueries.MOZILLA_ORG_AAAA_SOA_REPLY;
+import static fixture.dns.wiredata.TestQueries.getMozillaOrgEmptyReply;
+import static fixture.dns.wiredata.TestQueries.makeTestQuery;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.UnknownHostException;
@@ -13,12 +17,12 @@ import dk.mada.dns.filter.Whitelist;
 import dk.mada.dns.lookup.LookupEngine;
 import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.Query;
+import dk.mada.dns.resolver.ExternalDnsGateway;
 import dk.mada.dns.resolver.UpstreamResolver;
 import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
 import dk.mada.dns.wire.model.DnsRequests;
-import static fixture.dns.wiredata.TestQueries.*;
 import fixture.resolver.TestResolver;
 
 public class WireToModelConversionTest {
@@ -36,7 +40,8 @@ public class WireToModelConversionTest {
 	public void currentlyIgnoresSoaResponse() {
 		DnsRequest request = DnsRequests.fromWireData(MOZILLA_ORG_AAAA);
 
-		Optional<DnsReply> reply = new UpstreamResolver().resolve("127.0.0.1", request);
+		ExternalDnsGateway dnsGateway = new ExternalDnsGateway();
+		Optional<DnsReply> reply = new UpstreamResolver(dnsGateway).resolve("127.0.0.1", request);
 
 		assertThat(reply)
 			.get()
