@@ -124,7 +124,7 @@ public class LookupEngine {
 		return result;
 	}
 
-	private LookupResult makeBlockedReply(Query q, LookupState state, String blockedDueTo) {
+	public LookupResult makeBlockedReply(Query q, LookupState state, String blockedDueTo) {
 		var result = new LookupResult();
 		logger.info("{} is blocked due to {}", q.getRequestName(), blockedDueTo);
 		result.setState(state);

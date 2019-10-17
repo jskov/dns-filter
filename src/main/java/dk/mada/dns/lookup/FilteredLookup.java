@@ -19,6 +19,10 @@ public class FilteredLookup {
 		return getEngine().lookup(q);
 	}
 	
+	public LookupResult makeBlockedReply(Query q, String toggle) {
+		return getEngine().makeBlockedReply(q, LookupState.TOGGLE, toggle);
+	}
+	
 	private synchronized LookupEngine getEngine() {
 		if (engine == null) {
 			var blockedlist = fetchLists.get();

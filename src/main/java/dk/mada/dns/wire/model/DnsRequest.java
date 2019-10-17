@@ -13,6 +13,10 @@ public class DnsRequest extends DnsMessage {
 		this.baseWireRequest = baseWireRequest.asReadOnlyBuffer();
 	}
 
+	public String getQueryName() {
+		return getQuestion().getName().getName();
+	}
+	
 	@Override
 	public DnsHeaderQuery getHeader() {
 		return header;

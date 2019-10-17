@@ -16,6 +16,14 @@ curl localhost:8080 > /dev/null
 
 # Capture query
 
+Make a dig query to hostname prefixed with `dns-echo.` like this:
+
+	$ dig @localhost -p 8053 dns-echo.cnn.com
+
+Then the following upstream query of `cnn.com` will echo both query and reply data.
+
+.Alternative
+
 Lookup mada.dk, following this, the next 20 queries will be logged in full:
 
 $ dig @localhost -p 8053 mada.dk

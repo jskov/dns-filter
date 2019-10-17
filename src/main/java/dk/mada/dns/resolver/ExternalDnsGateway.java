@@ -15,9 +15,12 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import dk.mada.dns.service.DevelopmentDebugging;
 
 /**
  * External gateway to upstream DNS service.
@@ -38,6 +41,14 @@ public class ExternalDnsGateway {
 
 	private final ExecutorService rogueService = Executors.newFixedThreadPool(1);
 
+	private DevelopmentDebugging devDebugging;
+	
+	@Inject
+	public ExternalDnsGateway(DevelopmentDebugging devDebugging) {
+		this.devDebugging = devDebugging;
+	}
+	
+	
 	// Run in a rogue thread to avoid container reaping it
 	public void startBackgroundReaper() {
 		rogueService.submit(this::startReaper);
@@ -89,7 +100,7 @@ public class ExternalDnsGateway {
 		for (int i = 1; i <= 3; i++) {
 			logger.debug("Try resolving {}", query);
 			try {
-				return Optional.of(passOnToUpstreamServerWithTimeout(bb));
+				return Optional.of(passOnToUpstreamServerWithTimeout(query, bb));
 			} catch (ClosedByInterruptException e) {
 				logger.warn("Timeout on #{} request of {}", i, query);
 			}
@@ -113,7 +124,9 @@ public class ExternalDnsGateway {
 //	reply.rewind();
 
 	
-	private ByteBuffer passOnToUpstreamServerWithTimeout(ByteBuffer bb) throws ClosedByInterruptException {
+	private ByteBuffer passOnToUpstreamServerWithTimeout(String query, ByteBuffer bb) throws ClosedByInterruptException {
+		devDebugging.devOutputWireData(query, "Request for " + query, bb);
+		
 		long start = System.currentTimeMillis();
 		try (DatagramChannel channel = DatagramChannel.open()) {
 			channel.connect(target);
@@ -134,6 +147,11 @@ public class ExternalDnsGateway {
 			}
 			reply.flip();
 	
+			devDebugging.devOutputWireData(query, "Reply for " + query, reply);
+			reply.rewind();
+			
+			devDebugging.stopOutputForHost(query);
+			
 			long time = System.currentTimeMillis() - start;
 			logger.debug("Upstream reply in {}ms", time);
 			

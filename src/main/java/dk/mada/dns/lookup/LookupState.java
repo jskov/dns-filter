@@ -6,5 +6,6 @@ public enum LookupState {
 	BLACKLISTED,
 	BLOCKED,
 	PASSTHROUGH, // 
-	FAILED
+	FAILED,
+	TOGGLE		// Used to pass commands to lookup engine
 }

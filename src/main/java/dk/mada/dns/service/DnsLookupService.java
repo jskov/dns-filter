@@ -29,6 +29,8 @@ import dk.mada.dns.wire.model.DnsSection;
  */
 @ApplicationScoped
 public class DnsLookupService implements UDPPacketHandler {
+	private static final String DNS_ECHO = "dns-echo.";
+
 	private static final Logger logger = LoggerFactory.getLogger(DnsLookupService.class);
 
 	@Inject private DnsQueryEventService websocketEventNotifier;
@@ -45,10 +47,21 @@ public class DnsLookupService implements UDPPacketHandler {
 		logger.debug("Decoded request: {}", request);
 		devDebugging.devOutputRequest(request);
 		
-		Query q = new Query(request, clientIp);
 		
-		LookupResult res = lookup.lookup(q);
+		Query q = new Query(request, clientIp);
 
+		LookupResult res;
+		
+		String qName = q.getRequestName();
+		if (qName.startsWith(DNS_ECHO)) {
+			String traceHost = qName.substring(DNS_ECHO.length());
+			logger.info("Enable logging for {}", traceHost);
+			devDebugging.startOutputForHost(traceHost);
+			res = lookup.makeBlockedReply(q, "toggle:" + qName);
+		} else {
+			res = lookup.lookup(q);
+		}
+		
 		ByteBuffer replyBuffer;
 		if (res.getState() == LookupState.FAILED) {
 			logger.warn("Failed lookup");
