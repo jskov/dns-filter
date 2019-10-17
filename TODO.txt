@@ -9,7 +9,7 @@ state: better header toDevelopString
 
 ;; QUESTION SECTION:
 ;imgs.xkcd.com.			IN	A
-
+  TestQueries ready
 
 * Timeout when contacting upstream server
   - look at keeping connection?
