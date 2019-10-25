@@ -19,6 +19,7 @@ import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.Query;
 import dk.mada.dns.resolver.ExternalDnsGateway;
 import dk.mada.dns.resolver.UpstreamResolver;
+import dk.mada.dns.service.DevelopmentDebugging;
 import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
@@ -40,7 +41,7 @@ public class WireToModelConversionTest {
 	public void currentlyIgnoresSoaResponse() {
 		DnsRequest request = DnsRequests.fromWireData(MOZILLA_ORG_AAAA);
 
-		ExternalDnsGateway dnsGateway = new ExternalDnsGateway();
+		ExternalDnsGateway dnsGateway = new ExternalDnsGateway(new DevelopmentDebugging());
 		Optional<DnsReply> reply = new UpstreamResolver(dnsGateway).resolve("127.0.0.1", request);
 
 		assertThat(reply)
