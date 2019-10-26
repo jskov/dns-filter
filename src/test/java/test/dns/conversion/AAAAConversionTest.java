@@ -24,7 +24,7 @@ import dk.mada.dns.wire.model.DnsRequest;
 import dk.mada.dns.wire.model.DnsRequests;
 import fixture.resolver.CannedUdpResolver;
 
-public class WireToModelConversionTest {
+public class AAAAConversionTest {
 	/**
 	 * DNS requests of type AAAA (IPv6) for mozilla.org do not return an IP
 	 * address, but a SOA response.
