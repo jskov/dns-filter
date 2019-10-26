@@ -22,8 +22,8 @@ public class CannedUdpResolver extends DefaultResolver {
 		return nameserver.callCount != 0;
 	}
 	
-	public CannedUdpResolver(ByteBuffer firstReply) {
-		this(new CannedNameServer(firstReply));
+	public CannedUdpResolver(byte[] firstReply) {
+		this(new CannedNameServer(ByteBuffer.wrap(firstReply)));
 	}
 	
 	static class CannedNameServer implements UdpNameServer {

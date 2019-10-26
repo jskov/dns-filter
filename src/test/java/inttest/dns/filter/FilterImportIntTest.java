@@ -1,7 +1,7 @@
 package inttest.dns.filter;
 
 import static fixture.dns.wiredata.TestQueries.ADNXS_COM;
-import static fixture.dns.wiredata.TestQueries.getAdnxsChainedReply;
+import static fixture.dns.wiredata.TestQueries.ADNXS_COM_REPLY;
 import static fixture.dns.wiredata.TestQueries.makeTestQuery;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,8 +18,8 @@ import dk.mada.dns.lookup.LookupEngine;
 import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.LookupState;
 import dk.mada.dns.lookup.Query;
-import dk.mada.dns.wire.model.DnsReply;
-import fixture.resolver.CannedModelResolver;
+import dk.mada.dns.resolver.Resolver;
+import fixture.resolver.CannedUdpResolver;
 
 /**
  * Tests that external filters can be loaded and provide some filtering.
@@ -33,9 +33,8 @@ public class FilterImportIntTest {
 		Blockedlist blockedlist = cacher.get();
 
 		Query q = makeTestQuery(ADNXS_COM);
-		DnsReply reply = getAdnxsChainedReply(q);
 
-		CannedModelResolver resolver = new CannedModelResolver(reply);
+		Resolver resolver = new CannedUdpResolver(ADNXS_COM_REPLY);
 		Blacklist blacklist = h -> false;
 		Whitelist whitelist = h -> false;
 		
