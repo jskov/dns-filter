@@ -57,7 +57,6 @@ public class WireToModelConverter {
 
 	private static DnsRequest _requestToModel(ByteBuffer request) throws IOException {
 		var wireBytes = request.duplicate();
-		wireBytes.rewind();
 		
 		var message = new Message(request);
 		var question = message.getQuestion();
@@ -69,7 +68,9 @@ public class WireToModelConverter {
 	private static DnsReply _replyToModel(ByteBuffer reply) throws IOException {
 		var message = new Message(reply);
 
-		reply.rewind();
+		logger.debug("toModel {} {}", reply.position(), reply.limit());
+		reply.flip();
+		logger.debug("toModel/r {} {}", reply.position(), reply.limit());
 		
 		return fromAnswers(message.getHeader(), message.getQuestion(), message.getSectionArray(Section.ANSWER), reply);
 	}
