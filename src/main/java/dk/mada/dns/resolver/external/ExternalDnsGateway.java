@@ -1,4 +1,4 @@
-package dk.mada.dns.resolver;
+package dk.mada.dns.resolver.external;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.mada.dns.resolver.UdpNameServer;
 import dk.mada.dns.service.DevelopmentDebugging;
 
 /**
@@ -30,7 +31,7 @@ import dk.mada.dns.service.DevelopmentDebugging;
  * take too long.
  */
 @ApplicationScoped
-public class ExternalDnsGateway {
+public class ExternalDnsGateway implements UdpNameServer {
 	private static final Logger logger = LoggerFactory.getLogger(ExternalDnsGateway.class);
 	private static final int UPSTREAM_TIMEOUT_MS = 2_000;
 
@@ -47,8 +48,65 @@ public class ExternalDnsGateway {
 	public ExternalDnsGateway(DevelopmentDebugging devDebugging) {
 		this.devDebugging = devDebugging;
 	}
+
+	@Override
+	public Optional<ByteBuffer> lookup(String hostname, ByteBuffer query) {
+		for (int i = 1; i <= 3; i++) {
+			logger.debug("Try resolving {}", hostname);
+			try {
+				return Optional.of(passOnToUpstreamServerWithTimeout(hostname, query));
+			} catch (ClosedByInterruptException e) {
+				logger.warn("Timeout on #{} request of {}", i, hostname);
+			}
+		}
+		logger.warn("Gave up resolving {}", hostname);
+		return Optional.empty();
+	}
+
+	private ByteBuffer passOnToUpstreamServerWithTimeout(String query, ByteBuffer bb) throws ClosedByInterruptException {
+		devDebugging.devOutputWireData(query, "Request for " + query, bb);
+		
+		long start = System.currentTimeMillis();
+		try (DatagramChannel channel = DatagramChannel.open()) {
+			channel.connect(target);
+			
+			bb.rewind();
+			channel.send(bb, target);
 	
+			ByteBuffer reply = ByteBuffer.allocate(512);
 	
+			WaitingInstance ticket = new WaitingInstance(Thread.currentThread(), start + UPSTREAM_TIMEOUT_MS);
+			try {
+				queue.add(ticket);
+				actionSemaphore.release(1);
+				
+				channel.read(reply);
+			} finally {
+				queue.remove(ticket);
+			}
+			reply.flip();
+	
+			devDebugging.devOutputWireData(query, "Reply for " + query, reply);
+			reply.rewind();
+			
+			devDebugging.stopOutputForHost(query);
+			
+			long time = System.currentTimeMillis() - start;
+			logger.debug("Upstream reply in {}ms", time);
+			
+			return reply;
+		} catch (ClosedByInterruptException e) {
+			try {
+				Thread.sleep(0);
+			} catch (InterruptedException e1) {
+				logger.debug("Cleared interrupted state");
+			}
+			throw e;
+		} catch (IOException e) {
+			throw new IllegalStateException("Failed to query upstream DNS server", e);
+		}
+	}
+
 	// Run in a rogue thread to avoid container reaping it
 	public void startBackgroundReaper() {
 		rogueService.submit(this::startReaper);
@@ -95,19 +153,6 @@ public class ExternalDnsGateway {
 			}
 		}
 	}
-	
-	public Optional<ByteBuffer> passOnToUpstreamServer(String query, ByteBuffer bb) {
-		for (int i = 1; i <= 3; i++) {
-			logger.debug("Try resolving {}", query);
-			try {
-				return Optional.of(passOnToUpstreamServerWithTimeout(query, bb));
-			} catch (ClosedByInterruptException e) {
-				logger.warn("Timeout on #{} request of {}", i, query);
-			}
-		}
-		logger.warn("Gave up resolving {}", query);
-		return Optional.empty();
-	}
 
 	static class WaitingInstance {
 		final Thread thread;
@@ -120,51 +165,4 @@ public class ExternalDnsGateway {
 		}
 	}
 
-//	Hexer.printForDevelopment("Reply", reply, Collections.emptySet());
-//	reply.rewind();
-
-	
-	private ByteBuffer passOnToUpstreamServerWithTimeout(String query, ByteBuffer bb) throws ClosedByInterruptException {
-		devDebugging.devOutputWireData(query, "Request for " + query, bb);
-		
-		long start = System.currentTimeMillis();
-		try (DatagramChannel channel = DatagramChannel.open()) {
-			channel.connect(target);
-			
-			bb.rewind();
-			channel.send(bb, target);
-	
-			ByteBuffer reply = ByteBuffer.allocate(512);
-	
-			WaitingInstance ticket = new WaitingInstance(Thread.currentThread(), start + UPSTREAM_TIMEOUT_MS);
-			try {
-				queue.add(ticket);
-				actionSemaphore.release(1);
-				
-				channel.read(reply);
-			} finally {
-				queue.remove(ticket);
-			}
-			reply.flip();
-	
-			devDebugging.devOutputWireData(query, "Reply for " + query, reply);
-			reply.rewind();
-			
-			devDebugging.stopOutputForHost(query);
-			
-			long time = System.currentTimeMillis() - start;
-			logger.debug("Upstream reply in {}ms", time);
-			
-			return reply;
-		} catch (ClosedByInterruptException e) {
-			try {
-				Thread.sleep(0);
-			} catch (InterruptedException e1) {
-				logger.debug("Cleared interrupted state");
-			}
-			throw e;
-		} catch (IOException e) {
-			throw new IllegalStateException("Failed to query upstream DNS server", e);
-		}
-	}
 }

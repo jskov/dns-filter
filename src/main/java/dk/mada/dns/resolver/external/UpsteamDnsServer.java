@@ -1,4 +1,4 @@
-package dk.mada.dns.resolver;
+package dk.mada.dns.resolver.external;
 
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
