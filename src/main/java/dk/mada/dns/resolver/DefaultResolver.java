@@ -19,6 +19,8 @@ import dk.mada.dns.wire.model.DnsRequest;
 public class DefaultResolver implements Resolver {
 	private UdpNameServer nameServer;
 	
+	DefaultResolver() {} // needed by quarkus arc?!
+	
 	@Inject
 	public DefaultResolver(UdpNameServer nameServer) {
 		this.nameServer = nameServer;

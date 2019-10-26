@@ -27,7 +27,7 @@ import fixture.resolver.CannedModelResolver;
 @Tag("integration")
 public class FilterImportIntTest {
 	@Test
-	public void hostnamesShouldMatchDirectly() throws UnknownHostException {
+	public void blockingWorks() throws UnknownHostException {
 		BlockedListCacher cacher = new BlockedListCacher();
 		cacher.preloadCache();
 		Blockedlist blockedlist = cacher.get();
