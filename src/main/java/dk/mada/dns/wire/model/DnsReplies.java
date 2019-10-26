@@ -7,9 +7,10 @@ import dk.mada.dns.wire.model.conversion.ModelToWireConverter;
 import dk.mada.dns.wire.model.conversion.WireToModelConverter;
 
 public class DnsReplies {
-	public static DnsReply fromAnswer(DnsHeaderReply header, DnsSection question, DnsSection answer) {
+	public static DnsReply fromAnswer(ByteBuffer optWireData, DnsHeaderReply header, DnsSection question, DnsSection answer) {
 		var res = new DnsReply(header, question);
 		res.setAnswer(answer);
+		res.setOptWireReply(optWireData);
 		return res;
 	}
 	
@@ -18,7 +19,7 @@ public class DnsReplies {
 		var header = DnsHeaderReplies.fromRequest(qheader, (short)1, (short)0, (short)0);
 		// FIXME: copy AR
 		
-		return DnsReplies.fromAnswer(header, request.getQuestionSection(), DnsSections.from(DnsSectionType.ANSWER, List.of(answer)));
+		return DnsReplies.fromAnswer(null, header, request.getQuestionSection(), DnsSections.from(DnsSectionType.ANSWER, List.of(answer)));
 	}
 
 	public static DnsReply fromRequestWithAnswer(DnsRequest request, DnsSection answer) {
@@ -26,7 +27,7 @@ public class DnsReplies {
 		var header = DnsHeaderReplies.fromRequest(qheader, (short)answer.getRecords().size(), (short)0, (short)0);
 		// FIXME: copy AR
 		
-		return DnsReplies.fromAnswer(header, request.getQuestionSection(), answer);
+		return DnsReplies.fromAnswer(null, header, request.getQuestionSection(), answer);
 	}
 
 	public static DnsReply fromRequestWithAnswers(DnsRequest request, DnsRecord... answers) {
@@ -34,7 +35,7 @@ public class DnsReplies {
 		var header = DnsHeaderReplies.fromRequest(qheader, (short)answers.length, (short)0, (short)0);
 		// FIXME: copy AR
 		
-		return DnsReplies.fromAnswer(header, request.getQuestionSection(), DnsSections.ofAnswers(answers));
+		return DnsReplies.fromAnswer(null, header, request.getQuestionSection(), DnsSections.ofAnswers(answers));
 	}
 
 	public static DnsReply fromWireData(byte[] data) {

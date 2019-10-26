@@ -45,8 +45,6 @@ public class DnsLookupService implements UDPPacketHandler {
 		DnsRequest request = DnsRequests.fromWireData(wireRequest);
 		wireRequest.rewind();
 		logger.debug("Decoded request: {}", request);
-		devDebugging.devOutputRequest(request);
-		
 		
 		Query q = new Query(request, clientIp);
 
@@ -59,14 +57,21 @@ public class DnsLookupService implements UDPPacketHandler {
 			devDebugging.startOutputForHost(traceHost);
 			res = lookup.makeBlockedReply(q, "toggle:" + qName);
 		} else {
+			q.setDebugEchoRequest(devDebugging.isEchoOutputForHost(qName));
+			
 			res = lookup.lookup(q);
 		}
 		
-		ByteBuffer replyBuffer;
+		ByteBuffer replyBuffer = null;
 		if (res.getState() == LookupState.FAILED) {
 			logger.warn("Failed lookup");
 			replyBuffer = doFallbackUpstreamRequest(request);
-		} else {
+		} else if (res.getState() == LookupState.BYPASS) {
+			logger.warn("Bypass lookup");
+			replyBuffer = res.getReply().getOptWireReply();
+		}
+		
+		if (replyBuffer == null) {
 			DnsReply reply = res.getReply();
 			logger.debug("Decoded reply: {}", reply);
 
