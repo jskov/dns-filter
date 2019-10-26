@@ -91,18 +91,7 @@ public class WireToModelConverter {
 			    		.collect(Collectors.toList());
     	}
 		
-    	return DnsReplies.fromAnswer(optWireData, toReplyHeader(header, answers.size()), DnsSections.ofQuestion(toModelRecord(question, true)), DnsSections.ofAnswers(answers));
-	}
-
-	private static DnsHeaderQuery toQueryHeader(Header h, int ancount) {
-		byte[] wire = h.toWire();
-		
-		short flags = (short)(wire[2] << 8 | wire[3]);
-		short qdcount = 1;
-		short nscount = 0;
-		short arcount = 0;
-		
-		return DnsHeaderQueries.newObsoleted((short)h.getID(), flags, qdcount, (short)ancount, nscount, arcount);
+    	return DnsReplies.fromAnswer(toReplyHeader(header, answers.size()), DnsSections.ofQuestion(toModelRecord(question, true)), DnsSections.ofAnswers(answers), optWireData);
 	}
 
 	private static DnsHeaderReply toReplyHeader(Header h, int ancount) {
