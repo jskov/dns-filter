@@ -18,7 +18,7 @@ import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.LookupState;
 import dk.mada.dns.lookup.Query;
 import dk.mada.dns.wire.model.DnsReply;
-import fixture.resolver.TestResolver;
+import fixture.resolver.CannedModelResolver;
 
 /**
  * Tests state engine behavior.
@@ -32,7 +32,7 @@ public class LookupStateEngineTest {
 	public void blacklistedEntriesShouldNotBeResolved() {
 		Query q = makeTestQuery(GOOGLEADSERVICES_COM);
 		
-		TestResolver resolver = new TestResolver();
+		CannedModelResolver resolver = new CannedModelResolver();
 		Blacklist blacklist = h -> h.contains("ads");
 		Whitelist whitelist = h -> false;
 		Blockedlist blockedlist = h -> false;
@@ -63,7 +63,7 @@ public class LookupStateEngineTest {
 		Query q = makeTestQuery(DETECTPORTAL_FIREFOX_COM);
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
-		TestResolver resolver = new TestResolver(reply);
+		CannedModelResolver resolver = new CannedModelResolver(reply);
 		Blacklist blacklist = h -> h.contains("mozaws.net");
 		Whitelist whitelist = h -> false;
 		Blockedlist blockedlist = h -> false;
@@ -94,7 +94,7 @@ public class LookupStateEngineTest {
 		Query q = makeTestQuery(DETECTPORTAL_FIREFOX_COM);
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
-		TestResolver resolver = new TestResolver(reply);
+		CannedModelResolver resolver = new CannedModelResolver(reply);
 		Blacklist blacklist = h -> h.contains("mozaws.net");
 		Whitelist whitelist = h -> h.contains("akamai.net");
 		Blockedlist blockedlist = h -> false;
@@ -115,7 +115,7 @@ public class LookupStateEngineTest {
 		Query q = makeTestQuery(DETECTPORTAL_FIREFOX_COM);
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
-		TestResolver resolver = new TestResolver(reply);
+		CannedModelResolver resolver = new CannedModelResolver(reply);
 		Blacklist blacklist = h -> h.contains("firefox.com");
 		Whitelist whitelist = h -> h.contains("akamai.net");
 		Blockedlist blockedlist = h -> false;
@@ -136,7 +136,7 @@ public class LookupStateEngineTest {
 		Query q = makeTestQuery(DETECTPORTAL_FIREFOX_COM);
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
-		TestResolver resolver = new TestResolver(reply);
+		CannedModelResolver resolver = new CannedModelResolver(reply);
 		Blacklist blacklist = h -> false;
 		Whitelist whitelist = h -> false;
 		Blockedlist blockedlist = h -> h.contains("akamai");
@@ -156,7 +156,7 @@ public class LookupStateEngineTest {
 		Query q = makeTestQuery(DETECTPORTAL_FIREFOX_COM);
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
-		TestResolver resolver = new TestResolver(reply);
+		CannedModelResolver resolver = new CannedModelResolver(reply);
 		Blacklist blacklist = h -> false;
 		Whitelist whitelist = h -> false;
 		Blockedlist blockedlist = h -> false;

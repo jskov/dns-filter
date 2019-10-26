@@ -19,7 +19,7 @@ import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.LookupState;
 import dk.mada.dns.lookup.Query;
 import dk.mada.dns.wire.model.DnsReply;
-import fixture.resolver.TestResolver;
+import fixture.resolver.CannedModelResolver;
 
 /**
  * Tests that external filters can be loaded and provide some filtering.
@@ -35,7 +35,7 @@ public class FilterImportIntTest {
 		Query q = makeTestQuery(ADNXS_COM);
 		DnsReply reply = getAdnxsChainedReply(q);
 
-		TestResolver resolver = new TestResolver(reply);
+		CannedModelResolver resolver = new CannedModelResolver(reply);
 		Blacklist blacklist = h -> false;
 		Whitelist whitelist = h -> false;
 		

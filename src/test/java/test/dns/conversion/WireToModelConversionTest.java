@@ -24,7 +24,7 @@ import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
 import dk.mada.dns.wire.model.DnsRequests;
-import fixture.resolver.TestResolver;
+import fixture.resolver.CannedModelResolver;
 
 public class WireToModelConversionTest {
 
@@ -56,7 +56,7 @@ public class WireToModelConversionTest {
 		Query q = makeTestQuery(MOZILLA_ORG_AAAA);
 		DnsReply reply = getMozillaOrgEmptyReply(q);
 
-		TestResolver resolver = new TestResolver(reply);
+		CannedModelResolver resolver = new CannedModelResolver(reply);
 		Blacklist blacklist = h -> false;
 		Whitelist whitelist = h -> false;
 		Blockedlist blockedlist = h -> false;
