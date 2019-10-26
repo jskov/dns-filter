@@ -50,7 +50,7 @@ public class LookupEngine {
 	public LookupResult lookup(Query q) {
 		String name = q.getRequestName();
 		
-		if (blacklist.test(name)) {
+		if (blacklist.test(name) && !q.isDebugEchoRequest()) {
 			return makeBlockedReply(q, LookupState.BLACKLISTED, name);
 		}
 
@@ -66,7 +66,11 @@ public class LookupEngine {
 			result.setState(LookupState.FAILED);
 			return result;
 		}
-
+		
+		if (q.isDebugEchoRequest()) {
+			return makeBypassReply(q, reply);
+		}
+		
 		List<String> intermediateNames = reply.getAnswer().getRecords().stream()
 			.map(r -> r.getName())
 			.map(n -> n.getName())
@@ -112,6 +116,17 @@ public class LookupEngine {
 		result.setReply(reply);
 		return result;
 	}
+
+	// Bypass does not go wire->model->wire
+	private LookupResult makeBypassReply(Query q, DnsReply reply) {
+		var result = new LookupResult();
+		logger.info("{} is bypassed", q.getRequestName());
+		result.setState(LookupState.BYPASS);
+
+		result.setReply(reply);
+		return result;
+	}
+
 	
 	private LookupResult makeWhitelistReply(Query q, DnsSection answer, String passedDueTo) {
 		var result = new LookupResult();

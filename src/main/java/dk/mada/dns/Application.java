@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.mada.dns.filter.blocker.BlockedListCacher;
-import dk.mada.dns.resolver.ExternalDnsGateway;
+import dk.mada.dns.resolver.external.ExternalDnsGateway;
 import dk.mada.dns.service.DnsLookupService;
 import dk.mada.dns.service.UDPServer;
 import dk.mada.dns.websocket.DnsQueryEventService;

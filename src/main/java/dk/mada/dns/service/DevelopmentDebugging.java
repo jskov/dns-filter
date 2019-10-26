@@ -8,43 +8,36 @@ import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 
 import dk.mada.dns.util.Hexer;
-import dk.mada.dns.wire.model.DnsRequest;
 
 /**
- * Development hooks into service that allows
+ * Hooks into service that allows
  * packages to the printed to console for use
- * in code.
+ * in test code.
  * 
- * Trigger output for 20 packages by making a
- * request for mada.dk.
+ * Activate by first running a query for:
+ *  dns-echo.hostname
+ * 
+ * Filtering is also disabled.
  */
 @ApplicationScoped
 public class DevelopmentDebugging {
 	private Set<String> outputForHostnames = new HashSet<>();
-	private int printNextRequests;
 	
-	public void devOutputWireData(String host, String title, ByteBuffer bb) {
-		if (outputForHostnames.contains(host)) {
+	public void devOutputWireData(String hostname, String title, ByteBuffer bb) {
+		if (isEchoOutputForHost(hostname)) {
 			Hexer.printForDevelopment(title, bb, Collections.emptySet());
 		}
 	}
 	
-	public void startOutputForHost(String host) {
-		outputForHostnames.add(host);
+	public boolean isEchoOutputForHost(String hostname) {
+		return outputForHostnames.contains(hostname);
+	}
+	
+	public void startOutputForHost(String hostname) {
+		outputForHostnames.add(hostname);
 	}
 
-	public void stopOutputForHost(String host) {
-		outputForHostnames.remove(host);
-	}
-
-	public void devOutputRequest(DnsRequest request) {
-		if (printNextRequests > 0) {
-			Hexer.printForDevelopment(request);
-			printNextRequests--;
-		}
-
-		if ("mada.dk".equals(request.getQuestion().getName().getName())) {
-			printNextRequests = 20;
-		}
+	public void stopOutputForHost(String hostname) {
+		outputForHostnames.remove(hostname);
 	}
 }

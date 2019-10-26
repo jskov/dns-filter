@@ -6,11 +6,11 @@ import javax.inject.Inject;
 import dk.mada.dns.filter.Blacklist;
 import dk.mada.dns.filter.Whitelist;
 import dk.mada.dns.filter.blocker.BlockedListCacher;
-import dk.mada.dns.resolver.UpstreamResolver;
+import dk.mada.dns.resolver.DefaultResolver;
 
 @ApplicationScoped
 public class FilteredLookup {
-	@Inject private UpstreamResolver resolver;
+	@Inject private DefaultResolver resolver;
 	@Inject private BlockedListCacher fetchLists;
 	
 	private LookupEngine engine;

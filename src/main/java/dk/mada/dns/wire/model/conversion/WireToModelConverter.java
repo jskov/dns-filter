@@ -68,11 +68,17 @@ public class WireToModelConverter {
 
 	private static DnsReply _replyToModel(ByteBuffer reply) throws IOException {
 		var message = new Message(reply);
+
+		reply.rewind();
 		
-		return fromAnswers(message.getHeader(), message.getQuestion(), message.getSectionArray(Section.ANSWER));
+		return fromAnswers(message.getHeader(), message.getQuestion(), message.getSectionArray(Section.ANSWER), reply);
 	}
 	
 	public static DnsReply fromAnswers(Header _header, Record _question, Record[] answerRecords) {
+		return fromAnswers(_header, _question, answerRecords, null);
+	}
+
+	public static DnsReply fromAnswers(Header _header, Record _question, Record[] answerRecords, ByteBuffer optWireData) {
 		Header header = Objects.requireNonNull(_header, "Must provide header");
 		Record question = Objects.requireNonNull(_question, "Must provide question");
 
@@ -85,7 +91,7 @@ public class WireToModelConverter {
 			    		.collect(Collectors.toList());
     	}
 		
-    	return DnsReplies.fromAnswer(toReplyHeader(header, answers.size()), DnsSections.ofQuestion(toModelRecord(question, true)), DnsSections.ofAnswers(answers));
+    	return DnsReplies.fromAnswer(optWireData, toReplyHeader(header, answers.size()), DnsSections.ofQuestion(toModelRecord(question, true)), DnsSections.ofAnswers(answers));
 	}
 
 	private static DnsHeaderQuery toQueryHeader(Header h, int ancount) {

@@ -16,12 +16,14 @@ import dk.mada.dns.wire.model.DnsRequest;
  * Both input and output are model based.
  */
 @ApplicationScoped
-public class UpstreamResolver implements Resolver {
-	private ExternalDnsGateway dnsGateway;
+public class DefaultResolver implements Resolver {
+	private UdpNameServer nameServer;
+	
+	DefaultResolver() {} // needed by quarkus arc?!
 	
 	@Inject
-	public UpstreamResolver(ExternalDnsGateway dnsGateway) {
-		this.dnsGateway = dnsGateway;
+	public DefaultResolver(UdpNameServer nameServer) {
+		this.nameServer = nameServer;
 	}
 	
 	@Override
@@ -29,11 +31,11 @@ public class UpstreamResolver implements Resolver {
 		Objects.requireNonNull(clientIp);
 		Objects.requireNonNull(request);
 
-		String lookupHost = request.getQuestion().getName().getName();
+		String hostname = request.getQuestion().getName().getName();
 
-		ByteBuffer bb = request.asWirePacket();
+		ByteBuffer query = request.asWirePacket();
 
-		return dnsGateway.passOnToUpstreamServer(lookupHost, bb)
+		return nameServer.lookup(hostname, query)
 				.map(DnsReplies::fromWireData);
 	}
 }
