@@ -1,7 +1,6 @@
 package test.dns.conversion;
 
 import static fixture.dns.wiredata.TestQueries.MOZILLA_ORG_AAAA;
-import static fixture.dns.wiredata.TestQueries.getMozillaOrgEmptyReply;
 import static fixture.dns.wiredata.TestQueries.makeTestQuery;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,16 +16,15 @@ import dk.mada.dns.lookup.LookupEngine;
 import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.Query;
 import dk.mada.dns.resolver.DefaultResolver;
+import dk.mada.dns.resolver.Resolver;
 import dk.mada.dns.resolver.external.ExternalDnsGateway;
 import dk.mada.dns.service.DevelopmentDebugging;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
 import dk.mada.dns.wire.model.DnsRequests;
-import fixture.resolver.CannedModelResolver;
+import fixture.resolver.CannedUdpResolver;
 
 public class WireToModelConversionTest {
-
-	
 	/**
 	 * DNS requests of type AAAA (IPv6) for mozilla.org do not return an IP
 	 * address, but a SOA response.
@@ -49,12 +47,14 @@ public class WireToModelConversionTest {
 				.isNull();
 	}
 	
+	/** 
+	 * Mozilla.org does not appear to be available on IPv6, so the answer section is empty.
+	 */
 	@Test
 	public void canHandleRepliesWithEmptyAnswerSection() throws UnknownHostException {
 		Query q = makeTestQuery(MOZILLA_ORG_AAAA);
-		DnsReply reply = getMozillaOrgEmptyReply(q);
 
-		CannedModelResolver resolver = new CannedModelResolver(reply);
+		Resolver resolver = new CannedUdpResolver(MOZILLA_ORG_AAAA);
 		Blacklist blacklist = h -> false;
 		Whitelist whitelist = h -> false;
 		Blockedlist blockedlist = h -> false;
