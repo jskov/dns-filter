@@ -1,9 +1,18 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "io.quarkus:quarkus-gradle-plugin:${quarkusVersion}"
+    }
+}
+
 plugins {
     id 'eclipse'
-	id 'io.quarkus'
     id 'java'
-    id 'maven-publish'
 }
+
+apply plugin: "io.quarkus"
 
 ext {
 	successMarker = project.file("build/all-tests-passed")
@@ -13,7 +22,6 @@ group = "dk.mada.dns"
 version = "1-SNAPSHOT"
 
 repositories {
-     mavenLocal()
      mavenCentral()
 }
 
@@ -36,16 +44,6 @@ dependencies {
     testImplementation "io.rest-assured:rest-assured"
     testImplementation "org.assertj:assertj-core:3.11.1"
     testImplementation "dnsjava:dnsjava:${dnsJavaVersion}"
-    
-//    testImplementation "io.quarkus:quarkus-undertow-websockets-deployment"
-}
-
-publishing {
-    publications {
-        myLibrary(MavenPublication) {
-            from components.java
-        }
-    }
 }
 
 task makeSuccessMarker() {
@@ -58,7 +56,7 @@ task makeSuccessMarker() {
 test {
 	dependsOn(makeSuccessMarker)
     useJUnitPlatform {
-        excludeTags "accept", "integration"
+  	    includeTags "accept"
     }  
     ignoreFailures = true
     afterTest { td, tr ->
@@ -85,11 +83,10 @@ task integrationTest(type: Test) {
     environment("GRADLE_TEST", "true")
 }
 
-// Need to publish to MavenLocal because @QuarkusTest does not yet handle Gradle
-task acceptTest(type: Test, dependsOn: "publishToMavenLocal") {
+task unitTest(type: Test) {
 	dependsOn(makeSuccessMarker)
     useJUnitPlatform {
-  	    includeTags "accept"
+        excludeTags "accept", "integration"
     }
     ignoreFailures = true
     afterTest { td, tr ->
@@ -101,13 +98,14 @@ task acceptTest(type: Test, dependsOn: "publishToMavenLocal") {
     environment("GRADLE_TEST", "true")
 }
 
-tasks.check.dependsOn(acceptTest, integrationTest)
+tasks.check.dependsOn(unitTest, integrationTest)
+
+tasks.testNative.enabled = false
+tasks.buildNative.enabled = false
+tasks.quarkusBuild.enabled = false
 
 
 sourceCompatibility = 11
 targetCompatibility = 11
 
 tasks.eclipseClasspath.dependsOn("cleanEclipseClasspath")
-tasks.eclipse.doLast {
-	println configurations.forEclipse.asPath
-}
