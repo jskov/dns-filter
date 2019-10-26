@@ -1,7 +1,6 @@
 package test.dns.conversion;
 
 import static fixture.dns.wiredata.TestQueries.MOZILLA_ORG_AAAA;
-import static fixture.dns.wiredata.TestQueries.MOZILLA_ORG_AAAA_SOA_REPLY;
 import static fixture.dns.wiredata.TestQueries.getMozillaOrgEmptyReply;
 import static fixture.dns.wiredata.TestQueries.makeTestQuery;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,7 +19,6 @@ import dk.mada.dns.lookup.Query;
 import dk.mada.dns.resolver.DefaultResolver;
 import dk.mada.dns.resolver.external.ExternalDnsGateway;
 import dk.mada.dns.service.DevelopmentDebugging;
-import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
 import dk.mada.dns.wire.model.DnsRequests;
@@ -64,8 +62,7 @@ public class WireToModelConversionTest {
 		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
 		LookupResult result = sut.lookup(q);
 
-		DnsReply r = DnsReplies.fromWireData(MOZILLA_ORG_AAAA_SOA_REPLY);
-		
+		assertThat(result.getReply().getAnswer().getRecords())
+			.isEmpty();
 	}
-	
 }
