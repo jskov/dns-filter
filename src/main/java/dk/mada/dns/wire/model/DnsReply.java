@@ -29,8 +29,8 @@ public class DnsReply extends DnsMessage {
 
 	@Override
 	public String toString() {
-		return "DnsReply [getQuestion()=" + getQuestion() + ", getAnswer()=" + getAnswer() + ", getAuthority()="
-				+ getAuthority() + "]";
+		return "DnsReply [header=" + header + ", optWireReply=" + optWireReply + ", getQuestion()=" + getQuestion()
+				+ ", getAnswer()=" + getAnswer() + ", getAuthority()=" + getAuthority() + ", getAdditional()="
+				+ getAdditional() + "]";
 	}
-
 }

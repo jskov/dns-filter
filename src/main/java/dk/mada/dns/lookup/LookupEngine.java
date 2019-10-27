@@ -50,7 +50,7 @@ public class LookupEngine {
 	public LookupResult lookup(Query q) {
 		String name = q.getRequestName();
 		
-		if (blacklist.test(name) && !q.isDebugEchoRequest()) {
+		if (blacklist.test(name) && !q.isDebugBypassRequest()) {
 			return makeBlockedReply(q, LookupState.BLACKLISTED, name);
 		}
 
@@ -67,7 +67,7 @@ public class LookupEngine {
 			return result;
 		}
 		
-		if (q.isDebugEchoRequest()) {
+		if (q.isDebugBypassRequest()) {
 			return makeBypassReply(q, reply);
 		}
 		

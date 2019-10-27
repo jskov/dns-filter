@@ -160,7 +160,7 @@ public class WireToModelConverter {
 			return DnsRecords.cRecordFrom(name, DnsName.fromName(alias.toString(true)), ttl);
 		} else if (r instanceof OPTRecord) {
 			var optRec = (OPTRecord)r;
-			logger.info("Opt record {}", optRec);
+			logger.info("Opt record {}", r.getClass());
 			@SuppressWarnings("unchecked")
 			List<EDNSOption> xopts = (List<EDNSOption>)optRec.getOptions();
 			

@@ -8,7 +8,7 @@ import dk.mada.dns.wire.model.DnsRequest;
 public class Query {
 	private final String clientIp;
 	private DnsRequest request;
-	private boolean debugEchoRequest;
+	private boolean debugBypassRequest;
 
 	public Query(DnsRequest request, String clientIp) {
 		this.request = request;
@@ -34,11 +34,11 @@ public class Query {
 	 * 
 	 * @return true if the wire output should be echoed to the console
 	 */
-	public boolean isDebugEchoRequest() {
-		return debugEchoRequest;
+	public boolean isDebugBypassRequest() {
+		return debugBypassRequest;
 	}
 
-	public void setDebugEchoRequest(boolean debugEchoRequest) {
-		this.debugEchoRequest = debugEchoRequest;
+	public void setDebugBypassRequest(boolean debugBypassRequest) {
+		this.debugBypassRequest = debugBypassRequest;
 	}
 }
