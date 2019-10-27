@@ -7,9 +7,10 @@ import dk.mada.dns.wire.model.conversion.ModelToWireConverter;
 import dk.mada.dns.wire.model.conversion.WireToModelConverter;
 
 public class DnsReplies {
-	public static DnsReply fromAnswer(DnsHeaderReply header, DnsSection question, DnsSection answer, ByteBuffer optWireData) {
+	public static DnsReply fromAnswer(DnsHeaderReply header, DnsSection question, DnsSection answer, DnsSection additional, ByteBuffer optWireData) {
 		var res = new DnsReply(header, question);
 		res.setAnswer(answer);
+		res.setAdditional(additional);
 		res.setOptWireReply(optWireData);
 		return res;
 	}
@@ -19,23 +20,27 @@ public class DnsReplies {
 		var header = DnsHeaderReplies.fromRequest(qheader, (short)1, (short)0, (short)0);
 		// FIXME: copy AR
 		
-		return DnsReplies.fromAnswer(header, request.getQuestionSection(), DnsSections.from(DnsSectionType.ANSWER, List.of(answer)), null);
+		DnsSection answerSection = DnsSections.from(DnsSectionType.ANSWER, List.of(answer));
+		DnsSection additionalSection = DnsSections.from(DnsSectionType.ADDITIONAL,  List.of());
+		return DnsReplies.fromAnswer(header, request.getQuestionSection(), answerSection, additionalSection, null);
 	}
 
-	public static DnsReply fromRequestWithAnswer(DnsRequest request, DnsSection answer) {
+	public static DnsReply fromRequestWithAnswer(DnsRequest request, DnsSection answerSection) {
 		var qheader = request.getHeader();
-		var header = DnsHeaderReplies.fromRequest(qheader, (short)answer.getRecords().size(), (short)0, (short)0);
+		var header = DnsHeaderReplies.fromRequest(qheader, (short)answerSection.getRecords().size(), (short)0, (short)0);
 		// FIXME: copy AR
+		DnsSection additionalSection = DnsSections.from(DnsSectionType.ADDITIONAL,  List.of());
 		
-		return DnsReplies.fromAnswer(header, request.getQuestionSection(), answer, null);
+		return DnsReplies.fromAnswer(header, request.getQuestionSection(), answerSection, additionalSection, null);
 	}
 
 	public static DnsReply fromRequestWithAnswers(DnsRequest request, DnsRecord... answers) {
 		var qheader = request.getHeader();
 		var header = DnsHeaderReplies.fromRequest(qheader, (short)answers.length, (short)0, (short)0);
 		// FIXME: copy AR
+		DnsSection additionalSection = DnsSections.from(DnsSectionType.ADDITIONAL,  List.of());
 		
-		return DnsReplies.fromAnswer(header, request.getQuestionSection(), DnsSections.ofAnswers(answers), null);
+		return DnsReplies.fromAnswer(header, request.getQuestionSection(), DnsSections.ofAnswers(answers), additionalSection, null);
 	}
 
 	public static DnsReply fromWireData(byte[] data) {

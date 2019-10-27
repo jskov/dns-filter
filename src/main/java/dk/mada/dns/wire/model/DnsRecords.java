@@ -3,6 +3,7 @@ package dk.mada.dns.wire.model;
 import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
 public class DnsRecords {
 
@@ -28,5 +29,9 @@ public class DnsRecords {
 	
 	public static DnsRecordQ qRecordFrom(DnsName name, DnsRecordType type) {
 		return new DnsRecordQ(name, type);
+	}
+	
+	public static DnsRecordOpt optRecordFrom(DnsName name, DnsRecordType type, int payloadSize, int flags, List<DnsOption> options) {
+		return new DnsRecordOpt(name, type, payloadSize, flags, options);
 	}
 }

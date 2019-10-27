@@ -15,6 +15,10 @@ public class DnsSections {
 		return new DnsSection(DnsSectionType.ANSWER, records);
 	}
 
+	public static DnsSection ofAdditionals(List<DnsRecord> records) {
+		return new DnsSection(DnsSectionType.ADDITIONAL, records);
+	}
+
 	public static DnsSection ofAnswers(DnsRecord... records) {
 		return new DnsSection(DnsSectionType.ANSWER, List.of(records));
 	}

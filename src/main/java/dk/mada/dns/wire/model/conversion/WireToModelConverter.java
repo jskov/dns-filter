@@ -1,20 +1,22 @@
 package dk.mada.dns.wire.model.conversion;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.CNAMERecord;
+import org.xbill.DNS.EDNSOption;
 import org.xbill.DNS.Header;
 import org.xbill.DNS.Message;
+import org.xbill.DNS.OPTRecord;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
 
@@ -24,6 +26,8 @@ import dk.mada.dns.wire.model.DnsHeaderQuery;
 import dk.mada.dns.wire.model.DnsHeaderReplies;
 import dk.mada.dns.wire.model.DnsHeaderReply;
 import dk.mada.dns.wire.model.DnsName;
+import dk.mada.dns.wire.model.DnsOption;
+import dk.mada.dns.wire.model.DnsOptionUnhandled;
 import dk.mada.dns.wire.model.DnsRecord;
 import dk.mada.dns.wire.model.DnsRecordType;
 import dk.mada.dns.wire.model.DnsRecords;
@@ -31,6 +35,7 @@ import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
 import dk.mada.dns.wire.model.DnsRequests;
+import dk.mada.dns.wire.model.DnsSection;
 import dk.mada.dns.wire.model.DnsSections;
 
 /**
@@ -62,7 +67,9 @@ public class WireToModelConverter {
 		var question = message.getQuestion();
 		var header = message.getHeader();
 
-		return DnsRequests.fromWireRequest(toRequestHeader(header, 0), DnsSections.ofQuestion(toModelRecord(question, true)), wireBytes);
+		var additional = toAdditionalSection(message.getSectionArray(Section.ADDITIONAL));
+		
+		return DnsRequests.fromWireRequest(toRequestHeader(header, 0), DnsSections.ofQuestion(toModelRecord(question, true)), additional, wireBytes);
 	}
 
 	private static DnsReply _replyToModel(ByteBuffer reply) throws IOException {
@@ -72,29 +79,44 @@ public class WireToModelConverter {
 		reply.flip();
 		logger.debug("toModel/r {} {}", reply.position(), reply.limit());
 		
-		return fromAnswers(message.getHeader(), message.getQuestion(), message.getSectionArray(Section.ANSWER), reply);
+		logger.info("Processing message {}", message);
+		message.getOPT();
+		
+		return fromAnswers(message.getHeader(), message.getQuestion(), message.getSectionArray(Section.ANSWER), null, reply);
 	}
 	
 	public static DnsReply fromAnswers(Header _header, Record _question, Record[] answerRecords) {
-		return fromAnswers(_header, _question, answerRecords, null);
+		return fromAnswers(_header, _question, answerRecords, null, null);
 	}
 
-	public static DnsReply fromAnswers(Header _header, Record _question, Record[] answerRecords, ByteBuffer optWireData) {
+	public static DnsReply fromAnswers(Header _header, Record _question, Record[] answerRecords, Record[] additionalRecords, ByteBuffer optWireData) {
 		Header header = Objects.requireNonNull(_header, "Must provide header");
 		Record question = Objects.requireNonNull(_question, "Must provide question");
 
     	List<DnsRecord> answers;
     	if (answerRecords == null) {
-    		answers = Collections.emptyList();
+    		answers = List.of();
     	} else {
     		answers = Arrays.stream(answerRecords)
 			    		.map(r -> toModelRecord(r, false))
-			    		.collect(Collectors.toList());
+			    		.collect(toList());
     	}
-		
-    	return DnsReplies.fromAnswer(toReplyHeader(header, answers.size()), DnsSections.ofQuestion(toModelRecord(question, true)), DnsSections.ofAnswers(answers), optWireData);
+    	
+    	return DnsReplies.fromAnswer(toReplyHeader(header, answers.size()), DnsSections.ofQuestion(toModelRecord(question, true)), DnsSections.ofAnswers(answers), toAdditionalSection(additionalRecords), optWireData);
 	}
 
+	private static DnsSection toAdditionalSection(Record[] additionalRecords) {
+		List<DnsRecord> additional;
+		if (additionalRecords == null) {
+			additional = List.of();
+		} else {
+			additional = Arrays.stream(additionalRecords)
+					.map(r -> toModelRecord(r, false))
+					.collect(toList());
+		}
+		return DnsSections.ofAdditionals(additional);
+	}
+	
 	private static DnsHeaderReply toReplyHeader(Header h, int ancount) {
 		short flags = DnsHeader.FLAGS_QR;
 		short qdcount = 1;
@@ -124,6 +146,8 @@ public class WireToModelConverter {
 			return DnsRecords.qRecordFrom(name, type);
 		}
 		
+		logger.info("Processing xbill type {}", r.getClass());
+		
 		if (r instanceof ARecord) {
 			var address = ((ARecord)r).getAddress();
 			return DnsRecords.aRecordFrom(name, address, ttl);
@@ -134,8 +158,26 @@ public class WireToModelConverter {
 			var alias = ((CNAMERecord)r).getAlias();
 			logger.debug("CRecord {} -> {}", name, alias);
 			return DnsRecords.cRecordFrom(name, DnsName.fromName(alias.toString(true)), ttl);
+		} else if (r instanceof OPTRecord) {
+			var optRec = (OPTRecord)r;
+			logger.info("Opt record {}", optRec);
+			@SuppressWarnings("unchecked")
+			List<EDNSOption> xopts = (List<EDNSOption>)optRec.getOptions();
+			
+			int payloadSize = optRec.getPayloadSize();
+			int flags = optRec.getFlags();
+			List<DnsOption> options = xopts.stream()
+					.map(o -> toDnsOption(o))
+					.collect(toList());
+			
+			return DnsRecords.optRecordFrom(name, type, payloadSize, flags, options);
 		}
 		
 		return DnsRecord.unknownFrom(type, name, ttl);
+	}
+	
+	private static DnsOption toDnsOption(EDNSOption xopt) {
+		logger.info("Unknown DNS option {}", xopt.getClass());
+		return new DnsOptionUnhandled();
 	}
 }

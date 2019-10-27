@@ -80,7 +80,14 @@ public class DnsRecord {
 	public Optional<DnsRecordQ> asRecordQ() {
 		return Optional.empty();
 	}
-	
+
+	public void ifRecordOpt(Consumer<DnsRecordOpt> c) {
+	}
+
+	public Optional<DnsRecordOpt> asRecordOpt() {
+		return Optional.empty();
+	}
+
 	@Override
 	public String toString() {
 		return "DnsRecord [recordType=" + recordType + ", name=" + name + ", ttl=" + ttl
