@@ -7,6 +7,9 @@ import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dk.mada.dns.util.Hexer;
 
 /**
@@ -21,6 +24,7 @@ import dk.mada.dns.util.Hexer;
  */
 @ApplicationScoped
 public class DevelopmentDebugging {
+	private static final Logger logger = LoggerFactory.getLogger(DevelopmentDebugging.class);
 	
 	enum Action {
 		BYPASS,
@@ -48,10 +52,12 @@ public class DevelopmentDebugging {
 	}
 
 	public void startBypassForHost(String hostname) {
-		outputForHostnames.put(hostname, Action.ECHO);
+		outputForHostnames.put(hostname, Action.BYPASS);
 	}
 
 	public void stopActionForHost(String hostname) {
-		outputForHostnames.remove(hostname);
+		if (outputForHostnames.remove(hostname) != null) {
+			logger.info("Stopped action for {}", hostname);
+		}
 	}
 }
