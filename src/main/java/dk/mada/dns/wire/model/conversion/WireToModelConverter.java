@@ -35,7 +35,7 @@ import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
 import dk.mada.dns.wire.model.DnsRequests;
-import dk.mada.dns.wire.model.DnsSection;
+import dk.mada.dns.wire.model.DnsSectionAdditional;
 import dk.mada.dns.wire.model.DnsSections;
 
 /**
@@ -105,7 +105,7 @@ public class WireToModelConverter {
     	return DnsReplies.fromAnswer(toReplyHeader(header, answers.size()), DnsSections.ofQuestion(toModelRecord(question, true)), DnsSections.ofAnswers(answers), toAdditionalSection(additionalRecords), optWireData);
 	}
 
-	private static DnsSection toAdditionalSection(Record[] additionalRecords) {
+	private static DnsSectionAdditional toAdditionalSection(Record[] additionalRecords) {
 		List<DnsRecord> additional;
 		if (additionalRecords == null) {
 			additional = List.of();

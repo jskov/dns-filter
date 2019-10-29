@@ -1,13 +1,12 @@
 package dk.mada.dns.wire.model;
 
 import java.nio.ByteBuffer;
-import java.util.List;
 
 import dk.mada.dns.wire.model.conversion.ModelToWireConverter;
 import dk.mada.dns.wire.model.conversion.WireToModelConverter;
 
 public class DnsReplies {
-	public static DnsReply fromAnswer(DnsHeaderReply header, DnsSection question, DnsSection answer, DnsSection additional, ByteBuffer optWireData) {
+	public static DnsReply fromAnswer(DnsHeaderReply header, DnsSectionQuestion question, DnsSectionAnswer answer, DnsSectionAdditional additional, ByteBuffer optWireData) {
 		var res = new DnsReply(header, question);
 		res.setAnswer(answer);
 		res.setAdditional(additional);
@@ -20,16 +19,16 @@ public class DnsReplies {
 		var header = DnsHeaderReplies.fromRequest(qheader, (short)1, (short)0, (short)0);
 		// FIXME: copy AR
 		
-		DnsSection answerSection = DnsSections.from(DnsSectionType.ANSWER, List.of(answer));
-		DnsSection additionalSection = DnsSections.from(DnsSectionType.ADDITIONAL,  List.of());
+		DnsSectionAnswer answerSection = DnsSections.ofAnswers(answer);
+		DnsSectionAdditional additionalSection = DnsSections.emptyAdditionals();
 		return DnsReplies.fromAnswer(header, request.getQuestionSection(), answerSection, additionalSection, null);
 	}
 
-	public static DnsReply fromRequestWithAnswer(DnsRequest request, DnsSection answerSection) {
+	public static DnsReply fromRequestWithAnswer(DnsRequest request, DnsSectionAnswer answerSection) {
 		var qheader = request.getHeader();
 		var header = DnsHeaderReplies.fromRequest(qheader, (short)answerSection.getRecords().size(), (short)0, (short)0);
 		// FIXME: copy AR
-		DnsSection additionalSection = DnsSections.from(DnsSectionType.ADDITIONAL,  List.of());
+		DnsSectionAdditional additionalSection = DnsSections.emptyAdditionals();
 		
 		return DnsReplies.fromAnswer(header, request.getQuestionSection(), answerSection, additionalSection, null);
 	}
@@ -38,7 +37,7 @@ public class DnsReplies {
 		var qheader = request.getHeader();
 		var header = DnsHeaderReplies.fromRequest(qheader, (short)answers.length, (short)0, (short)0);
 		// FIXME: copy AR
-		DnsSection additionalSection = DnsSections.from(DnsSectionType.ADDITIONAL,  List.of());
+		DnsSectionAdditional additionalSection = DnsSections.emptyAdditionals();
 		
 		return DnsReplies.fromAnswer(header, request.getQuestionSection(), DnsSections.ofAnswers(answers), additionalSection, null);
 	}

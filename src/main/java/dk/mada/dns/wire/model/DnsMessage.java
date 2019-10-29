@@ -8,18 +8,18 @@ import java.util.Objects;
  * DNS message - containing both question and answers.
  */
 abstract class DnsMessage {
-	private final DnsSection questionSection;
-	private DnsSection answer;
-	private DnsSection authority;
-	private DnsSection additional;
+	private final DnsSectionQuestion questionSection;
+	private DnsSectionAnswer answer;
+	private DnsSectionAuthority authority;
+	private DnsSectionAdditional additional;
 
-	protected DnsMessage(DnsSection questionSection) {
+	protected DnsMessage(DnsSectionQuestion questionSection) {
 		this.questionSection = Objects.requireNonNull(questionSection);
 	}
 	
 	public abstract DnsHeader getHeader();
 
-	public DnsSection getQuestionSection() {
+	public DnsSectionQuestion getQuestionSection() {
 		return questionSection;
 	}
 	
@@ -31,22 +31,22 @@ abstract class DnsMessage {
 				.orElseThrow(() -> new IllegalStateException("Message contains no question?!"));
 	}
 	
-	public DnsSection getAnswer() {
+	public DnsSectionAnswer getAnswer() {
 		return answer;
 	}
-	public void setAnswer(DnsSection answer) {
+	public void setAnswer(DnsSectionAnswer answer) {
 		this.answer = answer;
 	}
-	public DnsSection getAuthority() {
+	public DnsSectionAuthority getAuthority() {
 		return authority;
 	}
-	public void setAuthority(DnsSection authority) {
+	public void setAuthority(DnsSectionAuthority authority) {
 		this.authority = authority;
 	}
-	public DnsSection getAdditional() {
+	public DnsSectionAdditional getAdditional() {
 		return additional;
 	}
-	public void setAdditional(DnsSection additional) {
+	public void setAdditional(DnsSectionAdditional additional) {
 		this.additional = additional;
 	}
 }

@@ -7,7 +7,7 @@ public class DnsRequest extends DnsMessage {
 	private final ByteBuffer baseWireRequest;
 	private final DnsHeaderQuery header;
 	
-	public DnsRequest(DnsHeaderQuery header, DnsSection question, DnsSection additional, ByteBuffer baseWireRequest) {
+	public DnsRequest(DnsHeaderQuery header, DnsSectionQuestion question, DnsSectionAdditional additional, ByteBuffer baseWireRequest) {
 		super(question);
 		setAdditional(additional);
 		this.header = header;
@@ -28,19 +28,19 @@ public class DnsRequest extends DnsMessage {
 	}
 
 	@Override
-	public DnsSection getAnswer() {
+	public DnsSectionAnswer getAnswer() {
 		throw new IllegalStateException(NOT_PERTINENT_IN_A_REQUEST);
 	}
 	@Override
-	public void setAnswer(DnsSection answer) {
+	public void setAnswer(DnsSectionAnswer answer) {
 		throw new IllegalStateException(NOT_PERTINENT_IN_A_REQUEST);
 	}
 	@Override
-	public DnsSection getAuthority() {
+	public DnsSectionAuthority getAuthority() {
 		throw new IllegalStateException(NOT_PERTINENT_IN_A_REQUEST);
 	}
 	@Override
-	public void setAuthority(DnsSection authority) {
+	public void setAuthority(DnsSectionAuthority authority) {
 		throw new IllegalStateException(NOT_PERTINENT_IN_A_REQUEST);
 	}
 

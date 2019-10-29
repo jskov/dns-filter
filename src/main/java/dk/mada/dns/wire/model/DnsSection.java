@@ -3,7 +3,7 @@ package dk.mada.dns.wire.model;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class DnsSection {
+public abstract class DnsSection {
 	private DnsSectionType type;
 	private List<DnsRecord> records;
 	

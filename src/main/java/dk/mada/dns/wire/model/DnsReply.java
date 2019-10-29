@@ -9,8 +9,8 @@ public class DnsReply extends DnsMessage {
 	private DnsHeaderReply header;
 	private ByteBuffer optWireReply;
 
-	DnsReply(DnsHeaderReply header, DnsSection request) {
-		super(request);
+	DnsReply(DnsHeaderReply header, DnsSectionQuestion question) {
+		super(question);
 		this.header = header;
 	}
 

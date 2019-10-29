@@ -14,7 +14,7 @@ import dk.mada.dns.resolver.Resolver;
 import dk.mada.dns.wire.model.DnsRecords;
 import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
-import dk.mada.dns.wire.model.DnsSection;
+import dk.mada.dns.wire.model.DnsSectionAnswer;
 
 /**
  * Looks up query via upstream, applying white list, 
@@ -106,7 +106,7 @@ public class LookupEngine {
 		return makePassthroughReply(q, reply.getAnswer());
 	}
 
-	private LookupResult makePassthroughReply(Query q, DnsSection answer) {
+	private LookupResult makePassthroughReply(Query q, DnsSectionAnswer answer) {
 		var result = new LookupResult();
 		logger.info("{} is passed through", q.getRequestName());
 		result.setState(LookupState.PASSTHROUGH);
@@ -128,7 +128,7 @@ public class LookupEngine {
 	}
 
 	
-	private LookupResult makeWhitelistReply(Query q, DnsSection answer, String passedDueTo) {
+	private LookupResult makeWhitelistReply(Query q, DnsSectionAnswer answer, String passedDueTo) {
 		var result = new LookupResult();
 		logger.info("{} is whitelisted due to {}", q.getRequestName(), passedDueTo);
 		result.setState(LookupState.WHITELISTED);
