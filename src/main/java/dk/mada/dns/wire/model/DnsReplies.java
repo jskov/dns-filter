@@ -23,13 +23,14 @@ public class DnsReplies {
 		return DnsReplies.fromAnswer(header, request.getQuestionSection(), answerSection, additionalSection, null);
 	}
 
-	public static DnsReply fromRequestWithAnswer(DnsRequest request, DnsSectionAnswer answerSection, DnsSectionAdditional additionalSection) {
-		var qheader = request.getHeader();
-		var header = DnsHeaderReplies.fromRequest(qheader, (short)answerSection.getRecords().size(), (short)0, (short)additionalSection.getSize());
-		
-		return DnsReplies.fromAnswer(header, request.getQuestionSection(), answerSection, additionalSection, null);
+	public static DnsReply fromRequestWithAnswer(DnsRequest request, DnsHeaderReply headerReply, DnsSectionAnswer answerSection, DnsSectionAdditional additionalSection) {
+		return DnsReplies.fromAnswer(headerReply, request.getQuestionSection(), answerSection, additionalSection, null);
 	}
 
+	/**
+	 * Only used by test - should use bin packets instead
+	 */
+	@Deprecated
 	public static DnsReply fromRequestWithAnswers(DnsRequest request, DnsRecord... answers) {
 		var qheader = request.getHeader();
 		var header = DnsHeaderReplies.fromRequest(qheader, (short)answers.length, (short)0, (short)0);

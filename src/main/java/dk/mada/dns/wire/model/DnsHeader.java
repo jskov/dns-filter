@@ -125,4 +125,9 @@ public abstract class DnsHeader {
 				.append(")")
 				.toString();
 	}
+	
+	@Override
+	public String toString() {
+		return toDebugString();
+	}
 }

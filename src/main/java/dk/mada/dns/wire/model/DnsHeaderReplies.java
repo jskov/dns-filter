@@ -1,7 +1,7 @@
 package dk.mada.dns.wire.model;
 
 public class DnsHeaderReplies {
-	public static DnsHeaderReply newObsoleted(short id, short flags, short qdcount, short ancount, short nscount, short arcount) {
+	public static DnsHeaderReply fromWire(short id, short flags, short qdcount, short ancount, short nscount, short arcount) {
 		return new DnsHeaderReply(id, flags, qdcount, ancount, nscount, arcount);
 	}
 

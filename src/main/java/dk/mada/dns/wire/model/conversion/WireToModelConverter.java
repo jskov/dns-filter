@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +15,14 @@ import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.EDNSOption;
+import org.xbill.DNS.Flags;
 import org.xbill.DNS.Header;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.OPTRecord;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
 
+import dk.mada.dns.util.Hexer;
 import dk.mada.dns.wire.model.DnsHeader;
 import dk.mada.dns.wire.model.DnsHeaderQueries;
 import dk.mada.dns.wire.model.DnsHeaderQuery;
@@ -121,13 +124,39 @@ public class WireToModelConverter {
 	}
 	
 	private static DnsHeaderReply toReplyHeader(Header h, short ancount, short arcount) {
+		
+		logger.info("xbill header {}", h.printFlags());
+		
 		short flags = DnsHeader.FLAGS_QR;
+
+		if (h.getFlag(Flags.AA)) {
+			flags |= DnsHeader.FLAGS_AA;
+		}
+		if (h.getFlag(Flags.TC)) {
+			flags |= DnsHeader.FLAGS_TC;
+		}
+		if (h.getFlag(Flags.RD)) {
+			flags |= DnsHeader.FLAGS_RD;
+		}
+		if (h.getFlag(Flags.RA)) {
+			flags |= DnsHeader.FLAGS_RA;
+		}
+		if (h.getFlag(Flags.AD)) {
+			flags |= DnsHeader.FLAGS_AD;
+		}
+		if (h.getFlag(Flags.CD)) {
+			flags |= DnsHeader.FLAGS_CD;
+		}
+
+		logger.info("Model flags: {}", Hexer.hexShort(flags));
+		
 		short qdcount = 1;
 		short nscount = 0;
 		
-		return DnsHeaderReplies.newObsoleted((short)h.getID(), flags, qdcount, (short)ancount, nscount, arcount);
+		
+		return DnsHeaderReplies.fromWire((short)h.getID(), flags, qdcount, (short)ancount, nscount, arcount);
 	}
-
+	
 	private static DnsHeaderQuery toRequestHeader(Header h, short arcount) {
 		byte[] bytes = h.toWire();
 		

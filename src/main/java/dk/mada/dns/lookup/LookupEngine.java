@@ -11,6 +11,7 @@ import dk.mada.dns.filter.Blacklist;
 import dk.mada.dns.filter.Blockedlist;
 import dk.mada.dns.filter.Whitelist;
 import dk.mada.dns.resolver.Resolver;
+import dk.mada.dns.wire.model.DnsHeaderReply;
 import dk.mada.dns.wire.model.DnsRecords;
 import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
@@ -83,7 +84,7 @@ public class LookupEngine {
 				.orElse(null);
 		
 		if (whitelistedName != null) {
-			return makeWhitelistReply(q, reply.getAnswer(), reply.getAdditional(), whitelistedName);
+			return makeWhitelistReply(q, reply.getHeader(), reply.getAnswer(), reply.getAdditional(), whitelistedName);
 		}
 		
 		String blacklistedName = intermediateNames.stream()
@@ -104,17 +105,17 @@ public class LookupEngine {
 			return makeBlockedReply(q, LookupState.BLOCKED, blockedName);
 		}
 
-		return makePassthroughReply(q, reply.getAnswer(), reply.getAdditional());
+		return makePassthroughReply(q, reply.getHeader(), reply.getAnswer(), reply.getAdditional());
 	}
 
-	private LookupResult makePassthroughReply(Query q, DnsSectionAnswer answer, DnsSectionAdditional additional) {
+	private LookupResult makePassthroughReply(Query q, DnsHeaderReply replyHeader, DnsSectionAnswer answer, DnsSectionAdditional additional) {
 		var result = new LookupResult();
 		logger.info("{} is passed through", q.getRequestName());
 		result.setState(LookupState.PASSTHROUGH);
 
 		logger.info("Additionals: {}", additional);
 		
-		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), answer, additional);
+		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), replyHeader, answer, additional);
 
 		result.setReply(reply);
 		return result;
@@ -131,12 +132,12 @@ public class LookupEngine {
 	}
 
 	
-	private LookupResult makeWhitelistReply(Query q, DnsSectionAnswer answer, DnsSectionAdditional additional, String passedDueTo) {
+	private LookupResult makeWhitelistReply(Query q, DnsHeaderReply headerReply, DnsSectionAnswer answer, DnsSectionAdditional additional, String passedDueTo) {
 		var result = new LookupResult();
 		logger.info("{} is whitelisted due to {}", q.getRequestName(), passedDueTo);
 		result.setState(LookupState.WHITELISTED);
 
-		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), answer, additional);
+		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), headerReply, answer, additional);
 
 		result.setReply(reply);
 		return result;
