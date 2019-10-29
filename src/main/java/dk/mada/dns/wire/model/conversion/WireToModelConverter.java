@@ -36,6 +36,7 @@ import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
 import dk.mada.dns.wire.model.DnsRequests;
 import dk.mada.dns.wire.model.DnsSectionAdditional;
+import dk.mada.dns.wire.model.DnsSectionAnswer;
 import dk.mada.dns.wire.model.DnsSections;
 
 /**
@@ -69,7 +70,7 @@ public class WireToModelConverter {
 
 		DnsSectionAdditional additional = toAdditionalSection(message.getSectionArray(Section.ADDITIONAL));
 		
-		return DnsRequests.fromWireRequest(toRequestHeader(header, 0), DnsSections.ofQuestion(toModelRecord(question, true)), additional, wireBytes);
+		return DnsRequests.fromWireRequest(toRequestHeader(header, additional.getSize()), DnsSections.ofQuestion(toModelRecord(question, true)), additional, wireBytes);
 	}
 
 	private static DnsReply _replyToModel(ByteBuffer reply) throws IOException {
@@ -80,9 +81,9 @@ public class WireToModelConverter {
 		logger.debug("toModel/r {} {}", reply.position(), reply.limit());
 		
 		logger.info("Processing message {}", message);
-		message.getOPT();
 		
-		return fromAnswers(message.getHeader(), message.getQuestion(), message.getSectionArray(Section.ANSWER), null, reply);
+		
+		return fromAnswers(message.getHeader(), message.getQuestion(), message.getSectionArray(Section.ANSWER), message.getSectionArray(Section.ADDITIONAL), reply);
 	}
 	
 	public static DnsReply fromAnswers(Header _header, Record _question, Record[] answerRecords) {
@@ -102,7 +103,9 @@ public class WireToModelConverter {
 			    		.collect(toList());
     	}
     	
-    	return DnsReplies.fromAnswer(toReplyHeader(header, answers.size()), DnsSections.ofQuestion(toModelRecord(question, true)), DnsSections.ofAnswers(answers), toAdditionalSection(additionalRecords), optWireData);
+    	DnsSectionAdditional additionalSection = toAdditionalSection(additionalRecords);
+		DnsSectionAnswer answerSecion = DnsSections.ofAnswers(answers);
+		return DnsReplies.fromAnswer(toReplyHeader(header, answerSecion.getSize(), additionalSection.getSize()), DnsSections.ofQuestion(toModelRecord(question, true)), answerSecion, additionalSection, optWireData);
 	}
 
 	private static DnsSectionAdditional toAdditionalSection(Record[] additionalRecords) {
@@ -117,24 +120,23 @@ public class WireToModelConverter {
 		return DnsSections.ofAdditionals(additional);
 	}
 	
-	private static DnsHeaderReply toReplyHeader(Header h, int ancount) {
+	private static DnsHeaderReply toReplyHeader(Header h, short ancount, short arcount) {
 		short flags = DnsHeader.FLAGS_QR;
 		short qdcount = 1;
 		short nscount = 0;
-		short arcount = 0;
 		
 		return DnsHeaderReplies.newObsoleted((short)h.getID(), flags, qdcount, (short)ancount, nscount, arcount);
 	}
 
-	private static DnsHeaderQuery toRequestHeader(Header h, int ancount) {
+	private static DnsHeaderQuery toRequestHeader(Header h, short arcount) {
 		byte[] bytes = h.toWire();
 		
 		short flags = (short)(bytes[2] << 8 | bytes[3]);
 		short qdcount = 1;
+		short ancount = 0;
 		short nscount = 0;
-		short arcount = 0;
 		
-		return DnsHeaderQueries.newObsoleted((short)h.getID(), flags, qdcount, (short)ancount, nscount, arcount);
+		return DnsHeaderQueries.newObsoleted((short)h.getID(), flags, qdcount, ancount, nscount, arcount);
 	}
 
 	private static DnsRecord toModelRecord(Record r, boolean isQuestion) {
@@ -164,13 +166,15 @@ public class WireToModelConverter {
 			@SuppressWarnings("unchecked")
 			List<EDNSOption> xopts = (List<EDNSOption>)optRec.getOptions();
 			
-			int payloadSize = optRec.getPayloadSize();
-			int flags = optRec.getFlags();
+			short payloadSize = (short)optRec.getPayloadSize();
+			short flags = (short)optRec.getFlags();
+			byte xrcode = (byte)optRec.getExtendedRcode();
+			byte version = (byte)optRec.getVersion();
 			List<DnsOption> options = xopts.stream()
 					.map(o -> toDnsOption(o))
 					.collect(toList());
 			
-			return DnsRecords.optRecordFrom(name, type, payloadSize, flags, options);
+			return DnsRecords.optRecordFrom(name, type, payloadSize, xrcode, version, flags, options);
 		}
 		
 		return DnsRecord.unknownFrom(type, name, ttl);

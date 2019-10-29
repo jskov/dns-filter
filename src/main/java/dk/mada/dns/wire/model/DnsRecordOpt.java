@@ -8,16 +8,21 @@ import java.util.function.Consumer;
  * An OPT record, as per https://tools.ietf.org/html/rfc6891
  */
 public class DnsRecordOpt extends DnsRecord {
-	private final int flags;
+	private final byte xrcode;
+	private final byte version;
+	private final short flags;
+	
 	/** Requstor's max payload size - allows bigger replies than 512 */
-	private final int payloadSize;
+	private final short payloadSize;
 	private final List<DnsOption> options;
 
-	DnsRecordOpt(DnsName name, DnsRecordType type, int payloadSize, int flags, List<DnsOption> options) {
+	DnsRecordOpt(DnsName name, DnsRecordType type, short payloadSize, byte xrcode,  byte version, short flags, List<DnsOption> options) {
 		super(DnsClass.IN, type, name, 0);
 		
-		this.payloadSize = payloadSize;
+		this.xrcode = xrcode;
+		this.version = version;
 		this.flags = flags;
+		this.payloadSize = payloadSize;
 		this.options = options;
 	}
 	
@@ -31,17 +36,27 @@ public class DnsRecordOpt extends DnsRecord {
 		return Optional.of(this);
 	}
 
-	public int getFlags() {
+	public short getFlags() {
 		return flags;
 	}
 
-	public int getPayloadSize() {
+	public byte getXrcode() {
+		return xrcode;
+	}
+
+	public byte getVersion() {
+		return version;
+	}
+
+	public short getPayloadSize() {
 		return payloadSize;
 	}
 
 	public List<DnsOption> getOptions() {
 		return options;
 	}
+	
+	
 
 	@Override
 	public String toString() {

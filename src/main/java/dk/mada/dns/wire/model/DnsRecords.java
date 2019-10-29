@@ -31,7 +31,7 @@ public class DnsRecords {
 		return new DnsRecordQ(name, type);
 	}
 	
-	public static DnsRecordOpt optRecordFrom(DnsName name, DnsRecordType type, int payloadSize, int flags, List<DnsOption> options) {
-		return new DnsRecordOpt(name, type, payloadSize, flags, options);
+	public static DnsRecordOpt optRecordFrom(DnsName name, DnsRecordType type, short payloadSize, byte xrcode,  byte version, short flags, List<DnsOption> options) {
+		return new DnsRecordOpt(name, type, payloadSize, xrcode, version, flags, options);
 	}
 }

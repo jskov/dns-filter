@@ -14,21 +14,18 @@ public class DnsReplies {
 		return res;
 	}
 	
-	public static DnsReply fromRequestWithAnswer(DnsRequest request, DnsRecord answer) {
+	public static DnsReply fromRequestToBlockedReply(DnsRequest request, DnsRecord answer) {
 		var qheader = request.getHeader();
 		var header = DnsHeaderReplies.fromRequest(qheader, (short)1, (short)0, (short)0);
-		// FIXME: copy AR
 		
 		DnsSectionAnswer answerSection = DnsSections.ofAnswers(answer);
 		DnsSectionAdditional additionalSection = DnsSections.emptyAdditionals();
 		return DnsReplies.fromAnswer(header, request.getQuestionSection(), answerSection, additionalSection, null);
 	}
 
-	public static DnsReply fromRequestWithAnswer(DnsRequest request, DnsSectionAnswer answerSection) {
+	public static DnsReply fromRequestWithAnswer(DnsRequest request, DnsSectionAnswer answerSection, DnsSectionAdditional additionalSection) {
 		var qheader = request.getHeader();
-		var header = DnsHeaderReplies.fromRequest(qheader, (short)answerSection.getRecords().size(), (short)0, (short)0);
-		// FIXME: copy AR
-		DnsSectionAdditional additionalSection = DnsSections.emptyAdditionals();
+		var header = DnsHeaderReplies.fromRequest(qheader, (short)answerSection.getRecords().size(), (short)0, (short)additionalSection.getSize());
 		
 		return DnsReplies.fromAnswer(header, request.getQuestionSection(), answerSection, additionalSection, null);
 	}

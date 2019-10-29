@@ -3,6 +3,7 @@ package dk.mada.dns.wire.model.conversion;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,13 +11,16 @@ import org.xbill.DNS.ARecord;
 import org.xbill.DNS.Header;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Name;
+import org.xbill.DNS.OPTRecord;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
 
 import dk.mada.dns.wire.model.DnsClass;
 import dk.mada.dns.wire.model.DnsHeader;
+import dk.mada.dns.wire.model.DnsOption;
 import dk.mada.dns.wire.model.DnsRecord;
 import dk.mada.dns.wire.model.DnsRecordA;
+import dk.mada.dns.wire.model.DnsRecordOpt;
 import dk.mada.dns.wire.model.DnsReply;
 
 /**
@@ -48,6 +52,11 @@ public class ModelToWireConverter {
     	reply.getAnswer().stream()
     		.map(a -> toRecord(a))
     		.forEach(r -> message.addRecord(r, Section.ANSWER));
+    	
+    	reply.getAdditional().stream()
+    	.peek(a -> logger.info("GO FOR {}", a))
+    		.map(a -> toRecord(a))
+    		.forEach(r -> message.addRecord(r, Section.ADDITIONAL));
     
     	logger.debug("Converted {} to\n{}", reply, message);
     	
@@ -57,6 +66,10 @@ public class ModelToWireConverter {
 	private static Record toRecord(DnsRecord r) {
 		if (r instanceof DnsRecordA) {
 			return toRecord((DnsRecordA)r);
+		}
+		
+		if (r instanceof DnsRecordOpt) {
+			return toRecord((DnsRecordOpt)r);
 		}
 		
 		try {
@@ -69,6 +82,21 @@ public class ModelToWireConverter {
 		}
 	}
 
+	private static Record toRecord(DnsRecordOpt r) {
+		short payloadSize = r.getPayloadSize();
+		byte xrcode = r.getXrcode();
+		byte version = r.getVersion();
+		short flags = r.getFlags();
+		
+		if (!r.getOptions().isEmpty()) {
+			logger.warn("Cannot convert options to xbill api");
+		}
+		
+		List<Object> xbillOptions = List.of();
+		
+		return new OPTRecord(payloadSize, xrcode, version, flags, xbillOptions);
+	}
+	
 	private static Record toRecord(DnsRecordA r) {
 		try {
 			String n = r.getName().getName();

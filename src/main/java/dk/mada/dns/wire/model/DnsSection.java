@@ -20,6 +20,10 @@ public abstract class DnsSection {
 		return records;
 	}
 	
+	public short getSize() {
+		return (short)records.size();
+	}
+	
 	public Stream<DnsRecord> stream() {
 		return records.stream();
 	}
