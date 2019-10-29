@@ -46,6 +46,7 @@ public class DnsRequest extends DnsMessage {
 
 	@Override
 	public String toString() {
-		return "DnsRequest [getQuestion()=" + getQuestion() + "]";
+		return "DnsRequest [header=" + header + ", getQuestion()=" + getQuestion() + ", getAdditional()="
+				+ getAdditional() + "]";
 	}
 }

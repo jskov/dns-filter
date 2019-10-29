@@ -9,6 +9,7 @@ import java.util.function.Consumer;
  */
 public class DnsRecordOpt extends DnsRecord {
 	private final int flags;
+	/** Requstor's max payload size - allows bigger replies than 512 */
 	private final int payloadSize;
 	private final List<DnsOption> options;
 
@@ -40,5 +41,10 @@ public class DnsRecordOpt extends DnsRecord {
 
 	public List<DnsOption> getOptions() {
 		return options;
+	}
+
+	@Override
+	public String toString() {
+		return "DnsRecordOpt [flags=" + flags + ", payloadSize=" + payloadSize + ", options=" + options + "]";
 	}
 }

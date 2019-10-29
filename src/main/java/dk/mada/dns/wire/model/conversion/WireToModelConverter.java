@@ -62,12 +62,12 @@ public class WireToModelConverter {
 
 	private static DnsRequest _requestToModel(ByteBuffer request) throws IOException {
 		var wireBytes = request.duplicate();
-		
+
 		var message = new Message(request);
 		var question = message.getQuestion();
 		var header = message.getHeader();
 
-		var additional = toAdditionalSection(message.getSectionArray(Section.ADDITIONAL));
+		DnsSectionAdditional additional = toAdditionalSection(message.getSectionArray(Section.ADDITIONAL));
 		
 		return DnsRequests.fromWireRequest(toRequestHeader(header, 0), DnsSections.ofQuestion(toModelRecord(question, true)), additional, wireBytes);
 	}
@@ -160,7 +160,7 @@ public class WireToModelConverter {
 			return DnsRecords.cRecordFrom(name, DnsName.fromName(alias.toString(true)), ttl);
 		} else if (r instanceof OPTRecord) {
 			var optRec = (OPTRecord)r;
-			logger.info("Opt record {}", r.getClass());
+			logger.info("Opt record {}", optRec);
 			@SuppressWarnings("unchecked")
 			List<EDNSOption> xopts = (List<EDNSOption>)optRec.getOptions();
 			
