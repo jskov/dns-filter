@@ -47,18 +47,17 @@ public class ModelToWireConverter {
     	Message message = Message.newQuery(question);
 
     	DnsHeader header = reply.getHeader();
-    	message.setHeader(new Header(header.toWireFormatZeroAnswers()));
+    	message.setHeader(new Header(header.toWireFormatZeroForReply()));
     	
     	reply.getAnswer().stream()
     		.map(a -> toRecord(a))
     		.forEach(r -> message.addRecord(r, Section.ANSWER));
     	
     	reply.getAdditional().stream()
-    	.peek(a -> logger.info("GO FOR {}", a))
     		.map(a -> toRecord(a))
     		.forEach(r -> message.addRecord(r, Section.ADDITIONAL));
     
-    	logger.debug("Converted {} to\n{}", reply, message);
+    	logger.info("Converted {} to\n{}", reply, message);
     	
     	return ByteBuffer.wrap(message.toWire());
 	}
