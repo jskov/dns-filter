@@ -60,7 +60,7 @@ public class ModelToWireConverter {
     		.map(a -> toRecord(a))
     		.forEach(r -> message.addRecord(r, Section.ADDITIONAL));
     
-    	logger.info("Converted {} to\n{}", reply, message);
+    	logger.debug("Converted {} to\n{}", reply, message);
     	
     	return ByteBuffer.wrap(message.toWire());
 	}

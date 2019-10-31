@@ -83,9 +83,6 @@ public class WireToModelConverter {
 		reply.flip();
 		logger.debug("toModel/r {} {}", reply.position(), reply.limit());
 		
-		logger.info("Processing message {}", message);
-		
-		
 		return fromAnswers(message.getHeader(), message.getQuestion(), message.getSectionArray(Section.ANSWER), message.getSectionArray(Section.ADDITIONAL), reply);
 	}
 	
@@ -125,7 +122,7 @@ public class WireToModelConverter {
 	
 	private static DnsHeaderReply toReplyHeader(Header h, short ancount, short arcount) {
 		
-		logger.info("xbill header {}", h.printFlags());
+		logger.debug("xbill header {}", h.printFlags());
 		
 		short flags = DnsHeader.FLAGS_QR;
 
@@ -148,7 +145,7 @@ public class WireToModelConverter {
 			flags |= DnsHeader.FLAGS_CD;
 		}
 
-		logger.info("Model flags: {}", Hexer.hexShort(flags));
+		logger.debug("Model flags: {}", Hexer.hexShort(flags));
 		
 		short qdcount = 1;
 		short nscount = 0;
@@ -177,7 +174,7 @@ public class WireToModelConverter {
 			return DnsRecords.qRecordFrom(name, type);
 		}
 		
-		logger.info("Processing xbill type {}", r.getClass());
+		logger.debug("Processing xbill type {}", r.getClass());
 		
 		if (r instanceof ARecord) {
 			var address = ((ARecord)r).getAddress();
@@ -191,7 +188,7 @@ public class WireToModelConverter {
 			return DnsRecords.cRecordFrom(name, DnsName.fromName(alias.toString(true)), ttl);
 		} else if (r instanceof OPTRecord) {
 			var optRec = (OPTRecord)r;
-			logger.info("Opt record {}", optRec);
+			logger.debug("Opt record {}", optRec);
 			@SuppressWarnings("unchecked")
 			List<EDNSOption> xopts = (List<EDNSOption>)optRec.getOptions();
 			
