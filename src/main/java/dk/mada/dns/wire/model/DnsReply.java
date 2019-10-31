@@ -9,8 +9,8 @@ public class DnsReply extends DnsMessage {
 	private DnsHeaderReply header;
 	private ByteBuffer optWireReply;
 
-	DnsReply(DnsHeaderReply header, DnsSection request) {
-		super(request);
+	DnsReply(DnsHeaderReply header, DnsSectionQuestion question) {
+		super(question);
 		this.header = header;
 	}
 
@@ -29,8 +29,8 @@ public class DnsReply extends DnsMessage {
 
 	@Override
 	public String toString() {
-		return "DnsReply [getQuestion()=" + getQuestion() + ", getAnswer()=" + getAnswer() + ", getAuthority()="
-				+ getAuthority() + "]";
+		return "DnsReply [header=" + header + ", optWireReply=" + optWireReply + ", getQuestion()=" + getQuestion()
+				+ ", getAnswer()=" + getAnswer() + ", getAuthority()=" + getAuthority() + ", getAdditional()="
+				+ getAdditional() + "]";
 	}
-
 }

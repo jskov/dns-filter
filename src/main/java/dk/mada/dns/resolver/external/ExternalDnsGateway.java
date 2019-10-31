@@ -86,10 +86,8 @@ public class ExternalDnsGateway implements UdpNameServer {
 			}
 			reply.flip();
 	
-			devDebugging.devOutputWireData(query, "Reply for " + query, reply);
+			devDebugging.devOutputWireData(query, "Dns server reply for " + query, reply);
 			reply.rewind();
-			
-			devDebugging.stopOutputForHost(query);
 			
 			long time = System.currentTimeMillis() - start;
 			logger.debug("Upstream reply in {}ms", time);

@@ -11,7 +11,8 @@ public enum DnsRecordType {
 	CNAME(5),	// c-name, alias
 	MX(15),
 	TXT(16),
-	AAAA(28);	// AAAA IPV6 https://tools.ietf.org/html/rfc3596
+	AAAA(28),	// AAAA IPV6 https://tools.ietf.org/html/rfc3596
+	OPT(41);	// OPT, https://tools.ietf.org/html/rfc6891
 	
 	private final int wireValue;
 	

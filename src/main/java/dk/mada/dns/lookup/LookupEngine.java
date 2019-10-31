@@ -11,10 +11,12 @@ import dk.mada.dns.filter.Blacklist;
 import dk.mada.dns.filter.Blockedlist;
 import dk.mada.dns.filter.Whitelist;
 import dk.mada.dns.resolver.Resolver;
+import dk.mada.dns.wire.model.DnsHeaderReply;
 import dk.mada.dns.wire.model.DnsRecords;
 import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
-import dk.mada.dns.wire.model.DnsSection;
+import dk.mada.dns.wire.model.DnsSectionAdditional;
+import dk.mada.dns.wire.model.DnsSectionAnswer;
 
 /**
  * Looks up query via upstream, applying white list, 
@@ -50,7 +52,7 @@ public class LookupEngine {
 	public LookupResult lookup(Query q) {
 		String name = q.getRequestName();
 		
-		if (blacklist.test(name) && !q.isDebugEchoRequest()) {
+		if (blacklist.test(name) && !q.isDebugBypassRequest()) {
 			return makeBlockedReply(q, LookupState.BLACKLISTED, name);
 		}
 
@@ -67,7 +69,7 @@ public class LookupEngine {
 			return result;
 		}
 		
-		if (q.isDebugEchoRequest()) {
+		if (q.isDebugBypassRequest()) {
 			return makeBypassReply(q, reply);
 		}
 		
@@ -82,7 +84,7 @@ public class LookupEngine {
 				.orElse(null);
 		
 		if (whitelistedName != null) {
-			return makeWhitelistReply(q, reply.getAnswer(), whitelistedName);
+			return makeWhitelistReply(q, reply.getHeader(), reply.getAnswer(), reply.getAdditional(), whitelistedName);
 		}
 		
 		String blacklistedName = intermediateNames.stream()
@@ -103,15 +105,17 @@ public class LookupEngine {
 			return makeBlockedReply(q, LookupState.BLOCKED, blockedName);
 		}
 
-		return makePassthroughReply(q, reply.getAnswer());
+		return makePassthroughReply(q, reply.getHeader(), reply.getAnswer(), reply.getAdditional());
 	}
 
-	private LookupResult makePassthroughReply(Query q, DnsSection answer) {
+	private LookupResult makePassthroughReply(Query q, DnsHeaderReply replyHeader, DnsSectionAnswer answer, DnsSectionAdditional additional) {
 		var result = new LookupResult();
 		logger.info("{} is passed through", q.getRequestName());
 		result.setState(LookupState.PASSTHROUGH);
 
-		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), answer);
+		logger.info("Additionals: {}", additional);
+		
+		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), replyHeader, answer, additional);
 
 		result.setReply(reply);
 		return result;
@@ -128,12 +132,12 @@ public class LookupEngine {
 	}
 
 	
-	private LookupResult makeWhitelistReply(Query q, DnsSection answer, String passedDueTo) {
+	private LookupResult makeWhitelistReply(Query q, DnsHeaderReply headerReply, DnsSectionAnswer answer, DnsSectionAdditional additional, String passedDueTo) {
 		var result = new LookupResult();
 		logger.info("{} is whitelisted due to {}", q.getRequestName(), passedDueTo);
 		result.setState(LookupState.WHITELISTED);
 
-		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), answer);
+		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), headerReply, answer, additional);
 
 		result.setReply(reply);
 		return result;
@@ -147,7 +151,7 @@ public class LookupEngine {
 		var name = q.getRequest().getQuestion().getName();
 		var deadend = DnsRecords.aRecordBlindFrom(name, BLOCKED_TTL_SECONDS);
 		
-		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), deadend);
+		var reply = DnsReplies.fromRequestToBlockedReply(q.getRequest(), deadend);
 
 		result.setReply(reply);
 		return result;

@@ -3,20 +3,27 @@ package dk.mada.dns.wire.model.conversion;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.ARecord;
+import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.Header;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Name;
+import org.xbill.DNS.OPTRecord;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
+import org.xbill.DNS.TextParseException;
 
 import dk.mada.dns.wire.model.DnsClass;
 import dk.mada.dns.wire.model.DnsHeader;
+import dk.mada.dns.wire.model.DnsName;
 import dk.mada.dns.wire.model.DnsRecord;
 import dk.mada.dns.wire.model.DnsRecordA;
+import dk.mada.dns.wire.model.DnsRecordC;
+import dk.mada.dns.wire.model.DnsRecordOpt;
 import dk.mada.dns.wire.model.DnsReply;
 
 /**
@@ -43,13 +50,17 @@ public class ModelToWireConverter {
     	Message message = Message.newQuery(question);
 
     	DnsHeader header = reply.getHeader();
-    	message.setHeader(new Header(header.toWireFormatZeroAnswers()));
+    	message.setHeader(new Header(header.toWireFormatZeroForReply()));
     	
     	reply.getAnswer().stream()
     		.map(a -> toRecord(a))
     		.forEach(r -> message.addRecord(r, Section.ANSWER));
+    	
+    	reply.getAdditional().stream()
+    		.map(a -> toRecord(a))
+    		.forEach(r -> message.addRecord(r, Section.ADDITIONAL));
     
-    	logger.debug("Converted {} to\n{}", reply, message);
+    	logger.info("Converted {} to\n{}", reply, message);
     	
     	return ByteBuffer.wrap(message.toWire());
 	}
@@ -59,21 +70,51 @@ public class ModelToWireConverter {
 			return toRecord((DnsRecordA)r);
 		}
 		
+		if (r instanceof DnsRecordOpt) {
+			return toRecord((DnsRecordOpt)r);
+		}
+		
+		if (r instanceof DnsRecordC) {
+			return toRecord((DnsRecordC)r);
+		}
+
+		throw new IllegalStateException("Unhandled type " + r.getClass());
+	}
+
+	private static Record toRecord(DnsRecordOpt r) {
+		short payloadSize = r.getPayloadSize();
+		byte xrcode = r.getXrcode();
+		byte version = r.getVersion();
+		short flags = r.getFlags();
+		
+		if (!r.getOptions().isEmpty()) {
+			logger.warn("Cannot convert options to xbill api");
+		}
+		
+		List<Object> xbillOptions = List.of();
+		
+		return new OPTRecord(payloadSize, xrcode, version, flags, xbillOptions);
+	}
+
+	private static Record toRecord(DnsRecordC r) {
 		try {
-			String n = r.getName().getName();
-			String absName = n.endsWith(".") ? n : (n + ".");
-			Name name = new Name(absName);
-			return Record.newRecord(name, r.getRecordType().getWireValue(), r.getDnsClass().getWireValue(), r.getTtl());
+			Name name = toAbsName(r.getName());
+			Name alias = toAbsName(r.getAlias());
+			return new CNAMERecord(name, r.getDnsClass().getWireValue(), r.getTtl(), alias);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
 	}
+	
+	private static Name toAbsName(DnsName name) throws TextParseException {
+		String n = name.getName();
+		String absName = n.endsWith(".") ? n : (n + ".");
+		return new Name(absName);
+	}
 
 	private static Record toRecord(DnsRecordA r) {
 		try {
-			String n = r.getName().getName();
-			String absName = n.endsWith(".") ? n : (n + ".");
-			Name name = new Name(absName);
+			Name name = toAbsName(r.getName());
 			return new ARecord(name, r.getDnsClass().getWireValue(), r.getTtl(), r.getAddress());
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);

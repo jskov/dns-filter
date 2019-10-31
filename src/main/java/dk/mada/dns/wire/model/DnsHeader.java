@@ -72,14 +72,18 @@ public abstract class DnsHeader {
 		return bb.array();
 	}
 
-	public byte[] toWireFormatZeroAnswers() {
+	/**
+	 * Prepare for wire, but zero out parts that xbill will later add to.
+	 * @return
+	 */
+	public byte[] toWireFormatZeroForReply() {
 		var bb = ByteBuffer.allocate(12);
 		bb.putShort(id);
 		bb.putShort(flags);
 		bb.putShort(qdcount);
 		bb.putShort((short)0);
 		bb.putShort(nscount);
-		bb.putShort(arcount);
+		bb.putShort((short)0);
 		
 		return bb.array();
 	}
@@ -120,5 +124,10 @@ public abstract class DnsHeader {
 				.append(status)
 				.append(")")
 				.toString();
+	}
+	
+	@Override
+	public String toString() {
+		return toDebugString();
 	}
 }

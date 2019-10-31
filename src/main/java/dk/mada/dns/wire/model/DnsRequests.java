@@ -16,7 +16,7 @@ public class DnsRequests {
 		return WireToModelConverter.requestToModel(data);
 	}
 
-	public static DnsRequest fromWireRequest(DnsHeaderQuery header, DnsSection question, ByteBuffer wireRequest) {
-		return new DnsRequest(header, question, wireRequest);
+	public static DnsRequest fromWireRequest(DnsHeaderQuery header, DnsSectionQuestion question, DnsSectionAdditional additional, ByteBuffer wireRequest) {
+		return new DnsRequest(header, question, additional, wireRequest);
 	}
 }

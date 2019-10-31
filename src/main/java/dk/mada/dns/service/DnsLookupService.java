@@ -30,6 +30,7 @@ import dk.mada.dns.wire.model.DnsSection;
 @ApplicationScoped
 public class DnsLookupService implements UDPPacketHandler {
 	private static final String DNS_ECHO = "dns-echo.";
+	private static final String DNS_BYPASS = "dns-bypass.";
 
 	private static final Logger logger = LoggerFactory.getLogger(DnsLookupService.class);
 
@@ -50,14 +51,19 @@ public class DnsLookupService implements UDPPacketHandler {
 
 		LookupResult res;
 		
-		String qName = q.getRequestName();
-		if (qName.startsWith(DNS_ECHO)) {
-			String traceHost = qName.substring(DNS_ECHO.length());
+		String queryHostname = q.getRequestName();
+		if (queryHostname.startsWith(DNS_ECHO)) {
+			String traceHost = queryHostname.substring(DNS_ECHO.length());
 			logger.info("Enable logging for {}", traceHost);
-			devDebugging.startOutputForHost(traceHost);
-			res = lookup.makeBlockedReply(q, "toggle:" + qName);
+			devDebugging.startEchoForHost(traceHost);
+			res = lookup.makeBlockedReply(q, "toggle:" + queryHostname);
+		} else if (queryHostname.startsWith(DNS_BYPASS)) {
+			String traceHost = queryHostname.substring(DNS_BYPASS.length());
+			logger.info("Enable bypass for {}", traceHost);
+			devDebugging.startBypassForHost(traceHost);
+			res = lookup.makeBlockedReply(q, "toggle:" + queryHostname);
 		} else {
-			q.setDebugEchoRequest(devDebugging.isEchoOutputForHost(qName));
+			q.setDebugBypassRequest(devDebugging.isBypassForHost(queryHostname));
 			
 			res = lookup.lookup(q);
 		}
@@ -77,6 +83,11 @@ public class DnsLookupService implements UDPPacketHandler {
 
 			replyBuffer = reportAndConvertReply(reply);
 		}
+		
+		devDebugging.devOutputWireData(queryHostname, "Filtered reply", replyBuffer);
+		
+		devDebugging.stopActionForHost(queryHostname);
+		
 		return replyBuffer;
 	}
 	

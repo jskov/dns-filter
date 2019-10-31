@@ -1,41 +1,43 @@
 package dk.mada.dns.wire.model;
 
 import java.nio.ByteBuffer;
-import java.util.List;
 
 import dk.mada.dns.wire.model.conversion.ModelToWireConverter;
 import dk.mada.dns.wire.model.conversion.WireToModelConverter;
 
 public class DnsReplies {
-	public static DnsReply fromAnswer(ByteBuffer optWireData, DnsHeaderReply header, DnsSection question, DnsSection answer) {
+	public static DnsReply fromAnswer(DnsHeaderReply header, DnsSectionQuestion question, DnsSectionAnswer answer, DnsSectionAdditional additional, ByteBuffer optWireData) {
 		var res = new DnsReply(header, question);
 		res.setAnswer(answer);
+		res.setAdditional(additional);
 		res.setOptWireReply(optWireData);
 		return res;
 	}
 	
-	public static DnsReply fromRequestWithAnswer(DnsRequest request, DnsRecord answer) {
+	public static DnsReply fromRequestToBlockedReply(DnsRequest request, DnsRecord answer) {
 		var qheader = request.getHeader();
 		var header = DnsHeaderReplies.fromRequest(qheader, (short)1, (short)0, (short)0);
-		// FIXME: copy AR
 		
-		return DnsReplies.fromAnswer(null, header, request.getQuestionSection(), DnsSections.from(DnsSectionType.ANSWER, List.of(answer)));
+		DnsSectionAnswer answerSection = DnsSections.ofAnswers(answer);
+		DnsSectionAdditional additionalSection = DnsSections.emptyAdditionals();
+		return DnsReplies.fromAnswer(header, request.getQuestionSection(), answerSection, additionalSection, null);
 	}
 
-	public static DnsReply fromRequestWithAnswer(DnsRequest request, DnsSection answer) {
-		var qheader = request.getHeader();
-		var header = DnsHeaderReplies.fromRequest(qheader, (short)answer.getRecords().size(), (short)0, (short)0);
-		// FIXME: copy AR
-		
-		return DnsReplies.fromAnswer(null, header, request.getQuestionSection(), answer);
+	public static DnsReply fromRequestWithAnswer(DnsRequest request, DnsHeaderReply headerReply, DnsSectionAnswer answerSection, DnsSectionAdditional additionalSection) {
+		return DnsReplies.fromAnswer(headerReply, request.getQuestionSection(), answerSection, additionalSection, null);
 	}
 
+	/**
+	 * Only used by test - should use bin packets instead
+	 */
+	@Deprecated
 	public static DnsReply fromRequestWithAnswers(DnsRequest request, DnsRecord... answers) {
 		var qheader = request.getHeader();
 		var header = DnsHeaderReplies.fromRequest(qheader, (short)answers.length, (short)0, (short)0);
 		// FIXME: copy AR
+		DnsSectionAdditional additionalSection = DnsSections.emptyAdditionals();
 		
-		return DnsReplies.fromAnswer(null, header, request.getQuestionSection(), DnsSections.ofAnswers(answers));
+		return DnsReplies.fromAnswer(header, request.getQuestionSection(), DnsSections.ofAnswers(answers), additionalSection, null);
 	}
 
 	public static DnsReply fromWireData(byte[] data) {
