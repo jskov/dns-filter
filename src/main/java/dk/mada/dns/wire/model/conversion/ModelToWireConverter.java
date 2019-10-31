@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.Header;
@@ -22,6 +23,7 @@ import dk.mada.dns.wire.model.DnsHeader;
 import dk.mada.dns.wire.model.DnsName;
 import dk.mada.dns.wire.model.DnsRecord;
 import dk.mada.dns.wire.model.DnsRecordA;
+import dk.mada.dns.wire.model.DnsRecordAAAA;
 import dk.mada.dns.wire.model.DnsRecordC;
 import dk.mada.dns.wire.model.DnsRecordOpt;
 import dk.mada.dns.wire.model.DnsReply;
@@ -60,7 +62,7 @@ public class ModelToWireConverter {
     		.map(a -> toRecord(a))
     		.forEach(r -> message.addRecord(r, Section.ADDITIONAL));
     
-    	logger.info("Converted {} to\n{}", reply, message);
+    	logger.debug("Converted {} to\n{}", reply, message);
     	
     	return ByteBuffer.wrap(message.toWire());
 	}
@@ -69,7 +71,11 @@ public class ModelToWireConverter {
 		if (r instanceof DnsRecordA) {
 			return toRecord((DnsRecordA)r);
 		}
-		
+
+		if (r instanceof DnsRecordAAAA) {
+			return toRecord((DnsRecordAAAA)r);
+		}
+
 		if (r instanceof DnsRecordOpt) {
 			return toRecord((DnsRecordOpt)r);
 		}
@@ -106,12 +112,6 @@ public class ModelToWireConverter {
 		}
 	}
 	
-	private static Name toAbsName(DnsName name) throws TextParseException {
-		String n = name.getName();
-		String absName = n.endsWith(".") ? n : (n + ".");
-		return new Name(absName);
-	}
-
 	private static Record toRecord(DnsRecordA r) {
 		try {
 			Name name = toAbsName(r.getName());
@@ -119,5 +119,20 @@ public class ModelToWireConverter {
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
+	}
+
+	private static Record toRecord(DnsRecordAAAA r) {
+		try {
+			Name name = toAbsName(r.getName());
+			return new AAAARecord(name, r.getDnsClass().getWireValue(), r.getTtl(), r.getAddress());
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
+
+	private static Name toAbsName(DnsName name) throws TextParseException {
+		String n = name.getName();
+		String absName = n.endsWith(".") ? n : (n + ".");
+		return new Name(absName);
 	}
 }

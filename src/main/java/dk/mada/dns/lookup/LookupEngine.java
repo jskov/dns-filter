@@ -113,8 +113,6 @@ public class LookupEngine {
 		logger.info("{} is passed through", q.getRequestName());
 		result.setState(LookupState.PASSTHROUGH);
 
-		logger.info("Additionals: {}", additional);
-		
 		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), replyHeader, answer, additional);
 
 		result.setReply(reply);
