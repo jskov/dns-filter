@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.ARecord;
+import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.Header;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Name;
@@ -17,9 +18,9 @@ import org.xbill.DNS.Section;
 
 import dk.mada.dns.wire.model.DnsClass;
 import dk.mada.dns.wire.model.DnsHeader;
-import dk.mada.dns.wire.model.DnsOption;
 import dk.mada.dns.wire.model.DnsRecord;
 import dk.mada.dns.wire.model.DnsRecordA;
+import dk.mada.dns.wire.model.DnsRecordC;
 import dk.mada.dns.wire.model.DnsRecordOpt;
 import dk.mada.dns.wire.model.DnsReply;
 
@@ -71,6 +72,13 @@ public class ModelToWireConverter {
 			return toRecord((DnsRecordOpt)r);
 		}
 		
+		if (r instanceof DnsRecordC) {
+			return toRecord((DnsRecordC)r);
+		}
+
+		if (true)
+			throw new IllegalStateException("Unhandled type " + r.getClass());
+		
 		try {
 			String n = r.getName().getName();
 			String absName = n.endsWith(".") ? n : (n + ".");
@@ -95,7 +103,20 @@ public class ModelToWireConverter {
 		
 		return new OPTRecord(payloadSize, xrcode, version, flags, xbillOptions);
 	}
+
 	
+	private static Record toRecord(DnsRecordC r) {
+		try {
+			String n = r.getName().getName();
+			String absName = n.endsWith(".") ? n : (n + ".");
+			Name name = new Name(absName);
+			Name alias = new Name(r.getAlias().getName());
+			return new CNAMERecord(name, r.getDnsClass().getWireValue(), r.getTtl(), alias);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
+
 	private static Record toRecord(DnsRecordA r) {
 		try {
 			String n = r.getName().getName();
