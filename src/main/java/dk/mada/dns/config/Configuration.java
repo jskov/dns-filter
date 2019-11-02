@@ -5,9 +5,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Controller providing access to persisted configuration.
@@ -21,12 +23,17 @@ import javax.inject.Inject;
  */
 @ApplicationScoped
 public class Configuration {
+	private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
+	
 	@Inject private ConfigurationSerializer serializer;
+	
 	private ConfigurationModel model;
 	private List<ConfigurationChangeListener> listeners = new ArrayList<>();
 	
 	public void loadConfiguration() {
 		model = serializer.load();
+		
+		logger.info("Loaded configuration\n{}", getSummary());
 	}
 
     private void update() {
