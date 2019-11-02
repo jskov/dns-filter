@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import dk.mada.dns.Environment;
 import dk.mada.dns.filter.Blacklist;
 import dk.mada.dns.filter.Blockedlist;
 import dk.mada.dns.filter.Whitelist;
@@ -28,7 +29,7 @@ import fixture.resolver.CannedUdpResolver;
 public class FilterImportIntTest {
 	@Test
 	public void blockingWorks() throws UnknownHostException {
-		BlockedListCacher cacher = new BlockedListCacher();
+		BlockedListCacher cacher = new BlockedListCacher(new Environment());
 		cacher.preloadCache();
 		Blockedlist blockedlist = cacher.get();
 

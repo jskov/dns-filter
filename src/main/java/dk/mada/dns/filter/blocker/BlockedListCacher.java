@@ -40,13 +40,18 @@ public class BlockedListCacher {
 	private static final String ADDRESS_PREFIX = "address=/";
 	private static final String IP_PREFIX = "0.0.0.0 ";
 	
-	@Inject private Environment environment;
+	private final Environment environment;
 	
 	private static Predicate<String> VALID_DOMAIN_PATTERN = Pattern.compile("[a-z0-9.-_]+").asPredicate();
 
 	private List<String> hostNames = Collections.emptyList();
 	private List<String> domainNames = Collections.emptyList();
 	private UpstreamBlocklist upstreamBlockList = new UpstreamBlocklist(List.of(), List.of());
+
+	@Inject
+	public BlockedListCacher(Environment environment) {
+		this.environment = environment;
+	}
 	
 	public void preloadCache() {
 		Path cacheDir = environment.getCacheDir();
