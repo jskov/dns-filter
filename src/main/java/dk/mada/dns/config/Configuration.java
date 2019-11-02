@@ -25,9 +25,8 @@ public class Configuration {
 	private ConfigurationModel model;
 	private List<ConfigurationChangeListener> listeners = new ArrayList<>();
 	
-	@PostConstruct
-	public void loadPrefsAtStartup() {
-		model = serializer.reload();
+	public void loadConfiguration() {
+		model = serializer.load();
 	}
 
     private void update() {

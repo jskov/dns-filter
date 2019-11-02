@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
@@ -13,9 +12,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import dk.mada.dns.Environment;
 
 /**
  * Persistence of configuration.
@@ -35,6 +37,8 @@ import org.slf4j.LoggerFactory;
 public class ConfigurationSerializer {
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationSerializer.class);
 
+	@Inject private Environment environment;
+	
 	private static final String BLOCKED_TTL_SECONDS = "blockedTtlSeconds";
 	/** Sensible default minimal length of an entry.
 	* -x.ru
@@ -43,24 +47,21 @@ public class ConfigurationSerializer {
 	private static final int MINIMUM_VALID_ENTRY_LENGTH = 5;
 	private static final String NL = System.lineSeparator();
 	
-	private static final String EXTERNAL_PROVIDED_DIR = System.getenv("DNS_FILTER_CONFIG_DIR");
-	private static final Path STORAGE_DIR = Paths.get(EXTERNAL_PROVIDED_DIR == null ? "/opt/data/dns-filter" : EXTERNAL_PROVIDED_DIR);
-	private static final Path STORAGE = STORAGE_DIR.resolve("config.txt");
-	
 	private static final Pattern DOMAIN_PATTERN = Pattern.compile("([+-])[.]([^:]+)(?::(.*))?");
 	private static final Pattern HOST_PATTERN =   Pattern.compile("([+-])([^.][^:]+)(?::(.*))?");
 	private static final Pattern PREF_PATTERN = Pattern.compile("^:([^=]+)=(.*)");
 	
-	ConfigurationModel reload() {
+	ConfigurationModel load() {
+		Path config = getConfigFile();
 		ConfigurationModel model = new ConfigurationModel();
-		if (Files.exists(STORAGE)) {
-			try (Stream<String> lines = Files.lines(STORAGE, StandardCharsets.UTF_8)) {
+		if (Files.exists(config)) {
+			try (Stream<String> lines = Files.lines(config, StandardCharsets.UTF_8)) {
 				load(model, lines);
 			} catch (IOException e) {
-				logger.warn("Failed to read configuration from " + STORAGE, e);
+				logger.warn("Failed to read configuration from " + config, e);
 			}
 		} else {
-			logger.warn("No configuration found at {}", STORAGE);
+			logger.warn("No configuration found at {}", config);
 		}
 		return model;
 	}
@@ -69,7 +70,7 @@ public class ConfigurationSerializer {
 		try {
 			makeBackupCopyIfRequired(model);
 			
-			try (var w = Files.newBufferedWriter(STORAGE, StandardCharsets.UTF_8)) {
+			try (var w = Files.newBufferedWriter(getConfigFile(), StandardCharsets.UTF_8)) {
 				w.write(modelToStr(model));
 			}
 			
@@ -180,18 +181,29 @@ public class ConfigurationSerializer {
 		return sb.toString();		
 	}
 	
+
+	private Path getConfigDir() {
+		return environment.getConfigDir();
+	}
+
+	private Path getConfigFile() {
+		return getConfigDir().resolve("config.txt");
+	}
+
 	private void makeBackupCopyIfRequired(ConfigurationModel model) throws IOException {
-		Path backupDir = STORAGE_DIR.resolve("backup");
+		Path configDir = getConfigDir();
+		Path backupDir = configDir.resolve("backup");
 		Files.createDirectories(backupDir);
 
 		var todaysBackupSuffix = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 		var name = "config_" + todaysBackupSuffix + ".txt";
 		Path backupFile = backupDir.resolve(name);
 		
-		if (Files.exists(backupFile) || !Files.exists(STORAGE)) {
+		Path config = getConfigFile();
+		if (Files.exists(backupFile) || !Files.exists(config)) {
 			return;
 		}
 		
-		Files.copy(STORAGE, backupFile);
+		Files.copy(config, backupFile);
 	}
 }
