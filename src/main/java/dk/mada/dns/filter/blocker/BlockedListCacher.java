@@ -10,7 +10,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -21,10 +20,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.mada.dns.Environment;
 import dk.mada.dns.filter.Blockedlist;
 
 /**
@@ -39,11 +40,7 @@ public class BlockedListCacher {
 	private static final String ADDRESS_PREFIX = "address=/";
 	private static final String IP_PREFIX = "0.0.0.0 ";
 	
-	private static final boolean isGradleTestEnv = Boolean.parseBoolean(System.getenv("GRADLE_TEST"));
-	private static final Path TEST_CACHE_DIR = Paths.get(System.getProperty("java.io.tmpdir")).resolve("_dns-filter");
-	private static final Path CACHE_DIR = isGradleTestEnv ? TEST_CACHE_DIR : Paths.get("/opt/data/dns-filter");
-	private static final Path CACHED_DOMAINNAMES = CACHE_DIR.resolve("_cached_domainnames.txt");
-	private static final Path CACHED_HOSTNAMES = CACHE_DIR.resolve("_cached_hostnames.txt");
+	@Inject private Environment environment;
 	
 	private static Predicate<String> VALID_DOMAIN_PATTERN = Pattern.compile("[a-z0-9.-_]+").asPredicate();
 
@@ -52,19 +49,22 @@ public class BlockedListCacher {
 	private UpstreamBlocklist upstreamBlockList = new UpstreamBlocklist(List.of(), List.of());
 	
 	public void preloadCache() {
-		logger.info("Preloading cache of blocked domain/host names from {}", CACHE_DIR);
+		Path cacheDir = environment.getCacheDir();
+		logger.info("Preloading cache of blocked domain/host names from {}", cacheDir);
 
-		if (Files.notExists(CACHED_HOSTNAMES) || Files.notExists(CACHED_DOMAINNAMES)) {
+		Path hostNamesFile = getCachedHostNamesFile();
+		Path domainNamesFile = getCachedDomainNamesFile();
+		if (Files.notExists(hostNamesFile) || Files.notExists(domainNamesFile)) {
 			refreshCaches();
 		}
 
 		try {
-			hostNames = Files.readAllLines(CACHED_HOSTNAMES);
+			hostNames = Files.readAllLines(hostNamesFile);
 		} catch (IOException e) {
 			logger.warn("Failed to read cache of blocked host names", e);
 		}
 		try {
-			domainNames = Files.readAllLines(CACHED_DOMAINNAMES);
+			domainNames = Files.readAllLines(domainNamesFile);
 		} catch (IOException e) {
 			logger.warn("Failed to read cache of blocked domain names", e);
 		}
@@ -93,9 +93,9 @@ public class BlockedListCacher {
 		}
 		
 		try {
-			Files.createDirectories(CACHE_DIR);
-			Files.writeString(CACHED_DOMAINNAMES, String.join("\n", domainNames));
-			Files.writeString(CACHED_HOSTNAMES, String.join("\n", hostNames));
+			Files.createDirectories(environment.getCacheDir());
+			Files.writeString(getCachedDomainNamesFile(), String.join("\n", domainNames));
+			Files.writeString(getCachedHostNamesFile(), String.join("\n", hostNames));
 		} catch (IOException e) {
 			logger.warn("Failed to cache list of blocked host/domain names", e);
 		}
@@ -148,5 +148,12 @@ public class BlockedListCacher {
 			throw new IllegalStateException(e);
 		}
 			
+	}
+	
+	private Path getCachedDomainNamesFile() {
+		return environment.getCacheDir().resolve("_cached_domainnames.txt");
+	}
+	private Path getCachedHostNamesFile() {
+		return environment.getCacheDir().resolve("_cached_hostnames.txt");
 	}
 }
