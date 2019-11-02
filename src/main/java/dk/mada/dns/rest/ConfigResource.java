@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 
 import dk.mada.dns.config.Configuration;
 import dk.mada.dns.rest.dto.DomainDto;
+import dk.mada.dns.rest.dto.FilterDto;
 import dk.mada.dns.rest.dto.HostDto;
 
 /**
@@ -26,7 +27,14 @@ import dk.mada.dns.rest.dto.HostDto;
 public class ConfigResource {
 	@Inject private Configuration configuration;
 	
-	@Path("whitelist/host")
+	@Path("filter")
+	@GET
+    @Produces(MediaType.APPLICATION_JSON)
+	public FilterDto getFilter() {
+		return FilterDto.from(configuration);
+	}
+	
+	@Path("filter/whitelist/host")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<HostDto> getWhitelistedHosts() {
@@ -35,13 +43,13 @@ public class ConfigResource {
 				.collect(toList());
     }
 
-	@Path("whitelist/host/{hostname}")
+	@Path("filter/whitelist/host/{hostname}")
 	@PUT
 	public void whitelistHost(@PathParam("hostname") String hostname, @QueryParam("reason") @DefaultValue("") String reason) {
 		configuration.whitelistHost(hostname, reason);
 	}
 
-	@Path("whitelist/domain")
+	@Path("filter/whitelist/domain")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<DomainDto> getWhitelistedDomains() {
@@ -50,13 +58,13 @@ public class ConfigResource {
 				.collect(toList());
     }
 
-	@Path("whitelist/domain/{domainname}")
+	@Path("filter/whitelist/domain/{domainname}")
 	@PUT
 	public void whitelistDomain(@PathParam("domainname") String domainname, @QueryParam("reason") @DefaultValue("") String reason) {
 		configuration.whitelistDomain(domainname, reason);
 	}
 
-	@Path("blacklist/host")
+	@Path("filter/blacklist/host")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<HostDto> getBlacklistHosts() {
@@ -65,13 +73,13 @@ public class ConfigResource {
 				.collect(toList());
     }
 
-	@Path("blacklist/host/{hostname}")
+	@Path("filter/blacklist/host/{hostname}")
 	@PUT
 	public void blacklistHost(@PathParam("hostname") String hostname, @QueryParam("reason") @DefaultValue("") String reason) {
 		configuration.blacklistHost(hostname, reason);
 	}
 
-	@Path("blacklist/domain")
+	@Path("filter/blacklist/domain")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<DomainDto> getBlacklistedDomains() {
@@ -80,7 +88,7 @@ public class ConfigResource {
 				.collect(toList());
     }
 
-	@Path("blacklist/domain/{domainname}")
+	@Path("filter/blacklist/domain/{domainname}")
 	@PUT
 	public void blacklistDomain(@PathParam("domainname") String domainname, @QueryParam("reason") @DefaultValue("") String reason) {
 		configuration.blacklistDomain(domainname, reason);
