@@ -29,6 +29,8 @@ import dk.mada.dns.filter.Blockedlist;
 
 /**
  * Fetches host and domain names from https://github.com/notracking/hosts-blocklists
+ * 
+ * TODO: Still need to do periodic refreshing of the lists
  */
 @ApplicationScoped
 public class BlockedListCacher {
@@ -47,7 +49,8 @@ public class BlockedListCacher {
 
 	private List<String> hostNames = Collections.emptyList();
 	private List<String> domainNames = Collections.emptyList();
-
+	private UpstreamBlocklist upstreamBlockList = new UpstreamBlocklist(List.of(), List.of());
+	
 	public void preloadCache() {
 		logger.info("Preloading cache of blocked domain/host names from {}", CACHE_DIR);
 
@@ -65,11 +68,14 @@ public class BlockedListCacher {
 		} catch (IOException e) {
 			logger.warn("Failed to read cache of blocked domain names", e);
 		}
+		
+		logger.info("Provide blocked list of {} host names and {} domain names", hostNames.size(), domainNames.size());
+		upstreamBlockList.setHosts(hostNames);
+		upstreamBlockList.setDomains(domainNames);
 	}
 	
 	public Blockedlist get() {
-		logger.info("Provide blocked list of {} host names and {} domain names", hostNames.size(), domainNames.size());
-		return new UpstreamBlocklist(hostNames, domainNames);
+		return upstreamBlockList;
 	}
 
 	private void refreshCaches() {
