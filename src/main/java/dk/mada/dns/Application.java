@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.mada.dns.config.Configuration;
 import dk.mada.dns.filter.blocker.BlockedListCacher;
 import dk.mada.dns.resolver.external.ExternalDnsGateway;
 import dk.mada.dns.service.DnsLookupService;
@@ -31,12 +32,14 @@ public class Application {
     @Inject private DnsQueryEventService websocketService;
     @Inject private BlockedListCacher blockedListCacher;
     @Inject private ExternalDnsGateway dnsGateway;
+    @Inject private Configuration configuration;
 
     private UDPServer server;
     
     void onStart(@Observes StartupEvent ev) {
         logger.info("The application is starting...");
     
+        configuration.loadConfiguration();
         blockedListCacher.preloadCache();
         dnsGateway.startBackgroundReaper();
         
