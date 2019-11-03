@@ -14,3 +14,7 @@ pluginManagement {
 }
 
 rootProject.name = "dns-filter"
+
+include 'dns-filter.android'
+project(':dns-filter.android').projectDir = file('android')
+
