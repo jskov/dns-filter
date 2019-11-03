@@ -3,6 +3,9 @@ pluginManagement {
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
+        maven {
+            url "https://nexus.gluonhq.com/nexus/content/repositories/releases"
+        }
     }
     resolutionStrategy {
         eachPlugin {
