@@ -22,7 +22,10 @@ group = "dk.mada.dns"
 version = "1-SNAPSHOT"
 
 repositories {
-     mavenCentral()
+    mavenCentral()
+	maven {
+		url "file:vaadin-ext-repo"
+	}
 }
 
 configurations {
@@ -47,6 +50,10 @@ dependencies {
 	implementation "com.vaadin:flow-html-components"
 	implementation "com.vaadin:vaadin-ordered-layout-flow"
 	implementation "com.vaadin:vaadin-core"
+
+	implementation "net.moewes:quarkus-vaadin-extension:0.1.0-SNAPSHOT"
+//	implementation files("libs/quarkus-vaadin-extension-0.1.0-SNAPSHOT.jar")
+//	runtimeOnly files("libs/quarkus-vaadin-extension-deployment-0.1.0-SNAPSHOT.jar")
 
 	compileOnly 'org.immutables:value-annotations:2.7.5'
 	forEclipse 'org.immutables:value:2.7.5'
