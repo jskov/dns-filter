@@ -16,6 +16,7 @@ import org.xbill.DNS.Name;
 import org.xbill.DNS.OPTRecord;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
+import org.xbill.DNS.TXTRecord;
 import org.xbill.DNS.TextParseException;
 
 import dk.mada.dns.wire.model.DnsClass;
@@ -26,6 +27,7 @@ import dk.mada.dns.wire.model.DnsRecordA;
 import dk.mada.dns.wire.model.DnsRecordAAAA;
 import dk.mada.dns.wire.model.DnsRecordC;
 import dk.mada.dns.wire.model.DnsRecordOpt;
+import dk.mada.dns.wire.model.DnsRecordTxt;
 import dk.mada.dns.wire.model.DnsReply;
 
 /**
@@ -83,10 +85,24 @@ public class ModelToWireConverter {
 		if (r instanceof DnsRecordC) {
 			return toRecord((DnsRecordC)r);
 		}
+		
+		if (r instanceof DnsRecordTxt) {
+			return toRecord((DnsRecordTxt)r);
+		}
 
 		throw new IllegalStateException("Unhandled type " + r.getClass());
 	}
 
+	private static Record toRecord(DnsRecordTxt r) {
+		try {
+			Name name = toAbsName(r.getName());
+			int dnsClass = r.getDnsClass().getWireValue();
+			return new TXTRecord(name, dnsClass, r.getTtl(), r.getTxts());
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
+	
 	private static Record toRecord(DnsRecordOpt r) {
 		short payloadSize = r.getPayloadSize();
 		byte xrcode = r.getXrcode();
@@ -106,7 +122,8 @@ public class ModelToWireConverter {
 		try {
 			Name name = toAbsName(r.getName());
 			Name alias = toAbsName(r.getAlias());
-			return new CNAMERecord(name, r.getDnsClass().getWireValue(), r.getTtl(), alias);
+			int dnsClass = r.getDnsClass().getWireValue();
+			return new CNAMERecord(name, dnsClass, r.getTtl(), alias);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
