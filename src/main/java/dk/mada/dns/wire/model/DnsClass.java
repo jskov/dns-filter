@@ -17,6 +17,15 @@ public enum DnsClass {
 		this.wireValue = wireValue;
 	}
 
+	public static DnsClass fromWire(int wire) {
+		for (DnsClass c : values()) {
+			if (c.wireValue == wire) {
+				return c;
+			}
+		}
+		throw new IllegalArgumentException("Invalid DNS CLASS wire value " + wire);
+	}
+	
 	public int getWireValue() {
 		return wireValue;
 	}

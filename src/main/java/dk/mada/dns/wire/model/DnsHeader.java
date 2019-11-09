@@ -43,6 +43,10 @@ public abstract class DnsHeader {
 	public short getFlags() {
 		return flags;
 	}
+	
+	public DnsResponseCode getResponseCode() {
+		return DnsResponseCode.fromWire(flags);
+	}
 
 	public short getQdcount() {
 		return qdcount;

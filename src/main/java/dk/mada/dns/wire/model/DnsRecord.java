@@ -87,6 +87,13 @@ public class DnsRecord {
 	public Optional<DnsRecordOpt> asRecordOpt() {
 		return Optional.empty();
 	}
+	
+	public void ifRecordTxt(Consumer<DnsRecordTxt> c) {
+	}
+
+	public Optional<DnsRecordTxt> asRecordTxt() {
+		return Optional.empty();
+	}
 
 	@Override
 	public String toString() {
