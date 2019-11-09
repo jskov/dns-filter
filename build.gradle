@@ -45,7 +45,8 @@ dependencies {
 	implementation "com.vaadin:vaadin-grid-flow"
 	implementation "com.vaadin:flow-server"
 	implementation "com.vaadin:flow-html-components"
-//	implementation "com.vaadin:vaadin-core"
+	implementation "com.vaadin:vaadin-ordered-layout-flow"
+	implementation "com.vaadin:vaadin-core"
 
 	compileOnly 'org.immutables:value-annotations:2.7.5'
 	forEclipse 'org.immutables:value:2.7.5'

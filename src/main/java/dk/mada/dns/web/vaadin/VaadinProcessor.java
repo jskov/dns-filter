@@ -60,4 +60,50 @@ public class VaadinProcessor {
 	                  .forEach(value -> reflectiveClass.produce(new ReflectiveClassBuildItem(false, false, value)));
 
 	  }
+	  
+	  @BuildStep
+	  void reflection(BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
+	    logger.info("Register reflective CLasses");
+
+	    // Vaadin
+	    ReflectiveClassBuildItem vaadinClassBuildItem = ReflectiveClassBuildItem.builder("com.vaadin.flow.component.UI",
+	                                                                                     "com.vaadin.flow.component.PollEvent",
+	                                                                                     "com.vaadin.flow.component.ClickEvent",
+	                                                                                     "com.vaadin.flow.component.CompositionEndEvent",
+	                                                                                     "com.vaadin.flow.component.CompositionStartEvent",
+	                                                                                     "com.vaadin.flow.component.CompositionUpdateEvent",
+	                                                                                     "com.vaadin.flow.component.KeyDownEvent",
+	                                                                                     "com.vaadin.flow.component.KeyPressEvent",
+	                                                                                     "com.vaadin.flow.component.KeyUpEvent",
+	                                                                                     "com.vaadin.flow.component.splitlayout.GeneratedVaadinSplitLayout$SplitterDragendEvent",
+	                                                                                     "com.vaadin.flow.component.details.Details$OpenedChangeEvent",
+	                                                                                     "com.vaadin.flow.component.details.Details",
+	                                                                                     "com.vaadin.flow.router.InternalServerError",
+	                                                                                     "com.vaadin.flow.router.RouteNotFoundError",
+	                                                                                     "com.vaadin.flow.theme.lumo.Lumo")
+	                                                                            .constructors(true)
+	                                                                            .methods(true)
+	                                                                            .build();
+
+	    reflectiveClass.produce(vaadinClassBuildItem);
+	    // Athmosphere
+	    ReflectiveClassBuildItem athmosClassBuildItem = ReflectiveClassBuildItem.builder(
+	        "org.atmosphere.cpr.DefaultBroadcaster", "org.atmosphere.cpr.DefaultAtmosphereResourceFactory",
+	        "org.atmosphere.cpr.DefaultBroadcasterFactory", "org.atmosphere.cpr.DefaultMetaBroadcaster",
+	        "org.atmosphere.cpr.DefaultAtmosphereResourceSessionFactory", "org.atmosphere.util.VoidAnnotationProcessor",
+	        "org.atmosphere.cache.UUIDBroadcasterCache", "org.atmosphere.websocket.protocol.SimpleHttpProtocol",
+	        "org.atmosphere.interceptor.IdleResourceInterceptor", "org.atmosphere.interceptor.OnDisconnectInterceptor",
+	        "org.atmosphere.interceptor.WebSocketMessageSuspendInterceptor",
+	        "org.atmosphere.interceptor.JavaScriptProtocol", "org.atmosphere.interceptor.JSONPAtmosphereInterceptor",
+	        "org.atmosphere.interceptor.SSEAtmosphereInterceptor",
+	        "org.atmosphere.interceptor.AndroidAtmosphereInterceptor",
+	        "org.atmosphere.interceptor.PaddingAtmosphereInterceptor", "org.atmosphere.interceptor.CacheHeadersInterceptor",
+	        "org.atmosphere.interceptor.CorsInterceptor")
+	                                                                            .constructors(true)
+	                                                                            .methods(true)
+	                                                                            .build();
+
+	    reflectiveClass.produce(athmosClassBuildItem);
+	  }
+
 }
