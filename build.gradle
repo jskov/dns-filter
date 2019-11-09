@@ -36,6 +36,9 @@ dependencies {
 
     implementation "dnsjava:dnsjava:${dnsJavaVersion}"
 
+	implementation enforcedPlatform("com.vaadin:vaadin-bom:14.0.12")
+	implementation "com.vaadin:vaadin-grid-flow"
+
 	compileOnly 'org.immutables:value-annotations:2.7.5'
 	forEclipse 'org.immutables:value:2.7.5'
 	annotationProcessor 'org.immutables:value:2.7.5'
