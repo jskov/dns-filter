@@ -1,18 +1,25 @@
 package dk.mada.dns.web.vaadin;
 
+import org.jboss.jandex.DotName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.router.Route;
 
+import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
+import io.quarkus.arc.deployment.BeanDefiningAnnotationBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
-import io.quarkus.deployment.builditem.substrate.ReflectiveClassBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.undertow.deployment.ServletBuildItem;
 
+// From https://github.com/Nano-Vaadin-Demos/nano-vaadin-quarkus
 public class VaadinProcessor {
 	private static final Logger logger = LoggerFactory.getLogger(VaadinProcessor.class);
 	
+	private static DotName routeAnnotation = DotName.createSimple(Route.class.getName());
+
 	 @BuildStep
 	  FeatureBuildItem featureBuildItem() {
 	    logger.info("Add Feature For Vaadin");

@@ -34,7 +34,10 @@ dependencies {
     implementation "io.quarkus:quarkus-resteasy-jsonb"
     implementation "io.quarkus:quarkus-undertow-websockets"
 
+	// For vaadin
 	compileOnly "io.quarkus:quarkus-core-deployment:${quarkusVersion}"
+	compileOnly "io.quarkus:quarkus-arc-deployment:${quarkusVersion}"
+	compileOnly "io.quarkus:quarkus-undertow-deployment:${quarkusVersion}"
 
     implementation "dnsjava:dnsjava:${dnsJavaVersion}"
 
@@ -42,7 +45,7 @@ dependencies {
 	implementation "com.vaadin:vaadin-grid-flow"
 	implementation "com.vaadin:flow-server"
 	implementation "com.vaadin:flow-html-components"
-	implementation "com.vaadin:vaadin-core"
+//	implementation "com.vaadin:vaadin-core"
 
 	compileOnly 'org.immutables:value-annotations:2.7.5'
 	forEclipse 'org.immutables:value:2.7.5'
@@ -52,6 +55,8 @@ dependencies {
     testImplementation "io.rest-assured:rest-assured"
     testImplementation "org.assertj:assertj-core:3.11.1"
     testImplementation "dnsjava:dnsjava:${dnsJavaVersion}"
+	testImplementation "io.quarkus:quarkus-arc-deployment:${quarkusVersion}"
+	testImplementation "io.quarkus:quarkus-undertow-deployment:${quarkusVersion}"
 }
 
 task makeSuccessMarker() {

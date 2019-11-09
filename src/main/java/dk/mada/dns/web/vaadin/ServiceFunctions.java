@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import dk.mada.dns.web.app.MainView;
 
+//From https://github.com/Nano-Vaadin-Demos/nano-vaadin-quarkus
 public class ServiceFunctions {
 
 	String DEFAULT_PKG_TO_SCAN_PROPERTY = "vaadin-pkg-to-scan";
