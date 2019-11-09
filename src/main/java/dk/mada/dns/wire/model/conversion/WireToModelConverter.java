@@ -21,8 +21,10 @@ import org.xbill.DNS.Message;
 import org.xbill.DNS.OPTRecord;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
+import org.xbill.DNS.TXTRecord;
 
 import dk.mada.dns.util.Hexer;
+import dk.mada.dns.wire.model.DnsClass;
 import dk.mada.dns.wire.model.DnsHeader;
 import dk.mada.dns.wire.model.DnsHeaderQueries;
 import dk.mada.dns.wire.model.DnsHeaderQuery;
@@ -122,7 +124,7 @@ public class WireToModelConverter {
 	
 	private static DnsHeaderReply toReplyHeader(Header h, short ancount, short arcount) {
 		
-		logger.debug("xbill header {}", h.printFlags());
+		logger.debug("xbill header {} : {}", h.printFlags(), h.getRcode());
 		
 		short flags = DnsHeader.FLAGS_QR;
 
@@ -144,6 +146,7 @@ public class WireToModelConverter {
 		if (h.getFlag(Flags.CD)) {
 			flags |= DnsHeader.FLAGS_CD;
 		}
+		flags |= h.getRcode();
 
 		logger.debug("Model flags: {}", Hexer.hexShort(flags));
 		
@@ -201,7 +204,18 @@ public class WireToModelConverter {
 					.collect(toList());
 			
 			return DnsRecords.optRecordFrom(name, type, payloadSize, xrcode, version, flags, options);
+		} else if (r instanceof TXTRecord) {
+			TXTRecord txtRecord = (TXTRecord)r;
+			var dnsClass = DnsClass.fromWire(r.getDClass());
+			@SuppressWarnings("unchecked")
+			List<String> txts = (List<String>)txtRecord.getStrings();
+			
+			logger.debug("TXT record {} : {}", name, txts);
+			
+			return DnsRecords.txtRecordFrom(name, dnsClass, ttl, txts);
 		}
+		
+		logger.warn("Unknown record type {} : {}", type, r.getClass());
 		
 		return DnsRecord.unknownFrom(type, name, ttl);
 	}

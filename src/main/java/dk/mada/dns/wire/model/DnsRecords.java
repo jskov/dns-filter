@@ -34,4 +34,8 @@ public class DnsRecords {
 	public static DnsRecordOpt optRecordFrom(DnsName name, DnsRecordType type, short payloadSize, byte xrcode,  byte version, short flags, List<DnsOption> options) {
 		return new DnsRecordOpt(name, type, payloadSize, xrcode, version, flags, options);
 	}
+	
+	public static DnsRecordTxt txtRecordFrom(DnsName name, DnsClass dnsClass, long ttl, List<String> txts) {
+		return new DnsRecordTxt(name, dnsClass, ttl, txts);
+	}
 }

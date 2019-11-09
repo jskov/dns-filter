@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true">
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="org.jboss.logging" level="WARN" />
+	<logger name="org.jboss.weld" level="WARN" />
+
+	<logger name="dk.mada.dns" level="DEBUG" />
+	<logger name="dk.mada.dns.parser" level="INFO" />
+
+
+	<root level="info">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>
