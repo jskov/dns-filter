@@ -53,10 +53,10 @@ dependencies {
 	implementation "com.vaadin:flow-server-compatibility-mode"
 
 	// https://github.com/Nano-Vaadin-Demos/nano-vaadin-quarkus
-	implementation "org.rapidpm.vaadin:nano-vaadin-quarkus-extension:1.0.0-RPM-SNAPSHOT"
+//	implementation "org.rapidpm.vaadin:nano-vaadin-quarkus-extension:1.0.0-RPM-SNAPSHOT"
 
 	// https://github.com/moewes/quarkus-vaadin-lab
-//	implementation "net.moewes:quarkus-vaadin-extension:0.1.0-SNAPSHOT"
+	implementation "net.moewes:quarkus-vaadin-extension:0.1.0-SNAPSHOT"
 
 	compileOnly 'org.immutables:value-annotations:2.7.5'
 	forEclipse 'org.immutables:value:2.7.5'
