@@ -9,7 +9,7 @@ import com.vaadin.flow.router.Route;
 @Route(value = "hallo")
 public class TestView extends VerticalLayout {
 
-	TestView() {
+	public TestView() {
 		Div div = new Div();
 		div.setText("Hello from Vaadin");
 
@@ -19,9 +19,9 @@ public class TestView extends VerticalLayout {
 
 		button.setText("My Button");
 
-//	    button.addClickListener(event -> {
-//	      UI.getCurrent().navigate(CdiView.class);
-//	    });
+	    button.addClickListener(event -> {
+	      UI.getCurrent().navigate(MainView.class);
+	    });
 
 		add(button);
 	}
