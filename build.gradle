@@ -51,6 +51,7 @@ dependencies {
 	implementation "com.vaadin:vaadin-ordered-layout-flow"
 	implementation "com.vaadin:vaadin-core"
 	implementation "com.vaadin:flow-server-compatibility-mode"
+	implementation "com.vaadin:vaadin-list-box-flow"
 
 	// https://github.com/Nano-Vaadin-Demos/nano-vaadin-quarkus
 //	implementation "org.rapidpm.vaadin:nano-vaadin-quarkus-extension:1.0.0-RPM-SNAPSHOT"
