@@ -13,11 +13,11 @@ import com.vaadin.flow.router.Route;
 import dk.mada.dns.config.Configuration;
 
 @Route(value = "config")
-public class MainView extends VerticalLayout {
-	private static final Logger logger = LoggerFactory.getLogger(MainView.class);
+public class ConfigView extends VerticalLayout {
+	private static final Logger logger = LoggerFactory.getLogger(ConfigView.class);
 	@Inject	private Configuration config;
 
-	public MainView() {
+	public ConfigView() {
 		add(new H1("Configuration"));
 	}
 	
