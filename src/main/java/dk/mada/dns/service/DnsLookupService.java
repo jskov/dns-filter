@@ -50,7 +50,6 @@ public class DnsLookupService implements UDPPacketHandler {
 		Query q = new Query(request, clientIp);
 
 		LookupResult res;
-		
 		String queryHostname = q.getRequestName();
 		if (queryHostname.startsWith(DNS_ECHO)) {
 			String traceHost = queryHostname.substring(DNS_ECHO.length());
@@ -64,7 +63,6 @@ public class DnsLookupService implements UDPPacketHandler {
 			res = lookup.makeBlockedReply(q, "toggle:" + queryHostname);
 		} else {
 			q.setDebugBypassRequest(devDebugging.isBypassForHost(queryHostname));
-			
 			res = lookup.lookup(q);
 		}
 		
@@ -80,28 +78,23 @@ public class DnsLookupService implements UDPPacketHandler {
 		if (replyBuffer == null) {
 			DnsReply reply = res.getReply();
 			logger.debug("Decoded reply: {}", reply);
-
-			replyBuffer = reportAndConvertReply(reply);
+			replyBuffer = DnsReplies.toWireFormat(reply);
 		}
 		
 		devDebugging.devOutputWireData(queryHostname, "Filtered reply", replyBuffer);
 		
 		devDebugging.stopActionForHost(queryHostname);
+
+		notifyEventListeners(queryHostname, res.getState(), res.getReply());
 		
 		return replyBuffer;
-	}
-	
-	private ByteBuffer reportAndConvertReply(DnsReply reply) {
-		notifyEventListeners(reply);
-
-		return DnsReplies.toWireFormat(reply);
 	}
 	
 	private ByteBuffer doFallbackUpstreamRequest(DnsRequest request) {
 		throw new UnsupportedOperationException("FIXME: need to implement safe fall-back");
 	}
 
-	private void notifyEventListeners(DnsReply reply) {
+	private void notifyEventListeners(String queryHostName, LookupState state, DnsReply reply) {
 		
 		DnsSection answers = reply.getAnswer();
 		if (answers == null) {
@@ -116,11 +109,11 @@ public class DnsLookupService implements UDPPacketHandler {
 		DnsRecord firstAnswer = records.get(0);
 
 		DnsQueryEventDto dto = new DnsQueryEventDto();
-		dto.hostname = reply.getQuestion().getName().toString();
-		dto.ttl = firstAnswer.getTtl();
-		firstAnswer.asRecordA()
-			.ifPresent(dra -> dto.ip = dra.getAddress().getHostAddress());
-		dto.type = EventTypeDto.PASSTHROUGH;
+		dto.hostname = queryHostName;
+//		dto.ttl = firstAnswer.getTtl();
+//		firstAnswer.asRecordA()
+//			.ifPresent(dra -> dto.ip = dra.getAddress().getHostAddress());
+		dto.type = EventTypeDto.from(state);
 
 		logger.debug("Notify listeners about {}", dto);
 		

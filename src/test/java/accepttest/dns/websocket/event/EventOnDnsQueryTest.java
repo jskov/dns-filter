@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import dk.mada.dns.websocket.DnsQueryEventService;
 import dk.mada.dns.websocket.dto.DnsQueryEventDto;
+import dk.mada.dns.websocket.dto.EventTypeDto;
 import fixture.dns.xbill.DnfFilterLocalHostLookup;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -54,8 +55,10 @@ public class EventOnDnsQueryTest {
 
 	    	 DnsQueryEventDto event = nextWebsocketMessage();
 	    	 logger.info("Got event {}", event);
-	    	 assertThat(event.ip)
-	    			 .isEqualTo("185.17.217.100");
+	    	 assertThat(event.type)
+    			 .isEqualTo(EventTypeDto.PASSTHROUGH);
+	    	 assertThat(event.hostname)
+	    	 	.isEqualTo("mada.dk");
         }
 	}
 
