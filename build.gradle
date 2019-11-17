@@ -127,8 +127,6 @@ tasks.check.dependsOn(unitTest, integrationTest)
 
 tasks.testNative.enabled = false
 tasks.buildNative.enabled = false
-tasks.quarkusBuild.enabled = false
-
 
 sourceCompatibility = 11
 targetCompatibility = 11
