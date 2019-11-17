@@ -157,22 +157,22 @@ public class ConfigurationSerializer {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append(model.getBlacklistedDomains().stream()
-					   .map(d -> "-." + d.getDomain() + ":" + d.getReason())
+					   .map(d -> "-." + d.getName() + ":" + d.getReason())
 					   .collect(Collectors.joining(NL)));
 		sb.append(NL).append(NL);
 
 		sb.append(model.getBlacklistedHosts().stream()
-				   .map(h -> "-" + h.getHost() + ":" + h.getReason())
+				   .map(h -> "-" + h.getName() + ":" + h.getReason())
 				   .collect(Collectors.joining(NL)));
 		sb.append(NL).append(NL);
 
 		sb.append(model.getWhitelistedDomains().stream()
-				   .map(d -> "+." + d.getDomain() + ":" + d.getReason())
+				   .map(d -> "+." + d.getName() + ":" + d.getReason())
 				   .collect(Collectors.joining(NL)));
 		sb.append(NL).append(NL);
 
 		sb.append(model.getWhitelistedHosts().stream()
-				.map(h -> "+" + h.getHost() + ":" + h.getReason())
+				.map(h -> "+" + h.getName() + ":" + h.getReason())
 				.collect(Collectors.joining(NL)));
 		sb.append(NL).append(NL);
 

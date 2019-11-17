@@ -82,6 +82,10 @@ Then the following query of `cnn.com` will echo both query, and the nameserver r
 
 # Vaadin
 
+http://localhost:8080/vaadin/
+
+https://vaadin.com/components/vaadin-text-field/java-examples/text-field
+
 ## Quarkus-vaadin-lab
 
 From https://github.com/moewes/quarkus-vaadin-lab

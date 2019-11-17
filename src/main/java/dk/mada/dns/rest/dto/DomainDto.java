@@ -11,7 +11,7 @@ public class DomainDto {
 	
 	public static DomainDto from(Domain d) {
 		var dto = new DomainDto();
-		dto.domain = d.getDomain();
+		dto.domain = d.getName();
 		dto.reason = d.getReason();
 		return dto;
 	}
