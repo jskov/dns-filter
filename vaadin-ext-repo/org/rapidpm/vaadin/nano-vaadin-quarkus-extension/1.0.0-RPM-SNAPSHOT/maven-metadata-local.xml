@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>org.rapidpm.vaadin</groupId>
+  <artifactId>nano-vaadin-quarkus-extension</artifactId>
+  <version>1.0.0-RPM-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <localCopy>true</localCopy>
+    </snapshot>
+    <lastUpdated>20191110105137</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <classifier>tests</classifier>
+        <extension>jar</extension>
+        <value>1.0.0-RPM-SNAPSHOT</value>
+        <updated>20191110105137</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>1.0.0-RPM-SNAPSHOT</value>
+        <updated>20191110105137</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>1.0.0-RPM-SNAPSHOT</value>
+        <updated>20191110105137</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>

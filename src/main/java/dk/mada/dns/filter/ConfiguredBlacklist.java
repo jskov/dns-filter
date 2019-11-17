@@ -4,8 +4,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import dk.mada.dns.config.ConfigurationChangeListener;
 import dk.mada.dns.config.Configuration;
+import dk.mada.dns.config.ConfigurationChangeListener;
 
 /**
  * The blacklist as configured by the user.

@@ -3,11 +3,8 @@ package dk.mada.dns.lookup;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import dk.mada.dns.config.Configuration;
-import dk.mada.dns.filter.Blacklist;
 import dk.mada.dns.filter.ConfiguredBlacklist;
 import dk.mada.dns.filter.ConfiguredWhitelist;
-import dk.mada.dns.filter.Whitelist;
 import dk.mada.dns.filter.blocker.BlockedListCacher;
 import dk.mada.dns.resolver.DefaultResolver;
 

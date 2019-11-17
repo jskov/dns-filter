@@ -80,3 +80,31 @@ Make a dig query to hostname prefixed with `dns-bypass.` like this:
 
 Then the following query of `cnn.com` will echo both query, and the nameserver reply. The reply will not be filtered.
 
+# Vaadin
+
+http://localhost:8080/vaadin/
+
+https://vaadin.com/components/vaadin-text-field/java-examples/text-field
+
+## Quarkus-vaadin-lab
+
+From https://github.com/moewes/quarkus-vaadin-lab
+
+Start as normal.
+
+But no control gui rendered.
+
+Fixed by adding com.vaadin:flow-server-compatibility-mode dependency.
+
+
+## Nano-Vaadin-Demos
+
+From https://github.com/Nano-Vaadin-Demos/nano-vaadin-quarkus
+
+Start with:
+
+	$ ./gradlew quarkusDev --jvm-args="-Dvaadin-pkg-to-scan=dk.mada.dns.web.app"
+	
+Created more recently, but seems simple (less complete?)
+
+

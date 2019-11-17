@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.rapidpm.vaadin</groupId>
+  <artifactId>nano-vaadin-quarkus-extension</artifactId>
+  <versioning>
+    <versions>
+      <version>1.0.0-RPM-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20191110105137</lastUpdated>
+  </versioning>
+</metadata>
