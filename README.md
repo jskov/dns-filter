@@ -5,6 +5,10 @@ DNS server with filtering of ad hosts/domains
 
 Personal development project, not fit for general use.
 
+# Building
+
+./gradlew quarkusBuild --uber-jar
+
 
 # Hooking into Linux (Fedora)
 

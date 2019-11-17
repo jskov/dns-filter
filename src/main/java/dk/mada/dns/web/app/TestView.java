@@ -20,7 +20,7 @@ public class TestView extends VerticalLayout {
 		button.setText("My Button");
 
 	    button.addClickListener(event -> {
-	      UI.getCurrent().navigate(MainView.class);
+	      UI.getCurrent().navigate(ConfigView.class);
 	    });
 
 		add(button);
