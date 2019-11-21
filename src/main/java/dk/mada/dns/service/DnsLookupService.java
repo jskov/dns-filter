@@ -111,10 +111,18 @@ public class DnsLookupService implements UDPPacketHandler {
 		DnsQueryEventDto dto = new DnsQueryEventDto();
 		dto.hostname = queryHostName;
 //		dto.ttl = firstAnswer.getTtl();
-//		firstAnswer.asRecordA()
-//			.ifPresent(dra -> dto.ip = dra.getAddress().getHostAddress());
+		firstAnswer.asRecordA()
+			.ifPresent(dra -> dto.ip = dra.getAddress().getHostAddress());
 		dto.type = EventTypeDto.from(state);
 
+		String target = dto.ip == null ? "(na)" : dto.ip;
+		String summary = queryHostName + " -> " + target + " : " + state.name() + "\n";
+		if (state != LookupState.PASSTHROUGH) {
+			summary = "* " + summary;
+		}
+		
+		dto.summary = summary;
+		
 		logger.debug("Notify listeners about {}", dto);
 		
 		websocketEventNotifier.broadcast(dto);

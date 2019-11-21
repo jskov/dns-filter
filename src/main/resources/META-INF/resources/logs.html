@@ -57,8 +57,9 @@
                   $("#msg").focus();
               };
               socket.onmessage =function(m) {
-                  console.log("Got message: " + m.data);
-                  $("#chat").append(m.data + "\n");
+                  var obj = JSON.parse(m.data)
+                  $("#chat").append(obj.summary)
+                  
                   scrollToBottom();
               };
           }
