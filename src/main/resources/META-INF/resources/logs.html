@@ -9,6 +9,7 @@
 
     <style>
         #chat {
+        font-family: monospace;
           min-height: 300px;
       }
     </style>
@@ -25,6 +26,7 @@
     <div class="container">
       <br/>
       <div class="row">
+		<button id="mark" class="col-md-1 btn btn-primary" type="button">mark</button>
           <textarea class="col-md-8" id="chat">
             </textarea>
       </div>
@@ -40,6 +42,9 @@
       var socket;
 
       $( document ).ready(function() {
+          $("#mark").click(function() {
+              $("#chat").append("======================================================================\n");
+            });
         $("#chat").change(function() {
             scrollToBottom();
           });
