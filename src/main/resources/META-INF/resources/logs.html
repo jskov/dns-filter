@@ -9,6 +9,7 @@
 
     <style>
         #chat {
+        font-family: monospace;
           min-height: 300px;
       }
     </style>
@@ -42,7 +43,7 @@
 
       $( document ).ready(function() {
           $("#mark").click(function() {
-              $("#chat").append("-------\n");
+              $("#chat").append("======================================================================\n");
             });
         $("#chat").change(function() {
             scrollToBottom();

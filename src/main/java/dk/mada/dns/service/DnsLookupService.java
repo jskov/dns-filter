@@ -85,7 +85,7 @@ public class DnsLookupService implements UDPPacketHandler {
 		
 		devDebugging.stopActionForHost(queryHostname);
 
-		notifyEventListeners(queryHostname, res.getState(), res.getReply());
+		notifyEventListeners(clientIp, queryHostname, res.getState(), res.getReply());
 		
 		return replyBuffer;
 	}
@@ -94,8 +94,7 @@ public class DnsLookupService implements UDPPacketHandler {
 		throw new UnsupportedOperationException("FIXME: need to implement safe fall-back");
 	}
 
-	private void notifyEventListeners(String queryHostName, LookupState state, DnsReply reply) {
-		
+	private void notifyEventListeners(String client, String queryHostName, LookupState state, DnsReply reply) {
 		DnsSection answers = reply.getAnswer();
 		if (answers == null) {
 			return;
@@ -116,15 +115,36 @@ public class DnsLookupService implements UDPPacketHandler {
 		dto.type = EventTypeDto.from(state);
 
 		String target = dto.ip == null ? "(na)" : dto.ip;
-		String summary = queryHostName + " -> " + target + " : " + state.name() + "\n";
+		StringBuilder sb = new StringBuilder();
 		if (state != LookupState.PASSTHROUGH) {
-			summary = "* " + summary;
+			sb.append("* ");
+		} else {
+			sb.append("  ");
 		}
+		append(sb, queryHostName, 50);
+		append(sb, target, 18);
+		append(sb, state.name(), 16);
+		append(sb, client, 18);
 		
-		dto.summary = summary;
+		sb.append("\n");
+		dto.summary = sb.toString();
 		
 		logger.debug("Notify listeners about {}", dto);
 		
 		websocketEventNotifier.broadcast(dto);
+	}
+	
+	private void append(StringBuilder sb, String txt, int width) {
+		sb.append(txt);
+		appendSpaces(sb, width - txt.length());
+	}
+	
+	
+	private void appendSpaces(StringBuilder sb, int count) {
+		if (count > 0) {
+			for (int i = 0; i < count; i++) {
+				sb.append(" ");
+			}
+		}
 	}
 }
