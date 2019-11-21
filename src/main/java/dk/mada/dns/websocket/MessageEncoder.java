@@ -26,7 +26,7 @@ public class MessageEncoder implements Encoder.Text<DnsQueryEventDto> {
 	@Override
 	public String encode(DnsQueryEventDto object) throws EncodeException {
 		String str = jsonb.toJson(object);
-		logger.info("Try to encode {} -> {}", object, str);
+		logger.trace("Try to encode {} -> {}", object, str);
 		return str;
 	}
 
