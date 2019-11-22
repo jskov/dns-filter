@@ -1,5 +1,6 @@
-![](https://github.com/jskov/dns-filter/workflows/Build%20and%20test/badge.svg)
-![](https://github.com/jskov/dns-filter/.github/workflows/run-tests.yml/badge.svg)
+![](https://github.com/jskov/dns-filter/workflows/Build%20and%20run%20tests/badge.svg)
+
+
 # dns-filter
 DNS server with filtering of ad hosts/domains
 
@@ -7,8 +8,16 @@ Personal development project, not fit for general use.
 
 # Building
 
+## Java Uber
+
 ./gradlew quarkusBuild --uber-jar
 
+
+## Native
+
+Install graal 19.3, make sure it is on PATH.
+
+	$ gu install native-image
 
 # Hooking into Linux (Fedora)
 
