@@ -1,18 +1,8 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "io.quarkus:quarkus-gradle-plugin:${quarkusVersion}"
-    }
-}
-
 plugins {
+	id "io.quarkus" version "1.2.0.Final"
     id 'eclipse'
     id 'java'
 }
-
-apply plugin: "io.quarkus"
 
 ext {
 	successMarker = project.file("build/all-tests-passed")
