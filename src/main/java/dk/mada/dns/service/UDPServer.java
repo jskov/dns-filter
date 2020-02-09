@@ -16,6 +16,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.jna.platform.linux.LibC;
+
 import dk.mada.dns.net.NetworkHelper;
 import dk.mada.dns.util.Hexer;
 
@@ -36,13 +38,22 @@ public class UDPServer {
 
 	private AtomicBoolean running = new AtomicBoolean();
 	private CountDownLatch startupLatch = new CountDownLatch(1);
+	private int continueAsUserId;
 	
-	public UDPServer(int port) {
-		listenAddress = NetworkHelper.makeLocalhostSocketAddress(port);
-		logger.info("Created service on {}", listenAddress);
+	public UDPServer(int port, int continueAsUserId) {
+        this.continueAsUserId = continueAsUserId;
+		int userId = LibC.INSTANCE.getuid();
+        logger.debug("current id {}", userId);
+
+        if (port < 1024 && !isRootUser()) {
+        	throw new IllegalArgumentException("Cannot listen to port <1024 as user id " + userId);
+        }
+        
+		listenAddress = NetworkHelper.makePublicAddress(port);
+		logger.info("Create service on {}", listenAddress);
 	}
 
-	public void start() {
+	public void startAndDropPrivileges() {
         executorService.execute(this::serve);
         try {
 			startupLatch.await();
@@ -69,6 +80,8 @@ public class UDPServer {
 	private void serve() {
 		try (DatagramChannel channel = DatagramChannel.open()) {
 			channel.bind(listenAddress);
+			
+			dropPrivileges();
 			
 			running.set(true);
 			startupLatch.countDown();
@@ -113,5 +126,21 @@ public class UDPServer {
 
 	public void setPacketHandler(UDPPacketHandler packetHandler) {
 		this.packetHandler = packetHandler;
+	}
+	
+	private void dropPrivileges() {
+		if (isRootUser()) {
+	        LibC.INSTANCE.setuid(continueAsUserId);
+	        int newId = LibC.INSTANCE.getuid();
+	        logger.info("Dropped priveleges, continuing as user {}", newId);
+		}
+		
+		if (isRootUser()) {
+			throw new IllegalStateException("This server should not keep running as root!");
+		}
+	}
+
+	private boolean isRootUser() {
+		return LibC.INSTANCE.getuid() == 0;
 	}
 }

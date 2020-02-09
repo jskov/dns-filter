@@ -11,7 +11,7 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.TextParseException;
 
-import dk.mada.dns.Application;
+import dk.mada.dns.Environment;
 import dk.mada.dns.wire.model.DnsClass;
 import dk.mada.dns.wire.model.DnsRecordType;
 import dk.mada.dns.wire.model.DnsReply;
@@ -66,7 +66,7 @@ public class DnfFilterLocalHostLookup {
 	
 	private SimpleResolver getLocalhostResolver() throws UnknownHostException, TextParseException {
 		SimpleResolver localhostResolver = new SimpleResolver("localhost");
-    	localhostResolver.setPort(Application.DNS_LISTENING_PORT);
+    	localhostResolver.setPort(Environment.LISTEN_PORT_DNS_DEFAULT);
     	return localhostResolver;
 	}
 }
