@@ -19,12 +19,27 @@ public class Environment {
 	private static final Path CACHE_DIR_TEST = Paths.get(System.getProperty("java.io.tmpdir")).resolve("_dns-filter");
 	private static final Path CACHE_DIR = IS_GRADLE_TEST_ENV ? CACHE_DIR_TEST : DATA_DIR_DEFAULT;
 
-	
+	public static final int LISTEN_PORT_DNS_DEFAULT = 8053;
+	private static final String LISTEN_PORT_DNS_ENV = System.getenv("DNS_FILTER_PORT_DNS");
+	private static final int LISTEN_PORT_DNS = LISTEN_PORT_DNS_ENV == null ? LISTEN_PORT_DNS_DEFAULT : Integer.parseInt(LISTEN_PORT_DNS_ENV);
+
+	private static final int RUN_AS_USER_DEFAULT = 65534; // nobody on fedora 31
+	private static final String RUN_AS_USERID_ENV = System.getenv("DNS_FILTER_RUN_AS");
+	private static final int RUN_AS_USERID = RUN_AS_USERID_ENV == null ? RUN_AS_USER_DEFAULT : Integer.parseInt(RUN_AS_USERID_ENV);
+
 	public Path getConfigDir() {
 		return CONFIG_DIR;
 	}
 	
 	public Path getCacheDir() {
 		return CACHE_DIR;
+	}
+	
+	public int getListenPortDns() {
+		return LISTEN_PORT_DNS;
+	}
+	
+	public int getRunAsUserId() {
+		return RUN_AS_USERID;
 	}
 }

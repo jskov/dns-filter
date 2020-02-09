@@ -15,6 +15,7 @@ import fixture.datagram.DatagramHelper;
  * Tests reception and dispatching of UDP packets.
  */
 public class UDPServerTest {
+	private static final int CONTINUATION_USER = 1000;
 	private static final int PORT = 10053;
 
 	/**
@@ -23,10 +24,10 @@ public class UDPServerTest {
 	 */
 	@Test
 	public void serverCanBeStopped() {
-		UDPServer sut = new UDPServer(PORT);
+		UDPServer sut = new UDPServer(PORT, CONTINUATION_USER);
 
 		// Startup test
-		sut.start();
+		sut.startAndDropPrivileges();
 		assertThat(sut.isRunning())
 			.isTrue();
 
@@ -41,12 +42,12 @@ public class UDPServerTest {
 	 */
 	@Test
 	public void canRoundTripUdpPacket() throws IOException {
-		UDPServer sut = new UDPServer(PORT);
+		UDPServer sut = new UDPServer(PORT, CONTINUATION_USER);
 
 		try {
 			UDPPacketHandler echoHandler = (clientIp, input) -> input;
 			sut.setPacketHandler(echoHandler);
-			sut.start();
+			sut.startAndDropPrivileges();
 
 			ByteBuffer input = ByteBuffer.wrap("foobar".getBytes());
 			ByteBuffer reply = DatagramHelper.sendBufferToLocalUDPPort(PORT, input);

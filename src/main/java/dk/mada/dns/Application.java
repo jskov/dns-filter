@@ -24,8 +24,6 @@ import io.quarkus.runtime.StartupEvent;
  */
 @ApplicationScoped
 public class Application {
-    public static final int DNS_LISTENING_PORT = 8053;
-
 	private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
     @Inject private DnsLookupService resolver;
@@ -33,21 +31,28 @@ public class Application {
     @Inject private BlockedListCacher blockedListCacher;
     @Inject private ExternalDnsGateway dnsGateway;
     @Inject private Configuration configuration;
+    @Inject private Environment environment;
 
     private UDPServer server;
     
     void onStart(@Observes StartupEvent ev) {
         logger.info("The application is starting...");
-    
-        configuration.loadConfiguration();
-        blockedListCacher.preloadCache();
-        dnsGateway.startBackgroundReaper();
-        
-        server = new UDPServer(DNS_LISTENING_PORT);
-		server.setPacketHandler(resolver);
-        server.start();
+        runningPrivileged();
+        runningWithoutPrivileges();
     }
 
+	private void runningPrivileged() {
+		server = new UDPServer(environment.getListenPortDns(), environment.getRunAsUserId());
+        server.setPacketHandler(resolver);
+        server.startAndDropPrivileges();
+	}
+
+	private void runningWithoutPrivileges() {
+		configuration.loadConfiguration();
+		blockedListCacher.preloadCache();
+		dnsGateway.startBackgroundReaper();
+	}
+	
     void onStop(@Observes ShutdownEvent ev) {
     	logger.info("Container wants to shut down...");
     	server.stop();

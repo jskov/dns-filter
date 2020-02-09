@@ -23,6 +23,20 @@ Install graal 19.3, make sure it is on PATH.
 
 This is how to (temporarily) hack/hook up the dns-filter process in Fedora so it gets used for DNS requests.
 
+## Running as root
+
+Run the service using port 53 requires it to be started as root.
+
+	$ DNS_FILTER_PORT_DNS=53 sudo /opt/tools/jdk-13/bin/java -jar dns-filter-$version-runner.jar
+
+After creating the socket on port 53, it will drop its privileges and continue as user 65534 (or what is specified in environment variable DNS_FILTER_RUN_AS)
+
+## Via DnsMasq
+
+The service can also run on unprivileged ports (does not require root), but then you must redirect the DNS traffic to the service.
+
+This is how I have configured it to work on Fedora 31.
+
 ## Stop libvirt
 
 Kill libvirt, which also runs dnsmasq.
@@ -31,7 +45,7 @@ Kill libvirt, which also runs dnsmasq.
 
 And make sure no lingering dnsmasq process is running.
 
-## Setup dnsmasq
+### Setup dnsmasq
 
 Setup dnsmasq to pass requests first to the dns-filter, then fallback to an external server in case of failure
 
@@ -58,7 +72,7 @@ Edit `/etc/resolv.conf`. Comment out current nameserver and add:
 Revert to old setting to disable use of dns-filter.
 
 
-## Run dns-filter
+## Run dns-filter from gradle
 
 	$ ./gradlew :quarkusDev
 
