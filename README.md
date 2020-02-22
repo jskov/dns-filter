@@ -134,4 +134,11 @@ Start with:
 	
 Created more recently, but seems simple (less complete?)
 
+# Javafx client
+
+## Run in Eclipse
+
+* Check out. Run './gradlew eclipse' to set up for development in Eclipse.
+
+To run in Eclipse, add VM arguments: `--add-modules ALL-MODULE-PATH`
 

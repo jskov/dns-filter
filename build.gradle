@@ -1,125 +1,194 @@
 plugins {
-	id "io.quarkus" version "1.2.1.Final"
     id 'eclipse'
     id 'java'
+    id "org.openjfx.javafxplugin" version "0.0.8" apply false
+	id "io.quarkus" version "1.2.1.Final" apply false
 }
 
-ext {
-	successMarker = project.file("build/all-tests-passed")
+project (":dns-filter.server") {
+	apply plugin: "java"
+	apply plugin: "eclipse"
+	apply plugin: "io.quarkus"
+	
+
+	ext {
+		successMarker = project.file("build/all-tests-passed")
+	}
+	
+	group = "dk.mada.dns"
+	version = "1-SNAPSHOT"
+	
+	repositories {
+	    mavenCentral()
+		maven {
+			url "file:vaadin-ext-repo"
+		}
+	}
+	
+	configurations {
+		forEclipse
+	}
+	
+	dependencies {
+		implementation enforcedPlatform("io.quarkus:quarkus-bom:${quarkusVersion}")
+	    implementation "io.quarkus:quarkus-resteasy-jsonb"
+	    implementation "io.quarkus:quarkus-undertow-websockets"
+	
+		// For vaadin
+		compileOnly "io.quarkus:quarkus-core-deployment:${quarkusVersion}"
+		compileOnly "io.quarkus:quarkus-arc-deployment:${quarkusVersion}"
+		compileOnly "io.quarkus:quarkus-undertow-deployment:${quarkusVersion}"
+	
+	    implementation "dnsjava:dnsjava:${dnsJavaVersion}"
+	    implementation "net.java.dev.jna:jna-platform:5.5.0"
+	
+	    implementation project(":dns-filter.dtos")
+	
+		implementation enforcedPlatform("com.vaadin:vaadin-bom:14.0.12")
+		implementation "com.vaadin:vaadin-grid-flow"
+		implementation "com.vaadin:flow-server"
+		implementation "com.vaadin:flow-html-components"
+		implementation "com.vaadin:vaadin-ordered-layout-flow"
+		implementation "com.vaadin:vaadin-core"
+		implementation "com.vaadin:flow-server-compatibility-mode"
+		implementation "com.vaadin:vaadin-list-box-flow"
+	
+		// https://github.com/Nano-Vaadin-Demos/nano-vaadin-quarkus
+	//	implementation "org.rapidpm.vaadin:nano-vaadin-quarkus-extension:1.0.0-RPM-SNAPSHOT"
+	
+		// https://github.com/moewes/quarkus-vaadin-lab
+		implementation "net.moewes:quarkus-vaadin-extension:0.1.0-SNAPSHOT"
+	
+		compileOnly 'org.immutables:value-annotations:2.7.5'
+		forEclipse 'org.immutables:value:2.7.5'
+		annotationProcessor 'org.immutables:value:2.7.5'
+	
+	    testImplementation "io.quarkus:quarkus-junit5"
+	    testImplementation "io.rest-assured:rest-assured"
+	    testImplementation "org.assertj:assertj-core:3.11.1"
+	    testImplementation "dnsjava:dnsjava:${dnsJavaVersion}"
+		testImplementation "io.quarkus:quarkus-arc-deployment:${quarkusVersion}"
+		testImplementation "io.quarkus:quarkus-undertow-deployment:${quarkusVersion}"
+	}
+	
+	task makeSuccessMarker() {
+		doFirst {
+			project.mkdir("build")
+			successMarker.createNewFile()
+		}
+	}
+	
+	test {
+		dependsOn(makeSuccessMarker)
+	    useJUnitPlatform {
+	  	    includeTags "accept"
+	    }  
+	    ignoreFailures = true
+	    afterTest { td, tr ->
+			if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
+				successMarker.delete()
+			}
+	    }
+	
+	    environment("GRADLE_TEST", "true")
+	}
+	
+	task integrationTest(type: Test) {
+		dependsOn(makeSuccessMarker)
+	    useJUnitPlatform {
+	  	    includeTags "integration"
+	    }
+	    ignoreFailures = true
+	    afterTest { td, tr ->
+			if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
+				successMarker.delete()
+			}
+	    }
+	    
+	    environment("GRADLE_TEST", "true")
+	}
+	
+	task unitTest(type: Test) {
+		dependsOn(makeSuccessMarker)
+	    useJUnitPlatform {
+	        excludeTags "accept", "integration"
+	    }
+	    ignoreFailures = true
+	    afterTest { td, tr ->
+			if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
+				successMarker.delete()
+			}
+	    }
+	
+	    environment("GRADLE_TEST", "true")
+	}
+	
+	tasks.check.dependsOn(unitTest, integrationTest)
+	
+	tasks.testNative.enabled = false
+	tasks.buildNative.enabled = false
+	
+	sourceCompatibility = 11
+	targetCompatibility = 11
+	
+	tasks.eclipseClasspath.dependsOn("cleanEclipseClasspath")
 }
 
-group = "dk.mada.dns"
-version = "1-SNAPSHOT"
+project (":dns-filter.javafx") {
+	apply plugin: "java"
+	apply plugin: "eclipse"
+	apply plugin: "org.openjfx.javafxplugin"
+	
+	repositories {
+	    mavenCentral()
+    }
+	
+	sourceCompatibility = 11
+	targetCompatibility = 11
+	
+	javafx {
+		version = '13.0.2'
+    	modules = [ 'javafx.controls', 'javafx.fxml' ]
+	}
+	//mainClassName = 'dk.mada.dns.android.HelloWorld'
+	
+	dependencies {
+	    implementation project(":dns-filter.dtos")
+		implementation "org.jboss.weld.se:weld-se-core:3.1.3.Final"
+		implementation "org.apache.logging.log4j:log4j-slf4j-impl:2.13.0"
+	}
+	
+	eclipseClasspath.dependsOn('cleanEclipseClasspath')
+	eclipse {
+	  	classpath {
+	  		file {
+	  			withXml {
+	  				def node = it.asNode()
+					node.classpathentry.findAll { cpe -> cpe.@path.contains("javafx") }.each { cpe -> markCpeAsModular(cpe) }
+				}
+	  		}
+	  	}
+  	}
+}
 
-repositories {
-    mavenCentral()
-	maven {
-		url "file:vaadin-ext-repo"
+project (":dns-filter.dtos") {
+	apply plugin: "java"
+	apply plugin: "java-library"
+	apply plugin: "eclipse"
+	
+	repositories {
+	    mavenCentral()
+    }
+	
+	sourceCompatibility = 11
+	targetCompatibility = 11
+	
+	dependencies {
 	}
 }
 
-configurations {
-	forEclipse
+void markCpeAsModular(Node cpe) {
+	def n = cpe.appendNode("attribute", ["name": "module", "value": "true"])
+	cpe.attributes.each { attrs -> attrs.append(n) }
 }
 
-dependencies {
-	implementation enforcedPlatform("io.quarkus:quarkus-bom:${quarkusVersion}")
-    implementation "io.quarkus:quarkus-resteasy-jsonb"
-    implementation "io.quarkus:quarkus-undertow-websockets"
-
-	// For vaadin
-	compileOnly "io.quarkus:quarkus-core-deployment:${quarkusVersion}"
-	compileOnly "io.quarkus:quarkus-arc-deployment:${quarkusVersion}"
-	compileOnly "io.quarkus:quarkus-undertow-deployment:${quarkusVersion}"
-
-    implementation "dnsjava:dnsjava:${dnsJavaVersion}"
-    implementation "net.java.dev.jna:jna-platform:5.5.0"
-
-	implementation enforcedPlatform("com.vaadin:vaadin-bom:14.0.12")
-	implementation "com.vaadin:vaadin-grid-flow"
-	implementation "com.vaadin:flow-server"
-	implementation "com.vaadin:flow-html-components"
-	implementation "com.vaadin:vaadin-ordered-layout-flow"
-	implementation "com.vaadin:vaadin-core"
-	implementation "com.vaadin:flow-server-compatibility-mode"
-	implementation "com.vaadin:vaadin-list-box-flow"
-
-	// https://github.com/Nano-Vaadin-Demos/nano-vaadin-quarkus
-//	implementation "org.rapidpm.vaadin:nano-vaadin-quarkus-extension:1.0.0-RPM-SNAPSHOT"
-
-	// https://github.com/moewes/quarkus-vaadin-lab
-	implementation "net.moewes:quarkus-vaadin-extension:0.1.0-SNAPSHOT"
-
-	compileOnly 'org.immutables:value-annotations:2.7.5'
-	forEclipse 'org.immutables:value:2.7.5'
-	annotationProcessor 'org.immutables:value:2.7.5'
-
-    testImplementation "io.quarkus:quarkus-junit5"
-    testImplementation "io.rest-assured:rest-assured"
-    testImplementation "org.assertj:assertj-core:3.11.1"
-    testImplementation "dnsjava:dnsjava:${dnsJavaVersion}"
-	testImplementation "io.quarkus:quarkus-arc-deployment:${quarkusVersion}"
-	testImplementation "io.quarkus:quarkus-undertow-deployment:${quarkusVersion}"
-}
-
-task makeSuccessMarker() {
-	doFirst {
-		project.mkdir("build")
-		successMarker.createNewFile()
-	}
-}
-
-test {
-	dependsOn(makeSuccessMarker)
-    useJUnitPlatform {
-  	    includeTags "accept"
-    }  
-    ignoreFailures = true
-    afterTest { td, tr ->
-		if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
-			successMarker.delete()
-		}
-    }
-
-    environment("GRADLE_TEST", "true")
-}
-
-task integrationTest(type: Test) {
-	dependsOn(makeSuccessMarker)
-    useJUnitPlatform {
-  	    includeTags "integration"
-    }
-    ignoreFailures = true
-    afterTest { td, tr ->
-		if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
-			successMarker.delete()
-		}
-    }
-    
-    environment("GRADLE_TEST", "true")
-}
-
-task unitTest(type: Test) {
-	dependsOn(makeSuccessMarker)
-    useJUnitPlatform {
-        excludeTags "accept", "integration"
-    }
-    ignoreFailures = true
-    afterTest { td, tr ->
-		if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
-			successMarker.delete()
-		}
-    }
-
-    environment("GRADLE_TEST", "true")
-}
-
-tasks.check.dependsOn(unitTest, integrationTest)
-
-tasks.testNative.enabled = false
-tasks.buildNative.enabled = false
-
-sourceCompatibility = 11
-targetCompatibility = 11
-
-tasks.eclipseClasspath.dependsOn("cleanEclipseClasspath")

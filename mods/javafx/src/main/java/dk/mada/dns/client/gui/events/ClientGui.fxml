@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.mada.dns.client.gui.events.ClientGui">
+   <children>
+      <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox>
+               <children>
+                  <Button mnemonicParsing="false" onAction="#onClear" text="clear" />
+                  <TextField fx:id="path" editable="false" focusTraversable="false" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <TableView fx:id="list" prefHeight="400.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
+              <columns>
+                <TableColumn fx:id="colDomain" prefWidth="400.0" text="Domain" />
+                <TableColumn fx:id="colIp" minWidth="0.0" prefWidth="163.0" text="IP" />
+                  <TableColumn fx:id="colClient" prefWidth="175.0" text="Client" />
+              </columns>
+            </TableView>
+            <HBox>
+               <children>
+                  <Label fx:id="status" focusTraversable="false" text="Label" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

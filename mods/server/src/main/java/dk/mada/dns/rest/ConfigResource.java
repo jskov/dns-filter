@@ -19,6 +19,7 @@ import dk.mada.dns.config.Configuration;
 import dk.mada.dns.rest.dto.DomainDto;
 import dk.mada.dns.rest.dto.FilterDto;
 import dk.mada.dns.rest.dto.HostDto;
+import static dk.mada.dns.rest.DomainToDtoMapper.*;
 
 /**
  * Resource for access to configuration.
@@ -31,7 +32,7 @@ public class ConfigResource {
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
 	public FilterDto getFilter() {
-		return FilterDto.from(configuration);
+		return filterDto(configuration);
 	}
 	
 	@Path("filter/whitelist/host")
@@ -39,7 +40,7 @@ public class ConfigResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<HostDto> getWhitelistedHosts() {
 		return configuration.getWhitelistedHosts().stream()
-				.map(HostDto::from)
+				.map(h -> hostDto(h))
 				.collect(toList());
     }
 
@@ -54,7 +55,7 @@ public class ConfigResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<DomainDto> getWhitelistedDomains() {
 		return configuration.getWhitelistedDomains().stream()
-				.map(DomainDto::from)
+				.map(d -> domainDto(d))
 				.collect(toList());
     }
 
@@ -69,7 +70,7 @@ public class ConfigResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<HostDto> getBlacklistHosts() {
 		return configuration.getBlacklistedHosts().stream()
-				.map(HostDto::from)
+				.map(h -> hostDto(h))
 				.collect(toList());
     }
 
@@ -84,7 +85,7 @@ public class ConfigResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<DomainDto> getBlacklistedDomains() {
 		return configuration.getBlacklistedDomains().stream()
-				.map(DomainDto::from)
+				.map(d -> domainDto(d))
 				.collect(toList());
     }
 

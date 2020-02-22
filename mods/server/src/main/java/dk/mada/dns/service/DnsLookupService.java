@@ -112,7 +112,7 @@ public class DnsLookupService implements UDPPacketHandler {
 //		dto.ttl = firstAnswer.getTtl();
 		firstAnswer.asRecordA()
 			.ifPresent(dra -> dto.ip = dra.getAddress().getHostAddress());
-		dto.type = EventTypeDto.from(state);
+		dto.type = EventTypeDto.valueOf(state.name());
 
 		String target = dto.ip == null ? "(na)" : dto.ip;
 		StringBuilder sb = new StringBuilder();
@@ -138,7 +138,6 @@ public class DnsLookupService implements UDPPacketHandler {
 		sb.append(txt);
 		appendSpaces(sb, width - txt.length());
 	}
-	
 	
 	private void appendSpaces(StringBuilder sb, int count) {
 		if (count > 0) {
