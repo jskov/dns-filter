@@ -1,20 +1,11 @@
 package dk.mada.dns.rest.dto;
 
-import dk.mada.dns.config.BlockedItem;
-
 /**
  * DTO for a host blacklisted or whitelisted.
  */
 public class HostDto {
 	public String host;
 	public String reason;
-	
-	public static HostDto from(BlockedItem h) {
-		var dto = new HostDto();
-		dto.host = h.getName();
-		dto.reason = h.getReason();
-		return dto;
-	}
 	
 	@Override
 	public int hashCode() {

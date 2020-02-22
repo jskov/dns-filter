@@ -36,6 +36,8 @@ dependencies {
     implementation "dnsjava:dnsjava:${dnsJavaVersion}"
     implementation "net.java.dev.jna:jna-platform:5.5.0"
 
+    implementation project(":dns-filter.dtos")
+
 	implementation enforcedPlatform("com.vaadin:vaadin-bom:14.0.12")
 	implementation "com.vaadin:vaadin-grid-flow"
 	implementation "com.vaadin:flow-server"

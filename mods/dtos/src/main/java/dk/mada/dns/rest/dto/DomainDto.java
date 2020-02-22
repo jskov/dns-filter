@@ -1,7 +1,5 @@
 package dk.mada.dns.rest.dto;
 
-import dk.mada.dns.config.Domain;
-
 /**
  * DTO for a domain blacklisted or whitelisted.
  */
@@ -9,10 +7,10 @@ public class DomainDto {
 	public String domain;
 	public String reason;
 	
-	public static DomainDto from(Domain d) {
+	public static DomainDto from(String domain, String reason) {
 		var dto = new DomainDto();
-		dto.domain = d.getName();
-		dto.reason = d.getReason();
+		dto.domain = domain;
+		dto.reason = reason;
 		return dto;
 	}
 	
