@@ -1,1 +1,4 @@
 rootProject.name = "dns-filter"
+
+include 'dns-filter.javafx'
+project(':dns-filter.javafx').projectDir = file('javafx')

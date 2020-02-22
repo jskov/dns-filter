@@ -2,6 +2,7 @@ plugins {
 	id "io.quarkus" version "1.2.1.Final"
     id 'eclipse'
     id 'java'
+    id "org.openjfx.javafxplugin" version "0.0.8" apply false
 }
 
 ext {
@@ -123,3 +124,43 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 tasks.eclipseClasspath.dependsOn("cleanEclipseClasspath")
+
+project (":dns-filter.javafx") {
+	apply plugin: "java"
+	apply plugin: "eclipse"
+	apply plugin: "org.openjfx.javafxplugin"
+	
+	repositories {
+	    mavenCentral()
+    }
+	
+	sourceCompatibility = 11
+	targetCompatibility = 11
+	
+	javafx {
+		version = '13.0.2'
+    	modules = [ 'javafx.controls', 'javafx.fxml' ]
+	}
+	//mainClassName = 'dk.mada.dns.android.HelloWorld'
+	
+	dependencies {
+	}
+	
+	eclipseClasspath.dependsOn('cleanEclipseClasspath')
+	eclipse {
+	  	classpath {
+	  		file {
+	  			withXml {
+	  				def node = it.asNode()
+					node.classpathentry.findAll { cpe -> cpe.@path.contains("javafx") }.each { cpe -> markCpeAsModular(cpe) }
+				}
+	  		}
+	  	}
+  	}
+}
+
+void markCpeAsModular(Node cpe) {
+	def n = cpe.appendNode("attribute", ["name": "module", "value": "true"])
+	cpe.attributes.each { attrs -> attrs.append(n) }
+}
+
