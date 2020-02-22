@@ -36,7 +36,7 @@ public class ClientGui {
     
     @FXML
     private void onClear() {
-    	
+    	logger.info("Clear");
     }
 
 }
