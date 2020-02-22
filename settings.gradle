@@ -1,5 +1,8 @@
 rootProject.name = "dns-filter"
 
+include 'dns-filter.server'
+project(':dns-filter.server').projectDir = file('mods/server')
+
 include 'dns-filter.dtos'
 project(':dns-filter.dtos').projectDir = file('mods/dtos')
 
