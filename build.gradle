@@ -5,6 +5,12 @@ plugins {
 	id "io.quarkus" version "1.2.1.Final" apply false
 }
 
+ext {
+	dnsJavaVersion = "2.1.9"
+	quarkusVersion = "1.2.1.Final"
+}
+
+
 project (":dns-filter.server") {
 	apply plugin: "java"
 	apply plugin: "eclipse"
@@ -69,6 +75,7 @@ project (":dns-filter.server") {
 	    testImplementation "dnsjava:dnsjava:${dnsJavaVersion}"
 		testImplementation "io.quarkus:quarkus-arc-deployment:${quarkusVersion}"
 		testImplementation "io.quarkus:quarkus-undertow-deployment:${quarkusVersion}"
+		testImplementation "org.apache.logging.log4j:log4j-slf4j-impl:2.13.1"
 	}
 	
 	task makeSuccessMarker() {
