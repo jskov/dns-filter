@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Logger name="org.jboss.logging" level="WARN" />
+    <Logger name="org.jboss.weld" level="INFO" />
+  
+    <Logger name="dk.mada.dns" level="DEBUG" />
+    <Logger name="dk.mada.dns.parser" level="INFO" />
+
+    <Root level="info">
+      <AppenderRef ref="Console" />
+    </Root>
+  </Loggers>
+</Configuration>
