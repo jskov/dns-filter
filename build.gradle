@@ -26,9 +26,6 @@ project (":dns-filter.server") {
 	
 	repositories {
 	    mavenCentral()
-		maven {
-			url "file:vaadin-ext-repo"
-		}
 	}
 	
 	configurations {
@@ -40,30 +37,10 @@ project (":dns-filter.server") {
 	    implementation "io.quarkus:quarkus-resteasy-jsonb"
 	    implementation "io.quarkus:quarkus-undertow-websockets"
 	
-		// For vaadin
-		compileOnly "io.quarkus:quarkus-core-deployment:${quarkusVersion}"
-		compileOnly "io.quarkus:quarkus-arc-deployment:${quarkusVersion}"
-		compileOnly "io.quarkus:quarkus-undertow-deployment:${quarkusVersion}"
-	
 	    implementation "dnsjava:dnsjava:${dnsJavaVersion}"
 	    implementation "net.java.dev.jna:jna-platform:5.5.0"
 	
 	    implementation project(":dns-filter.dtos")
-	
-		implementation enforcedPlatform("com.vaadin:vaadin-bom:14.0.12")
-		implementation "com.vaadin:vaadin-grid-flow"
-		implementation "com.vaadin:flow-server"
-		implementation "com.vaadin:flow-html-components"
-		implementation "com.vaadin:vaadin-ordered-layout-flow"
-		implementation "com.vaadin:vaadin-core"
-		implementation "com.vaadin:flow-server-compatibility-mode"
-		implementation "com.vaadin:vaadin-list-box-flow"
-	
-		// https://github.com/Nano-Vaadin-Demos/nano-vaadin-quarkus
-	//	implementation "org.rapidpm.vaadin:nano-vaadin-quarkus-extension:1.0.0-RPM-SNAPSHOT"
-	
-		// https://github.com/moewes/quarkus-vaadin-lab
-		implementation "net.moewes:quarkus-vaadin-extension:0.1.0-SNAPSHOT"
 	
 		compileOnly 'org.immutables:value-annotations:2.7.5'
 		forEclipse 'org.immutables:value:2.7.5'
