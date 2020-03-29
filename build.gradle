@@ -2,12 +2,12 @@ plugins {
     id 'eclipse'
     id 'java'
     id "org.openjfx.javafxplugin" version "0.0.8" apply false
-	id "io.quarkus" version "1.2.1.Final" apply false
+	id "io.quarkus" version "1.3.0.Final" apply false
 }
 
 ext {
 	dnsJavaVersion = "2.1.9"
-	quarkusVersion = "1.2.1.Final"
+	quarkusVersion = "1.3.0.Final"	// change to 999-SNAPSHOT to test fix
 }
 
 
@@ -25,6 +25,7 @@ project (":dns-filter.server") {
 	version = "1-SNAPSHOT"
 	
 	repositories {
+		mavenLocal()
 	    mavenCentral()
 	}
 	
@@ -53,6 +54,7 @@ project (":dns-filter.server") {
 		testImplementation "io.quarkus:quarkus-arc-deployment:${quarkusVersion}"
 		testImplementation "io.quarkus:quarkus-undertow-deployment:${quarkusVersion}"
 		testImplementation "org.apache.logging.log4j:log4j-slf4j-impl:2.13.1"
+		testImplementation "org.jboss.weld:weld-junit5:2.0.1.Final"
 	}
 	
 	task makeSuccessMarker() {
@@ -74,6 +76,14 @@ project (":dns-filter.server") {
 			}
 	    }
 	
+		doFirst {
+			// "copy beans.xml into same folder hiearchy as class files"
+			copy {
+				from "build/resources/main"
+				into "build/classes/java/main"
+				include "META-INF/beans.xml"
+			}
+		}
 	    environment("GRADLE_TEST", "true")
 	}
 	
