@@ -29,6 +29,6 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: server-test-report
-        path: mods/server/build/reports
-    - run: test -f mods/server/build/all-tests-passed
+        path: build/reports
+    - run: test -f build/all-tests-passed
         
