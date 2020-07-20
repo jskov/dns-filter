@@ -18,7 +18,11 @@ public class RuntimePingTest {
     @Test
     public void testPingEndpoint() {
         given()
-          .when().get("/ping")
+//        .log().all()
+          .relaxedHTTPSValidation()
+          .baseUri("https://localhost:8446")
+          .when()
+              .get("/ping")
           .then()
              .statusCode(200)
              .body(is("pong"));
