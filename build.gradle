@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+    	mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+		classpath 'com.gluonhq:client-gradle-plugin:0.1.28'
+    }
+}
+
 plugins {
     id 'eclipse'
     id 'java'
@@ -175,5 +185,45 @@ project (":dns-filter.dtos") {
 void markCpeAsModular(Node cpe) {
 	def n = cpe.appendNode("attribute", ["name": "module", "value": "true"])
 	cpe.attributes.each { attrs -> attrs.append(n) }
+}
+
+project (":dns-filter.android") {
+	apply plugin: "java"
+	apply plugin: "eclipse"
+	apply plugin: "org.openjfx.javafxplugin"
+	apply plugin: 'com.gluonhq.client-gradle-plugin'
+
+	javafx {
+		version = '11'
+	    modules = [ 'javafx.controls', 'javafx.base' ]
+	}
+	
+	repositories {
+		jcenter()
+	}
+	
+	ext {
+		mainClassName = 'dk.mada.dns.android.HelloWorld'
+	}
+
+	gluonClient {
+		verbose = true
+	
+	}
+/*	
+	jfxmobile {
+	    android {
+			androidSdk = "/opt/android"
+	        applicationPackage = 'dk.mada.dns.android'
+	        compileSdkVersion = 25
+	    }
+	}
+*/
+	sourceCompatibility = 11
+	targetCompatibility = 11
+	
+	
+	dependencies {
+	}
 }
 

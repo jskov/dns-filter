@@ -1,3 +1,14 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+        maven {
+            url "https://nexus.gluonhq.com/nexus/content/repositories/releases"
+        }
+    }
+}
+
 rootProject.name = "dns-filter"
 
 include 'dns-filter.dtos'
@@ -5,3 +16,6 @@ project(':dns-filter.dtos').projectDir = file('modules/dtos')
 
 include 'dns-filter.javafx'
 project(':dns-filter.javafx').projectDir = file('modules/javafx')
+
+include 'dns-filter.android'
+project(':dns-filter.android').projectDir = file('android')
