@@ -107,33 +107,6 @@ Make a dig query to hostname prefixed with `dns-bypass.` like this:
 
 Then the following query of `cnn.com` will echo both query, and the nameserver reply. The reply will not be filtered.
 
-# Vaadin
-
-http://localhost:8080/vaadin/
-
-https://vaadin.com/components/vaadin-text-field/java-examples/text-field
-
-## Quarkus-vaadin-lab
-
-From https://github.com/moewes/quarkus-vaadin-lab
-
-Start as normal.
-
-But no control gui rendered.
-
-Fixed by adding com.vaadin:flow-server-compatibility-mode dependency.
-
-
-## Nano-Vaadin-Demos
-
-From https://github.com/Nano-Vaadin-Demos/nano-vaadin-quarkus
-
-Start with:
-
-	$ ./gradlew quarkusDev --jvm-args="-Dvaadin-pkg-to-scan=dk.mada.dns.web.app"
-	
-Created more recently, but seems simple (less complete?)
-
 # Javafx client
 
 ## Run in Eclipse
@@ -142,3 +115,35 @@ Created more recently, but seems simple (less complete?)
 
 To run in Eclipse, add VM arguments: `--add-modules ALL-MODULE-PATH`
 
+
+# Self Signed Certificate
+
+	keytool -genkey -keyalg RSA -alias selfsigned -keystore keystore.jks -storepass secret -validity 360 -keysize 2048
+	What is your first and last name?
+	  [Unknown]:  dns-filter
+	What is the name of your organizational unit?
+	  [Unknown]:  mada
+	What is the name of your organization?
+	  [Unknown]:  mada 
+	What is the name of your City or Locality?
+	  [Unknown]:  Silkeborg
+	What is the name of your State or Province?
+	  [Unknown]:   
+	What is the two-letter country code for this unit?
+	  [Unknown]:  DK
+	Is CN=dns-filter, OU=mada, O=mada, L=Silkeborg, ST=Unknown, C=DK correct?
+	  [no]:  yes
+	
+	Generating 2,048 bit RSA key pair and self-signed certificate (SHA256withRSA) with a validity of 360 days
+		for: CN=dns-filter, OU=mada, O=mada, L=Silkeborg, ST=Unknown, C=DK
+	
+
+Hooked into quarkus with https://quarkus.io/guides/http-reference#supporting-secure-connections-with-ssl
+
+# App trust
+
+Export certificate from browser.
+
+	keytool -importcert -keystore trustca.jks -storepass changeit -alias dns-filter -file ~/Downloads/dns-filter-chain.pem
+	
+	

@@ -10,7 +10,6 @@ import javafx.stage.Stage;
 public class JavaCdiFxTest extends Application {
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
-		
 	   Weld weld = new Weld();
 	   try (WeldContainer container = weld.initialize()) {
 		   container.select(Starter.class).get().start(primaryStage);

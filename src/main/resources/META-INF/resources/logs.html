@@ -55,7 +55,7 @@
       var connect = function() {
           if (! connected) {
               var name = "client";
-              socket = new WebSocket("ws://" + location.host + "/chat/" + name);
+              socket = new WebSocket("wss://" + location.host + "/chat/" + name);
               socket.onopen = function() {
                   connected = true;
                   console.log("Connected to the web socket");

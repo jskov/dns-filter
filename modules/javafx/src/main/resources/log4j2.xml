@@ -8,11 +8,10 @@
   <Loggers>
     <Logger name="org.jboss" level="WARN" /> 
 
+    <Logger name="dk.jyskebank.infra.net.websocket.client" level="TRACE" /> 
+
     <Root level="trace">
       <AppenderRef ref="STDOUT" level="DEBUG"/>
     </Root>
-
   </Loggers>
-  
-  
 </Configuration>
