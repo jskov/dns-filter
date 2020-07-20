@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+    	mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+		classpath 'com.gluonhq:client-gradle-plugin:0.1.18-SNAPSHOT'
+    }
+}
+
 plugins {
     id 'eclipse'
     id 'java'
