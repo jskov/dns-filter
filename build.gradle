@@ -2,131 +2,122 @@ plugins {
     id 'eclipse'
     id 'java'
     id "org.openjfx.javafxplugin" version "0.0.8" apply false
-	id "io.quarkus" version "1.6.0.Final" apply false
+	id "io.quarkus" version "1.6.0.Final"
 }
 
 ext {
 	dnsJavaVersion = "2.1.9"
 	quarkusVersion = "1.6.0.Final"	// change to 999-SNAPSHOT to test fix
+
+	successMarker = project.file("build/all-tests-passed")
 }
 
+group = "dk.mada.dns"
+version = "1-SNAPSHOT"
 
-project (":dns-filter.server") {
-	apply plugin: "java"
-	apply plugin: "eclipse"
-	apply plugin: "io.quarkus"
-	
+sourceCompatibility = 11
+targetCompatibility = 11
 
-	ext {
-		successMarker = project.file("build/all-tests-passed")
-	}
-	
-	group = "dk.mada.dns"
-	version = "1-SNAPSHOT"
-	
-	repositories {
-		mavenLocal()
-	    mavenCentral()
-	}
-	
-	configurations {
-		forEclipse
-	}
-	
-	dependencies {
-		implementation enforcedPlatform("io.quarkus:quarkus-bom:${quarkusVersion}")
-	    implementation "io.quarkus:quarkus-resteasy-jsonb"
-	    implementation "io.quarkus:quarkus-undertow-websockets"
-	
-	    implementation "dnsjava:dnsjava:${dnsJavaVersion}"
-	    implementation "net.java.dev.jna:jna-platform:5.5.0"
-	
-	    implementation project(":dns-filter.dtos")
-	
-		compileOnly 'org.immutables:value-annotations:2.7.5'
-		forEclipse 'org.immutables:value:2.7.5'
-		annotationProcessor 'org.immutables:value:2.7.5'
-	
-	    testImplementation "io.quarkus:quarkus-junit5"
-	    testImplementation "io.rest-assured:rest-assured"
-	    testImplementation "org.assertj:assertj-core:3.11.1"
-	    testImplementation "dnsjava:dnsjava:${dnsJavaVersion}"
-		testImplementation "io.quarkus:quarkus-arc-deployment:${quarkusVersion}"
-		testImplementation "io.quarkus:quarkus-undertow-deployment:${quarkusVersion}"
-		testImplementation "org.apache.logging.log4j:log4j-slf4j-impl:2.13.1"
-		testImplementation "org.jboss.weld:weld-junit5:2.0.1.Final"
-	}
-	
-	task makeSuccessMarker() {
-		doFirst {
-			project.mkdir("build")
-			successMarker.createNewFile()
-		}
-	}
-	
-	test {
-		dependsOn(makeSuccessMarker)
-	    useJUnitPlatform {
-	  	    includeTags "accept"
-	    }  
-	    ignoreFailures = true
-	    afterTest { td, tr ->
-			if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
-				successMarker.delete()
-			}
-	    }
-	
-		doFirst {
-			// "copy beans.xml into same folder hiearchy as class files"
-			copy {
-				from "build/resources/main"
-				into "build/classes/java/main"
-				include "META-INF/beans.xml"
-			}
-		}
-	    environment("GRADLE_TEST", "true")
-	}
-	
-	task integrationTest(type: Test) {
-		dependsOn(makeSuccessMarker)
-	    useJUnitPlatform {
-	  	    includeTags "integration"
-	    }
-	    ignoreFailures = true
-	    afterTest { td, tr ->
-			if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
-				successMarker.delete()
-			}
-	    }
-	    
-	    environment("GRADLE_TEST", "true")
-	}
-	
-	task unitTest(type: Test) {
-		dependsOn(makeSuccessMarker)
-	    useJUnitPlatform {
-	        excludeTags "accept", "integration"
-	    }
-	    ignoreFailures = true
-	    afterTest { td, tr ->
-			if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
-				successMarker.delete()
-			}
-	    }
-	
-	    environment("GRADLE_TEST", "true")
-	}
-	
-	tasks.check.dependsOn(unitTest, integrationTest)
-	
-	tasks.testNative.enabled = false
-	tasks.buildNative.enabled = false
-	
-	sourceCompatibility = 11
-	targetCompatibility = 11
-	
-	tasks.eclipseClasspath.dependsOn("cleanEclipseClasspath")
+
+repositories {
+	mavenLocal()
+    mavenCentral()
 }
+	
+configurations {
+	forEclipse
+}
+	
+dependencies {
+	implementation enforcedPlatform("io.quarkus:quarkus-bom:${quarkusVersion}")
+    implementation "io.quarkus:quarkus-resteasy-jsonb"
+    implementation "io.quarkus:quarkus-undertow-websockets"
+
+    implementation "dnsjava:dnsjava:${dnsJavaVersion}"
+    implementation "net.java.dev.jna:jna-platform:5.5.0"
+
+    implementation project(":dns-filter.dtos")
+
+	compileOnly 'org.immutables:value-annotations:2.7.5'
+	forEclipse 'org.immutables:value:2.7.5'
+	annotationProcessor 'org.immutables:value:2.7.5'
+
+    testImplementation "io.quarkus:quarkus-junit5"
+    testImplementation "io.rest-assured:rest-assured"
+    testImplementation "org.assertj:assertj-core:3.11.1"
+    testImplementation "dnsjava:dnsjava:${dnsJavaVersion}"
+	testImplementation "io.quarkus:quarkus-arc-deployment:${quarkusVersion}"
+	testImplementation "io.quarkus:quarkus-undertow-deployment:${quarkusVersion}"
+	testImplementation "org.apache.logging.log4j:log4j-slf4j-impl:2.13.1"
+	testImplementation "org.jboss.weld:weld-junit5:2.0.1.Final"
+}
+
+task makeSuccessMarker() {
+	doFirst {
+		project.mkdir("build")
+		successMarker.createNewFile()
+	}
+}
+
+test {
+	dependsOn(makeSuccessMarker)
+    useJUnitPlatform {
+  	    includeTags "accept"
+    }  
+    ignoreFailures = true
+    afterTest { td, tr ->
+		if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
+			successMarker.delete()
+		}
+    }
+
+	doFirst {
+		// "copy beans.xml into same folder hiearchy as class files"
+		copy {
+			from "build/resources/main"
+			into "build/classes/java/main"
+			include "META-INF/beans.xml"
+		}
+	}
+    environment("GRADLE_TEST", "true")
+}
+
+task integrationTest(type: Test) {
+	dependsOn(makeSuccessMarker)
+    useJUnitPlatform {
+  	    includeTags "integration"
+    }
+    ignoreFailures = true
+    afterTest { td, tr ->
+		if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
+			successMarker.delete()
+		}
+    }
+    
+    environment("GRADLE_TEST", "true")
+}
+
+task unitTest(type: Test) {
+	dependsOn(makeSuccessMarker)
+    useJUnitPlatform {
+        excludeTags "accept", "integration"
+    }
+    ignoreFailures = true
+    afterTest { td, tr ->
+		if (tr.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
+			successMarker.delete()
+		}
+    }
+
+    environment("GRADLE_TEST", "true")
+}
+
+tasks.check.dependsOn(unitTest, integrationTest)
+
+tasks.testNative.enabled = false
+tasks.buildNative.enabled = false
+
+tasks.eclipseClasspath.dependsOn("cleanEclipseClasspath")
 
 project (":dns-filter.javafx") {
 	apply plugin: "java"
@@ -225,3 +216,4 @@ project (":dns-filter.android") {
 	dependencies {
 	}
 }
+
