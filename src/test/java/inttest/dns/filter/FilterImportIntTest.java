@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import dk.mada.dns.Environment;
-import dk.mada.dns.filter.Blacklist;
-import dk.mada.dns.filter.Blockedlist;
-import dk.mada.dns.filter.Whitelist;
+import dk.mada.dns.filter.Deny;
+import dk.mada.dns.filter.Block;
+import dk.mada.dns.filter.Allow;
 import dk.mada.dns.filter.blocker.BlockedListCacher;
 import dk.mada.dns.lookup.LookupEngine;
 import dk.mada.dns.lookup.LookupResult;
@@ -31,13 +31,13 @@ public class FilterImportIntTest {
 	public void blockingWorks() throws UnknownHostException {
 		BlockedListCacher cacher = new BlockedListCacher(new Environment());
 		cacher.preloadCache();
-		Blockedlist blockedlist = cacher.get();
+		Block blockedlist = cacher.get();
 
 		Query q = makeTestQuery(ADNXS_COM);
 
 		Resolver resolver = new CannedUdpResolver(ADNXS_COM_REPLY);
-		Blacklist blacklist = h -> false;
-		Whitelist whitelist = h -> false;
+		Deny blacklist = h -> false;
+		Allow whitelist = h -> false;
 		
 		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
 		LookupResult result = sut.lookup(q);

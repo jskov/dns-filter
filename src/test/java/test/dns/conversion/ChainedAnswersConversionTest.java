@@ -9,9 +9,9 @@ import java.nio.ByteBuffer;
 
 import org.junit.jupiter.api.Test;
 
-import dk.mada.dns.filter.Blacklist;
-import dk.mada.dns.filter.Blockedlist;
-import dk.mada.dns.filter.Whitelist;
+import dk.mada.dns.filter.Deny;
+import dk.mada.dns.filter.Block;
+import dk.mada.dns.filter.Allow;
 import dk.mada.dns.lookup.LookupEngine;
 import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.Query;
@@ -32,9 +32,9 @@ public class ChainedAnswersConversionTest {
 		Query q = makeTestQuery(IMGS_XKCD_COM);
 
 		Resolver resolver = new CannedUdpResolver(IMGS_XKCD_COM_REPLY);
-		Blacklist blacklist = h -> false;
-		Whitelist whitelist = h -> false;
-		Blockedlist blockedlist = h -> false;
+		Deny blacklist = h -> false;
+		Allow whitelist = h -> false;
+		Block blockedlist = h -> false;
 		
 		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
 		LookupResult result = sut.lookup(q);

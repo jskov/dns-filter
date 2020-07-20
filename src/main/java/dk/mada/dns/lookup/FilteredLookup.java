@@ -3,8 +3,8 @@ package dk.mada.dns.lookup;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import dk.mada.dns.filter.ConfiguredBlacklist;
-import dk.mada.dns.filter.ConfiguredWhitelist;
+import dk.mada.dns.filter.ConfiguredDenied;
+import dk.mada.dns.filter.ConfiguredAllowed;
 import dk.mada.dns.filter.blocker.BlockedListCacher;
 import dk.mada.dns.resolver.DefaultResolver;
 
@@ -12,8 +12,8 @@ import dk.mada.dns.resolver.DefaultResolver;
 public class FilteredLookup {
 	@Inject private DefaultResolver resolver;
 	@Inject private BlockedListCacher fetchLists;
-	@Inject private ConfiguredBlacklist blacklist;
-	@Inject private ConfiguredWhitelist whitelist;
+	@Inject private ConfiguredDenied denied;
+	@Inject private ConfiguredAllowed allowed;
 	
 	private LookupEngine engine;
 	
@@ -28,9 +28,8 @@ public class FilteredLookup {
 	private synchronized LookupEngine getEngine() {
 		if (engine == null) {
 			var blockedlist = fetchLists.get();
-			engine = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
+			engine = new LookupEngine(resolver, blockedlist, denied, allowed);
 		}
 		return engine;
 	}
-
 }

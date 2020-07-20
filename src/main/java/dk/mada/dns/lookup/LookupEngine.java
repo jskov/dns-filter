@@ -7,9 +7,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.mada.dns.filter.Blacklist;
-import dk.mada.dns.filter.Blockedlist;
-import dk.mada.dns.filter.Whitelist;
+import dk.mada.dns.filter.Deny;
+import dk.mada.dns.filter.Block;
+import dk.mada.dns.filter.Allow;
 import dk.mada.dns.resolver.Resolver;
 import dk.mada.dns.wire.model.DnsHeaderReply;
 import dk.mada.dns.wire.model.DnsRecords;
@@ -19,17 +19,17 @@ import dk.mada.dns.wire.model.DnsSectionAdditional;
 import dk.mada.dns.wire.model.DnsSectionAnswer;
 
 /**
- * Looks up query via upstream, applying white list, 
- * black list and blocked list to the result.
+ * Looks up query via upstream, applying allows, 
+ * denies, and blocked list to the result.
  * 
  * The lists take priority like this:
- *  - white list (locally defined)
- *  - black list (locally defined)
+ *  - allowed (locally defined)
+ *  - denied (locally defined)
  *  - blocked list (externally defined)
  *  
- * But as an optimization, a black listed query
+ * But as an optimization, a denied query
  * will block without upstream lookup.
- * This means that the white list cannot override
+ * This means that allowed cannot override
  * in this case.
  */
 public class LookupEngine {
@@ -38,22 +38,22 @@ public class LookupEngine {
 	private static final int BLOCKED_TTL_SECONDS = 60*3;
 	
 	private final Resolver resolver;
-	private final Blacklist blacklist;
-	private final Blockedlist blockedlist;
-	private final Whitelist whitelist;
+	private final Deny deny;
+	private final Block block;
+	private final Allow allow;
 
-	public LookupEngine(Resolver resolver, Blockedlist blockedlist, Blacklist blacklist, Whitelist whitelist) {
+	public LookupEngine(Resolver resolver, Block block, Deny deny, Allow allow) {
 		this.resolver = resolver;
-		this.blockedlist = blockedlist;
-		this.blacklist = blacklist;
-		this.whitelist = whitelist;
+		this.block = block;
+		this.deny = deny;
+		this.allow = allow;
 	}
 
 	public LookupResult lookup(Query q) {
 		String name = q.getRequestName();
 		
-		if (blacklist.test(name) && !q.isDebugBypassRequest()) {
-			return makeBlockedReply(q, LookupState.BLACKLISTED, name);
+		if (deny.test(name) && !q.isDebugBypassRequest()) {
+			return makeBlockedReply(q, LookupState.DENIED, name);
 		}
 
 		logger.debug("Look up {}", name);
@@ -78,26 +78,26 @@ public class LookupEngine {
 			.map(n -> n.getName())
 			.collect(toList());
 
-		String whitelistedName = intermediateNames.stream()
-				.filter(whitelist::test)
+		String allowedName = intermediateNames.stream()
+				.filter(allow::test)
 				.findFirst()
 				.orElse(null);
 		
-		if (whitelistedName != null) {
-			return makeWhitelistReply(q, reply.getHeader(), reply.getAnswer(), reply.getAdditional(), whitelistedName);
+		if (allowedName != null) {
+			return makeWhitelistReply(q, reply.getHeader(), reply.getAnswer(), reply.getAdditional(), allowedName);
 		}
 		
-		String blacklistedName = intermediateNames.stream()
-				.filter(blacklist::test)
+		String deniedName = intermediateNames.stream()
+				.filter(deny::test)
 				.findFirst()
 				.orElse(null);
 		
-		if (blacklistedName != null) {
-			return makeBlockedReply(q, LookupState.BLACKLISTED, blacklistedName);
+		if (deniedName != null) {
+			return makeBlockedReply(q, LookupState.DENIED, deniedName);
 		}
 
 		String blockedName = intermediateNames.stream()
-				.filter(blockedlist::test)
+				.filter(block::test)
 				.findFirst()
 				.orElse(null);
 		
@@ -133,7 +133,7 @@ public class LookupEngine {
 	private LookupResult makeWhitelistReply(Query q, DnsHeaderReply headerReply, DnsSectionAnswer answer, DnsSectionAdditional additional, String passedDueTo) {
 		var result = new LookupResult();
 		logger.info("{} is whitelisted due to {}", q.getRequestName(), passedDueTo);
-		result.setState(LookupState.WHITELISTED);
+		result.setState(LookupState.ALLOWED);
 
 		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), headerReply, answer, additional);
 

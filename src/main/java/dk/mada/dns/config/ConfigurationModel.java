@@ -11,79 +11,70 @@ import java.util.Set;
  * Model containing configuration.
  */
 public class ConfigurationModel {
-	private Map<String, Domain> blacklistedDomains = Collections.synchronizedMap(new HashMap<>());
-	private Map<String, Domain> whitelistedDomains = Collections.synchronizedMap(new HashMap<>());
-	private Map<String, Host> blacklistedHosts = Collections.synchronizedMap(new HashMap<>());
-	private Map<String, Host> whitelistedHosts = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, Domain> deniedDomains = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, Domain> allowedDomains = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, Host> deniedHosts = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, Host> allowedHosts = Collections.synchronizedMap(new HashMap<>());
 	
-	private Set<String> blacklistedDomainNamesReadOnly = Collections.unmodifiableSet(blacklistedDomains.keySet());
-	private Set<String> whitelistedDomainNamesReadOnly = Collections.unmodifiableSet(whitelistedDomains.keySet());
-	private Set<String> blacklistedHostNamesReadOnly = Collections.unmodifiableSet(blacklistedHosts.keySet());
-	private Set<String> whitelistedHostNamesReadOnly = Collections.unmodifiableSet(whitelistedHosts.keySet());
+	private Set<String> deniedDomainNamesReadOnly = Collections.unmodifiableSet(deniedDomains.keySet());
+	private Set<String> allowedDomainNamesReadOnly = Collections.unmodifiableSet(allowedDomains.keySet());
+	private Set<String> deniedHostNamesReadOnly = Collections.unmodifiableSet(deniedHosts.keySet());
+	private Set<String> allowedHostNamesReadOnly = Collections.unmodifiableSet(allowedHosts.keySet());
 	
-	private Collection<Domain> blacklistedDomainsReadOnly = Collections.unmodifiableCollection(blacklistedDomains.values());
-	private Collection<Domain> whitelistedDomainsReadOnly = Collections.unmodifiableCollection(whitelistedDomains.values());
-	private Collection<Host> blacklistedHostsReadOnly = Collections.unmodifiableCollection(blacklistedHosts.values());
-	private Collection<Host> whitelistedHostsReadOnly = Collections.unmodifiableCollection(whitelistedHosts.values());
+	private Collection<Domain> deniedDomainsReadOnly = Collections.unmodifiableCollection(deniedDomains.values());
+	private Collection<Domain> allowedDomainsReadOnly = Collections.unmodifiableCollection(allowedDomains.values());
+	private Collection<Host> deniedHostsReadOnly = Collections.unmodifiableCollection(deniedHosts.values());
+	private Collection<Host> allowedHostsReadOnly = Collections.unmodifiableCollection(allowedHosts.values());
 	
 	private int blockedTtlSeconds = (int)Duration.ofMinutes(5).toSeconds();
 	
-	public void blacklistDomain(String domain, String reason) {
-		blacklistedDomains.put(domain, new Domain(domain, reason));
-	}
-	public void unblacklistDomain(String domain) {
-		blacklistedDomains.remove(domain);
+	public void denyDomain(String domain, String reason) {
+	    allowedDomains.remove(domain);
+		deniedDomains.put(domain, new Domain(domain, reason));
 	}
 	
-	public void blacklistHost(String host, String reason) {
-		blacklistedHosts.put(host, new Host(host, reason));
-	}
-	public void unblacklistHost(String host) {
-		blacklistedHosts.remove(host);
+	public void denyHost(String host, String reason) {
+	    allowedHosts.remove(host);
+		deniedHosts.put(host, new Host(host, reason));
 	}
 
-	public void whitelistDomain(String domain, String reason) {
-		whitelistedDomains.put(domain, new Domain(domain, reason));
-	}
-	public void unwhitelistDomain(String domain) {
-		whitelistedDomains.remove(domain);
+	public void allowDomain(String domain, String reason) {
+	    deniedDomains.remove(domain);
+		allowedDomains.put(domain, new Domain(domain, reason));
 	}
 
-	public void whitelistHost(String host, String reason) {
-		whitelistedHosts.put(host, new Host(host, reason));
+	public void allowHost(String host, String reason) {
+	    deniedHosts.remove(host);
+		allowedHosts.put(host, new Host(host, reason));
 	}
-	public void unwhitelistHost(String host) {
-		whitelistedHosts.remove(host);
-	}
-
 	
-	public Collection<Host> getBlacklistedHosts() {
-		return blacklistedHostsReadOnly;
+	public Collection<Host> getDeniedHosts() {
+		return deniedHostsReadOnly;
 	}
 
-	public Collection<Host> getWhitelistedHosts() {
-		return whitelistedHostsReadOnly;
+	public Collection<Host> getAllowedHosts() {
+		return allowedHostsReadOnly;
 	}
 
-	public Collection<Domain> getBlacklistedDomains() {
-		return blacklistedDomainsReadOnly;
+	public Collection<Domain> getDeniedDomains() {
+		return deniedDomainsReadOnly;
 	}
 
-	public Collection<Domain> getWhitelistedDomains() {
-		return whitelistedDomainsReadOnly;
+	public Collection<Domain> getAllowedDomains() {
+		return allowedDomainsReadOnly;
 	}
 
-	public Set<String> getBlacklistedHostNames() {
-		return blacklistedHostNamesReadOnly;
+	public Set<String> getDeniedHostNames() {
+		return deniedHostNamesReadOnly;
 	}
-	public Set<String> getBlacklistedDomainNames() {
-		return blacklistedDomainNamesReadOnly;
+	public Set<String> getDeniedDomainNames() {
+		return deniedDomainNamesReadOnly;
 	}
-	public Set<String> getWhitelistedHostNames() {
-		return whitelistedHostNamesReadOnly;
+	public Set<String> getAllowedHostNames() {
+		return allowedHostNamesReadOnly;
 	}
 	public Set<String> getWhitelistedDomainNames() {
-		return whitelistedDomainNamesReadOnly;
+		return allowedDomainNamesReadOnly;
 	}
 	
 	public int getBlockedTtlSeconds() {

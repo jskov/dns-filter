@@ -23,11 +23,11 @@ public class ConfigurationParsingTest {
 		var m = new ConfigurationModel();
 		new ConfigurationSerializer().load(m, Stream.of("-facebook.dk: just because", "-facebook.ru", "+xkcd.com: good stuff", "+test.dk", "+long-winded.dk: because: it: is!"));
 		
-		assertThat(m.getBlacklistedHostNames())
+		assertThat(m.getDeniedHostNames())
 			.containsOnly("facebook.dk", "facebook.ru");
-		assertThat(m.getWhitelistedHostNames())
+		assertThat(m.getAllowedHostNames())
 			.containsOnly("xkcd.com", "test.dk", "long-winded.dk");
-		assertThat(m.getWhitelistedHosts())
+		assertThat(m.getAllowedHosts())
 			.anyMatch(d -> "because: it: is!".equals(d.getReason()));
 	}
 
@@ -36,11 +36,11 @@ public class ConfigurationParsingTest {
 		var m = new ConfigurationModel();
 		new ConfigurationSerializer().load(m, Stream.of("-.facebook.dk: x", "-.facebook.ru", "+.xkcd.com: good stuff", "+.test.dk", "+.long-winded.dk: because: it: is!"));
 		
-		assertThat(m.getBlacklistedDomainNames())
+		assertThat(m.getDeniedDomainNames())
 			.containsOnly("facebook.dk", "facebook.ru");
 		assertThat(m.getWhitelistedDomainNames())
 			.containsOnly("xkcd.com", "test.dk", "long-winded.dk");
-		assertThat(m.getBlacklistedDomains())
+		assertThat(m.getDeniedDomains())
 			.anyMatch(d -> "x".equals(d.getReason()));
 	}
 }

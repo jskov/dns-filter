@@ -8,14 +8,14 @@ import dk.mada.dns.config.Configuration;
 import dk.mada.dns.config.ConfigurationChangeListener;
 
 /**
- * The whitelist as configured by the user.
+ * The allowed hosts/domains as configured by the user.
  */
 @ApplicationScoped
-public class ConfiguredWhitelist extends HostDomainNameMatcher implements ConfigurationChangeListener, Whitelist {
+public class ConfiguredAllowed extends HostDomainNameMatcher implements ConfigurationChangeListener, Allow {
 	@Inject private Configuration configuration;
 	
-	public ConfiguredWhitelist() {
-		super("Configured whitelist");
+	public ConfiguredAllowed() {
+		super("Configured allows");
 	}
 	
 	@PostConstruct
@@ -30,7 +30,7 @@ public class ConfiguredWhitelist extends HostDomainNameMatcher implements Config
 	
 	@Override
 	public void configurationChanged() {
-		setHosts(configuration.getWhitelistedHostNames());
-		setDomains(configuration.getWhitelistedDomainNames());
+		setHosts(configuration.getAllowedHostNames());
+		setDomains(configuration.getAllowedDomainNames());
 	}
 }

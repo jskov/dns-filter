@@ -39,7 +39,7 @@ public class ConfigResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<HostDto> getWhitelistedHosts() {
-		return configuration.getWhitelistedHosts().stream()
+		return configuration.getAllowedHosts().stream()
 				.map(h -> hostDto(h))
 				.collect(toList());
     }
@@ -47,14 +47,14 @@ public class ConfigResource {
 	@Path("filter/whitelist/host/{hostname}")
 	@PUT
 	public void whitelistHost(@PathParam("hostname") String hostname, @QueryParam("reason") @DefaultValue("") String reason) {
-		configuration.whitelistHost(hostname, reason);
+		configuration.allowHost(hostname, reason);
 	}
 
 	@Path("filter/whitelist/domain")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<DomainDto> getWhitelistedDomains() {
-		return configuration.getWhitelistedDomains().stream()
+		return configuration.getAllowedDomains().stream()
 				.map(d -> domainDto(d))
 				.collect(toList());
     }
@@ -62,36 +62,36 @@ public class ConfigResource {
 	@Path("filter/whitelist/domain/{domainname}")
 	@PUT
 	public void whitelistDomain(@PathParam("domainname") String domainname, @QueryParam("reason") @DefaultValue("") String reason) {
-		configuration.whitelistDomain(domainname, reason);
+		configuration.allowDomain(domainname, reason);
 	}
 
-	@Path("filter/blacklist/host")
+	@Path("filter/deny/host")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<HostDto> getBlacklistHosts() {
-		return configuration.getBlacklistedHosts().stream()
+    public List<HostDto> getDeniedHosts() {
+		return configuration.getDeniedHosts().stream()
 				.map(h -> hostDto(h))
 				.collect(toList());
     }
 
-	@Path("filter/blacklist/host/{hostname}")
+	@Path("filter/deny/host/{hostname}")
 	@PUT
-	public void blacklistHost(@PathParam("hostname") String hostname, @QueryParam("reason") @DefaultValue("") String reason) {
-		configuration.blacklistHost(hostname, reason);
+	public void denyHost(@PathParam("hostname") String hostname, @QueryParam("reason") @DefaultValue("") String reason) {
+		configuration.denyHost(hostname, reason);
 	}
 
-	@Path("filter/blacklist/domain")
+	@Path("filter/deny/domain")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<DomainDto> getBlacklistedDomains() {
-		return configuration.getBlacklistedDomains().stream()
+    public List<DomainDto> getDeniedDomains() {
+		return configuration.getDeniedDomains().stream()
 				.map(d -> domainDto(d))
 				.collect(toList());
     }
 
-	@Path("filter/blacklist/domain/{domainname}")
+	@Path("filter/deny/domain/{domainname}")
 	@PUT
-	public void blacklistDomain(@PathParam("domainname") String domainname, @QueryParam("reason") @DefaultValue("") String reason) {
-		configuration.blacklistDomain(domainname, reason);
+	public void denyDomain(@PathParam("domainname") String domainname, @QueryParam("reason") @DefaultValue("") String reason) {
+		configuration.denyDomain(domainname, reason);
 	}
 }

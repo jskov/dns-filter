@@ -10,9 +10,9 @@ import java.net.UnknownHostException;
 
 import org.junit.jupiter.api.Test;
 
-import dk.mada.dns.filter.Blacklist;
-import dk.mada.dns.filter.Blockedlist;
-import dk.mada.dns.filter.Whitelist;
+import dk.mada.dns.filter.Deny;
+import dk.mada.dns.filter.Block;
+import dk.mada.dns.filter.Allow;
 import dk.mada.dns.lookup.LookupEngine;
 import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.LookupState;
@@ -33,15 +33,15 @@ public class LookupStateEngineTest {
 		Query q = makeTestQuery(GOOGLEADSERVICES_COM);
 		
 		CannedModelResolver resolver = new CannedModelResolver();
-		Blacklist blacklist = h -> h.contains("ads");
-		Whitelist whitelist = h -> false;
-		Blockedlist blockedlist = h -> false;
+		Deny blacklist = h -> h.contains("ads");
+		Allow whitelist = h -> false;
+		Block blockedlist = h -> false;
 
 		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
 		LookupResult result = sut.lookup(q);
 		
 		assertThat(result.getState())
-			.isEqualTo(LookupState.BLACKLISTED);
+			.isEqualTo(LookupState.DENIED);
 		assertThat(resolver.hasBeenCalled())
 			.isFalse();
 	}
@@ -64,15 +64,15 @@ public class LookupStateEngineTest {
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		CannedModelResolver resolver = new CannedModelResolver(reply);
-		Blacklist blacklist = h -> h.contains("mozaws.net");
-		Whitelist whitelist = h -> false;
-		Blockedlist blockedlist = h -> false;
+		Deny blacklist = h -> h.contains("mozaws.net");
+		Allow whitelist = h -> false;
+		Block blockedlist = h -> false;
 
 		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
 		LookupResult result = sut.lookup(q);
 
 		assertThat(result.getState())
-			.isEqualTo(LookupState.BLACKLISTED);
+			.isEqualTo(LookupState.DENIED);
 	}
 
 	/**
@@ -95,15 +95,15 @@ public class LookupStateEngineTest {
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		CannedModelResolver resolver = new CannedModelResolver(reply);
-		Blacklist blacklist = h -> h.contains("mozaws.net");
-		Whitelist whitelist = h -> h.contains("akamai.net");
-		Blockedlist blockedlist = h -> false;
+		Deny blacklist = h -> h.contains("mozaws.net");
+		Allow whitelist = h -> h.contains("akamai.net");
+		Block blockedlist = h -> false;
 
 		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
 		LookupResult result = sut.lookup(q);
 
 		assertThat(result.getState())
-			.isEqualTo(LookupState.WHITELISTED);
+			.isEqualTo(LookupState.ALLOWED);
 	}
 
 	/**
@@ -116,15 +116,15 @@ public class LookupStateEngineTest {
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		CannedModelResolver resolver = new CannedModelResolver(reply);
-		Blacklist blacklist = h -> h.contains("firefox.com");
-		Whitelist whitelist = h -> h.contains("akamai.net");
-		Blockedlist blockedlist = h -> false;
+		Deny blacklist = h -> h.contains("firefox.com");
+		Allow whitelist = h -> h.contains("akamai.net");
+		Block blockedlist = h -> false;
 
 		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
 		LookupResult result = sut.lookup(q);
 
 		assertThat(result.getState())
-			.isEqualTo(LookupState.BLACKLISTED);
+			.isEqualTo(LookupState.DENIED);
 	}
 	
 	/**
@@ -137,9 +137,9 @@ public class LookupStateEngineTest {
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		CannedModelResolver resolver = new CannedModelResolver(reply);
-		Blacklist blacklist = h -> false;
-		Whitelist whitelist = h -> false;
-		Blockedlist blockedlist = h -> h.contains("akamai");
+		Deny blacklist = h -> false;
+		Allow whitelist = h -> false;
+		Block blockedlist = h -> h.contains("akamai");
 
 		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
 		LookupResult result = sut.lookup(q);
@@ -157,9 +157,9 @@ public class LookupStateEngineTest {
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		CannedModelResolver resolver = new CannedModelResolver(reply);
-		Blacklist blacklist = h -> false;
-		Whitelist whitelist = h -> false;
-		Blockedlist blockedlist = h -> false;
+		Deny blacklist = h -> false;
+		Allow whitelist = h -> false;
+		Block blockedlist = h -> false;
 
 		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
 		LookupResult result = sut.lookup(q);

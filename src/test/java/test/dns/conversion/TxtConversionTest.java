@@ -10,9 +10,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import dk.mada.dns.filter.Blacklist;
-import dk.mada.dns.filter.Blockedlist;
-import dk.mada.dns.filter.Whitelist;
+import dk.mada.dns.filter.Deny;
+import dk.mada.dns.filter.Block;
+import dk.mada.dns.filter.Allow;
 import dk.mada.dns.lookup.LookupEngine;
 import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.LookupState;
@@ -32,9 +32,9 @@ public class TxtConversionTest {
 		Query q = makeTestQuery(NOSCRIPT_CSP_INVALID);
 
 		Resolver resolver = new CannedUdpResolver(NOSCRIPT_CSP_INVALID_REPLY);
-		Blacklist blacklist = h -> false;
-		Whitelist whitelist = h -> false;
-		Blockedlist blockedlist = h -> false;
+		Deny blacklist = h -> false;
+		Allow whitelist = h -> false;
+		Block blockedlist = h -> false;
 		
 		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
 		LookupResult result = sut.lookup(q);
