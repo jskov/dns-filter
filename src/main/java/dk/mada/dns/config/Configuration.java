@@ -49,67 +49,51 @@ public class Configuration {
     	listeners.remove(l);
     }
     
-	public void blacklistDomain(String domain, String reason) {
-		model.blacklistDomain(domain, reason);
+	public void denyDomain(String domain, String reason) {
+		model.denyDomain(domain, reason);
 		update();
 	}
-	public void blacklistHost(String hostname, String reason) {
-		model.blacklistHost(hostname, reason);
-		update();
-	}
-	public void unblacklistDomain(String domain) {
-		model.unblacklistDomain(domain);
-		update();
-	}
-	public void unblacklistHost(String hostname) {
-		model.unblacklistHost(hostname);
+	public void denyHost(String hostname, String reason) {
+		model.denyHost(hostname, reason);
 		update();
 	}
 
-	public void whitelistDomain(String domain, String reason) {
-		model.whitelistDomain(domain, reason);
+	public void allowDomain(String domain, String reason) {
+		model.allowDomain(domain, reason);
 		update();
 	}
-	public void whitelistHost(String hostname, String reason) {
-		model.whitelistHost(hostname, reason);
-		update();
-	}
-	public void unwhitelistDomain(String domain) {
-		model.unwhitelistDomain(domain);
-		update();
-	}
-	public void unwhitelistHost(String hostname) {
-		model.unwhitelistHost(hostname);
+	public void allowHost(String hostname, String reason) {
+		model.allowHost(hostname, reason);
 		update();
 	}
 
-	public Set<String> getBlacklistedHostNames() {
-		return model.getBlacklistedHostNames();
+	public Set<String> getDeniedHostNames() {
+		return model.getDeniedHostNames();
 	}
-	public Set<String> getBlacklistedDomainNames() {
-		return model.getBlacklistedDomainNames();
+	public Set<String> getDeniedDomainNames() {
+		return model.getDeniedDomainNames();
 	}
-	public Set<String> getWhitelistedHostNames() {
-		return model.getWhitelistedHostNames();
+	public Set<String> getAllowedHostNames() {
+		return model.getAllowedHostNames();
 	}
-	public Set<String> getWhitelistedDomainNames() {
-		return model.getWhitelistedDomainNames();
+	public Set<String> getAllowedDomainNames() {
+		return model.getAllowedDomainNames();
 	}
 	
-	public Collection<Domain> getBlacklistedDomains() {
-		return model.getBlacklistedDomains();
+	public Collection<Domain> getDeniedDomains() {
+		return model.getDeniedDomains();
 	}
 
-	public Collection<Host> getBlacklistedHosts() {
-		return model.getBlacklistedHosts();
+	public Collection<Host> getDeniedHosts() {
+		return model.getDeniedHosts();
 	}
 
-	public Collection<Domain> getWhitelistedDomains() {
-		return model.getWhitelistedDomains();
+	public Collection<Domain> getAllowedDomains() {
+		return model.getAllowedDomains();
 	}
 
-	public Collection<Host> getWhitelistedHosts() {
-		return model.getWhitelistedHosts();
+	public Collection<Host> getAllowedHosts() {
+		return model.getAllowedHosts();
 	}
 	
 	public int getBlockedTtlSeconds() {
@@ -122,14 +106,14 @@ public class Configuration {
 
 	public String getSummary() {
 		return new StringBuilder("Configuration summary:\n")
-				.append(" blacklisted hosts:\n  ")
-				.append(String.join("\n  ", model.getBlacklistedHostNames()))
-				.append("\n\n blacklisted domains:\n  ")
-				.append(String.join("\n  ", model.getBlacklistedDomainNames()))
-				.append("\n\n whitelisted hosts:\n  ")
-				.append(String.join("\n  ", model.getWhitelistedHostNames()))
-				.append("\n\n whitelisted domains:\n  ")
-				.append(String.join("\n  ", model.getWhitelistedDomainNames()))
+				.append(" denied hosts:\n  ")
+				.append(String.join("\n  ", model.getDeniedHostNames()))
+				.append("\n\n denied domains:\n  ")
+				.append(String.join("\n  ", model.getDeniedDomainNames()))
+				.append("\n\n allowed hosts:\n  ")
+				.append(String.join("\n  ", model.getAllowedHostNames()))
+				.append("\n\n allowed domains:\n  ")
+				.append(String.join("\n  ", model.getAllowedDomainNames()))
 				.append("\n")
 				.toString();
 	}

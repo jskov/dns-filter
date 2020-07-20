@@ -22,11 +22,11 @@ import dk.mada.dns.Environment;
 /**
  * Persistence of configuration.
  * 
- * Blacklisted entries stored as:
+ * Denied entries stored as:
  * -hostname : reason
  * -.domain  : reason
  * 
- * Whitelisted entries stored as:
+ * Allowed entries stored as:
  * +hostname : reason
  * +.domain  : reason
  * 
@@ -110,32 +110,32 @@ public class ConfigurationSerializer {
 	}
 	
 	private void loadDomainLine(ConfigurationModel model, Matcher m) {
-		boolean blacklist = m.group(1).equals("-");
+		boolean isDeny = m.group(1).equals("-");
 		String domain = m.group(2).trim();
 		String reason = m.group(3);
 		reason = reason == null ? "" : reason.trim();
 
-		logger.debug("Load domain line {} {}, because: {}", blacklist ? "blacklist" : "whitelist", domain, reason);
+		logger.debug("Load domain line {} {}, because: {}", isDeny ? "deny" : "allow", domain, reason);
 		
-		if (blacklist) {
-			model.blacklistDomain(domain, reason);
+		if (isDeny) {
+			model.denyDomain(domain, reason);
 		} else {
-			model.whitelistDomain(domain, reason);
+			model.allowDomain(domain, reason);
 		}
 	}
 
 	private void loadHostLine(ConfigurationModel model, Matcher m) {
-		boolean blacklist = m.group(1).equals("-");
+		boolean isDeny = m.group(1).equals("-");
 		String host = m.group(2).trim();
 		String reason = m.group(3);
 		reason = reason == null ? "" : reason.trim();
 
-		logger.debug("Load host line {} {}, because: {}", blacklist ? "blacklist" : "whitelist", host, reason);
+		logger.debug("Load host line {} {}, because: {}", isDeny ? "deny" : "allow", host, reason);
 		
-		if (blacklist) {
-			model.blacklistHost(host, reason);
+		if (isDeny) {
+			model.denyHost(host, reason);
 		} else {
-			model.whitelistHost(host, reason);
+			model.allowHost(host, reason);
 		}
 	}
 
@@ -156,22 +156,22 @@ public class ConfigurationSerializer {
 	private String modelToStr(ConfigurationModel model) {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append(model.getBlacklistedDomains().stream()
+		sb.append(model.getDeniedDomains().stream()
 					   .map(d -> "-." + d.getName() + ":" + d.getReason())
 					   .collect(Collectors.joining(NL)));
 		sb.append(NL).append(NL);
 
-		sb.append(model.getBlacklistedHosts().stream()
+		sb.append(model.getDeniedHosts().stream()
 				   .map(h -> "-" + h.getName() + ":" + h.getReason())
 				   .collect(Collectors.joining(NL)));
 		sb.append(NL).append(NL);
 
-		sb.append(model.getWhitelistedDomains().stream()
+		sb.append(model.getAllowedDomains().stream()
 				   .map(d -> "+." + d.getName() + ":" + d.getReason())
 				   .collect(Collectors.joining(NL)));
 		sb.append(NL).append(NL);
 
-		sb.append(model.getWhitelistedHosts().stream()
+		sb.append(model.getAllowedHosts().stream()
 				.map(h -> "+" + h.getName() + ":" + h.getReason())
 				.collect(Collectors.joining(NL)));
 		sb.append(NL).append(NL);

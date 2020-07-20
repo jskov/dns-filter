@@ -2,8 +2,8 @@ package dk.mada.dns.websocket.dto;
 
 public enum EventTypeDto {
 	QUERY,
-	WHITELISTED,
-	BLACKLISTED,
+	ALLOWED,
+	DENIED,
 	BLOCKED,
 	PASSTHROUGH, // 
 	FAILED,

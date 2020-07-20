@@ -9,9 +9,9 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import dk.mada.dns.filter.Blacklist;
-import dk.mada.dns.filter.Blockedlist;
-import dk.mada.dns.filter.Whitelist;
+import dk.mada.dns.filter.Deny;
+import dk.mada.dns.filter.Block;
+import dk.mada.dns.filter.Allow;
 import dk.mada.dns.lookup.LookupEngine;
 import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.Query;
@@ -55,11 +55,11 @@ public class AAAAConversionTest {
 		Query q = makeTestQuery(MOZILLA_ORG_AAAA);
 
 		Resolver resolver = new CannedUdpResolver(MOZILLA_ORG_AAAA);
-		Blacklist blacklist = h -> false;
-		Whitelist whitelist = h -> false;
-		Blockedlist blockedlist = h -> false;
+		Deny deny = h -> false;
+		Allow allow = h -> false;
+		Block block = h -> false;
 		
-		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
+		var sut = new LookupEngine(resolver, allow, deny, block);
 		LookupResult result = sut.lookup(q);
 
 		assertThat(result.getReply().getAnswer().getRecords())

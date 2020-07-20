@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.mada.dns.Environment;
-import dk.mada.dns.filter.Blockedlist;
+import dk.mada.dns.filter.Block;
 
 /**
  * Fetches host and domain names from https://github.com/notracking/hosts-blocklists
@@ -79,7 +79,7 @@ public class BlockedListCacher {
 		upstreamBlockList.setDomains(domainNames);
 	}
 	
-	public Blockedlist get() {
+	public Block get() {
 		return upstreamBlockList;
 	}
 

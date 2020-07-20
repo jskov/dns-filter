@@ -26,16 +26,16 @@ public class DomainToDtoMapper {
 	
 	public static FilterDto filterDto(Configuration c) {
 		var dto = new FilterDto();
-		dto.blacklistedDomains = c.getBlacklistedDomains().stream()
+		dto.deniedDomains = c.getDeniedDomains().stream()
 				.map(d -> domainDto(d))
 				.collect(toList());
-		dto.blacklistedHosts = c.getBlacklistedHosts().stream()
+		dto.deniedHosts = c.getDeniedHosts().stream()
 				.map(h -> hostDto(h))
 				.collect(toList());
-		dto.whitelistedDomains = c.getWhitelistedDomains().stream()
+		dto.allowedDomains = c.getAllowedDomains().stream()
 				.map(d -> domainDto(d))
 				.collect(toList());
-		dto.whitelistedHosts = c.getWhitelistedHosts().stream()
+		dto.allowedHosts = c.getAllowedHosts().stream()
 				.map(h -> hostDto(h))
 				.collect(toList());
 		return dto;

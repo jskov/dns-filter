@@ -1,7 +1,7 @@
 package dk.mada.dns.rest.dto;
 
 /**
- * DTO for a host blacklisted or whitelisted.
+ * DTO for a host denied or allowed.
  */
 public class HostDto {
 	public String host;

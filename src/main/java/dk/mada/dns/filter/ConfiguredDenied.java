@@ -8,14 +8,14 @@ import dk.mada.dns.config.Configuration;
 import dk.mada.dns.config.ConfigurationChangeListener;
 
 /**
- * The blacklist as configured by the user.
+ * The denied hosts/domains as configured by the user.
  */
 @ApplicationScoped
-public class ConfiguredBlacklist extends HostDomainNameMatcher implements ConfigurationChangeListener, Blacklist {
+public class ConfiguredDenied extends HostDomainNameMatcher implements ConfigurationChangeListener, Deny {
 	@Inject private Configuration configuration;
 	
-	public ConfiguredBlacklist() {
-		super("Configured blacklist");
+	public ConfiguredDenied() {
+		super("Configured denies");
 	}
 
 	@PostConstruct
@@ -30,7 +30,7 @@ public class ConfiguredBlacklist extends HostDomainNameMatcher implements Config
 	
 	@Override
 	public void configurationChanged() {
-		setHosts(configuration.getBlacklistedHostNames());
-		setDomains(configuration.getBlacklistedDomainNames());
+		setHosts(configuration.getDeniedHostNames());
+		setDomains(configuration.getDeniedDomainNames());
 	}
 }
