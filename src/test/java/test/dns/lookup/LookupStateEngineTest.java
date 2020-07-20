@@ -29,7 +29,7 @@ public class LookupStateEngineTest {
 	 * upstream resolve.
 	 */
 	@Test
-	public void blacklistedEntriesShouldNotBeResolved() {
+	public void deniedEntriesShouldNotBeResolved() {
 		Query q = makeTestQuery(GOOGLEADSERVICES_COM);
 		
 		CannedModelResolver resolver = new CannedModelResolver();
@@ -59,7 +59,7 @@ public class LookupStateEngineTest {
      *   a1089.dscd.akamai.net.  10      IN      A       104.84.152.177
 	 */
 	@Test
-	public void blacklistedChainEntriesShouldBlock() throws UnknownHostException {
+	public void deniedChainEntriesShouldBlock() throws UnknownHostException {
 		Query q = makeTestQuery(DETECTPORTAL_FIREFOX_COM);
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
