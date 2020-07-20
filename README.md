@@ -118,27 +118,42 @@ To run in Eclipse, add VM arguments: `--add-modules ALL-MODULE-PATH`
 
 # Self Signed Certificate
 
-	keytool -genkey -keyalg RSA -alias selfsigned -keystore keystore.jks -storepass secret -validity 360 -keysize 2048
-	What is your first and last name?
-	  [Unknown]:  dns-filter
-	What is the name of your organizational unit?
-	  [Unknown]:  mada
-	What is the name of your organization?
-	  [Unknown]:  mada 
-	What is the name of your City or Locality?
-	  [Unknown]:  Silkeborg
-	What is the name of your State or Province?
-	  [Unknown]:   
-	What is the two-letter country code for this unit?
-	  [Unknown]:  DK
-	Is CN=dns-filter, OU=mada, O=mada, L=Silkeborg, ST=Unknown, C=DK correct?
-	  [no]:  yes
-	
-	Generating 2,048 bit RSA key pair and self-signed certificate (SHA256withRSA) with a validity of 360 days
-		for: CN=dns-filter, OU=mada, O=mada, L=Silkeborg, ST=Unknown, C=DK
-	
+```console
+$ keytool -genkey -keyalg RSA -alias selfsigned -keystore keystore.jks -storepass secret -validity 360 -keysize 2048
+What is your first and last name?
+  [Unknown]:  dns-filter
+What is the name of your organizational unit?
+  [Unknown]:  mada
+What is the name of your organization?
+  [Unknown]:  mada 
+What is the name of your City or Locality?
+  [Unknown]:  Silkeborg
+What is the name of your State or Province?
+  [Unknown]:   
+What is the two-letter country code for this unit?
+  [Unknown]:  DK
+Is CN=dns-filter, OU=mada, O=mada, L=Silkeborg, ST=Unknown, C=DK correct?
+  [no]:  yes
+
+Generating 2,048 bit RSA key pair and self-signed certificate (SHA256withRSA) with a validity of 360 days
+	for: CN=dns-filter, OU=mada, O=mada, L=Silkeborg, ST=Unknown, C=DK
+```
 
 Hooked into quarkus with https://quarkus.io/guides/http-reference#supporting-secure-connections-with-ssl
+
+Now replies over SSL for 
+
+Config:
+
+	curl -k https://localhost:8443/config/filter
+	
+Logs:
+
+	https://0.0.0.0:8443/logs.html
+
+Query:
+	dig @localhost -p 8053 cnn.com
+	
 
 # App trust
 
