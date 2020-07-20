@@ -32,11 +32,11 @@ public class TxtConversionTest {
 		Query q = makeTestQuery(NOSCRIPT_CSP_INVALID);
 
 		Resolver resolver = new CannedUdpResolver(NOSCRIPT_CSP_INVALID_REPLY);
-		Deny blacklist = h -> false;
-		Allow whitelist = h -> false;
-		Block blockedlist = h -> false;
+		Deny deny = h -> false;
+		Allow allow = h -> false;
+		Block block = h -> false;
 		
-		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
+		var sut = new LookupEngine(resolver, block, deny, allow);
 		LookupResult result = sut.lookup(q);
 
 		assertThat(result.getState())

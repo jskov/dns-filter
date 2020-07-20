@@ -77,7 +77,7 @@ public class Configuration {
 		return model.getAllowedHostNames();
 	}
 	public Set<String> getAllowedDomainNames() {
-		return model.getWhitelistedDomainNames();
+		return model.getAllowedDomainNames();
 	}
 	
 	public Collection<Domain> getDeniedDomains() {
@@ -113,7 +113,7 @@ public class Configuration {
 				.append("\n\n allowed hosts:\n  ")
 				.append(String.join("\n  ", model.getAllowedHostNames()))
 				.append("\n\n allowed domains:\n  ")
-				.append(String.join("\n  ", model.getWhitelistedDomainNames()))
+				.append(String.join("\n  ", model.getAllowedDomainNames()))
 				.append("\n")
 				.toString();
 	}

@@ -36,10 +36,10 @@ public class FilterImportIntTest {
 		Query q = makeTestQuery(ADNXS_COM);
 
 		Resolver resolver = new CannedUdpResolver(ADNXS_COM_REPLY);
-		Deny blacklist = h -> false;
-		Allow whitelist = h -> false;
+		Deny deny = h -> false;
+		Allow allow = h -> false;
 		
-		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
+		var sut = new LookupEngine(resolver, blockedlist, deny, allow);
 		LookupResult result = sut.lookup(q);
 
 		assertThat(result.getState())

@@ -35,33 +35,33 @@ public class ConfigResource {
 		return filterDto(configuration);
 	}
 	
-	@Path("filter/whitelist/host")
+	@Path("filter/allow/host")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<HostDto> getWhitelistedHosts() {
+    public List<HostDto> getAllowedHosts() {
 		return configuration.getAllowedHosts().stream()
 				.map(h -> hostDto(h))
 				.collect(toList());
     }
 
-	@Path("filter/whitelist/host/{hostname}")
+	@Path("filter/allow/host/{hostname}")
 	@PUT
-	public void whitelistHost(@PathParam("hostname") String hostname, @QueryParam("reason") @DefaultValue("") String reason) {
+	public void allowHost(@PathParam("hostname") String hostname, @QueryParam("reason") @DefaultValue("") String reason) {
 		configuration.allowHost(hostname, reason);
 	}
 
-	@Path("filter/whitelist/domain")
+	@Path("filter/allow/domain")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<DomainDto> getWhitelistedDomains() {
+    public List<DomainDto> getAllowedDomains() {
 		return configuration.getAllowedDomains().stream()
 				.map(d -> domainDto(d))
 				.collect(toList());
     }
 
-	@Path("filter/whitelist/domain/{domainname}")
+	@Path("filter/allow/domain/{domainname}")
 	@PUT
-	public void whitelistDomain(@PathParam("domainname") String domainname, @QueryParam("reason") @DefaultValue("") String reason) {
+	public void allowDomain(@PathParam("domainname") String domainname, @QueryParam("reason") @DefaultValue("") String reason) {
 		configuration.allowDomain(domainname, reason);
 	}
 

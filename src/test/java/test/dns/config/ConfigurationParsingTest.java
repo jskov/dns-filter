@@ -38,7 +38,7 @@ public class ConfigurationParsingTest {
 		
 		assertThat(m.getDeniedDomainNames())
 			.containsOnly("facebook.dk", "facebook.ru");
-		assertThat(m.getWhitelistedDomainNames())
+		assertThat(m.getAllowedDomainNames())
 			.containsOnly("xkcd.com", "test.dk", "long-winded.dk");
 		assertThat(m.getDeniedDomains())
 			.anyMatch(d -> "x".equals(d.getReason()));

@@ -55,11 +55,11 @@ public class AAAAConversionTest {
 		Query q = makeTestQuery(MOZILLA_ORG_AAAA);
 
 		Resolver resolver = new CannedUdpResolver(MOZILLA_ORG_AAAA);
-		Deny blacklist = h -> false;
-		Allow whitelist = h -> false;
-		Block blockedlist = h -> false;
+		Deny deny = h -> false;
+		Allow allow = h -> false;
+		Block block = h -> false;
 		
-		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
+		var sut = new LookupEngine(resolver, block, deny, allow);
 		LookupResult result = sut.lookup(q);
 
 		assertThat(result.getReply().getAnswer().getRecords())

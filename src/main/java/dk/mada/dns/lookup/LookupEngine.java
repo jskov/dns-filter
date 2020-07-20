@@ -84,7 +84,7 @@ public class LookupEngine {
 				.orElse(null);
 		
 		if (allowedName != null) {
-			return makeWhitelistReply(q, reply.getHeader(), reply.getAnswer(), reply.getAdditional(), allowedName);
+			return makeAllowedReply(q, reply.getHeader(), reply.getAnswer(), reply.getAdditional(), allowedName);
 		}
 		
 		String deniedName = intermediateNames.stream()
@@ -130,9 +130,9 @@ public class LookupEngine {
 	}
 
 	
-	private LookupResult makeWhitelistReply(Query q, DnsHeaderReply headerReply, DnsSectionAnswer answer, DnsSectionAdditional additional, String passedDueTo) {
+	private LookupResult makeAllowedReply(Query q, DnsHeaderReply headerReply, DnsSectionAnswer answer, DnsSectionAdditional additional, String passedDueTo) {
 		var result = new LookupResult();
-		logger.info("{} is whitelisted due to {}", q.getRequestName(), passedDueTo);
+		logger.info("{} is allowed due to {}", q.getRequestName(), passedDueTo);
 		result.setState(LookupState.ALLOWED);
 
 		var reply = DnsReplies.fromRequestWithAnswer(q.getRequest(), headerReply, answer, additional);

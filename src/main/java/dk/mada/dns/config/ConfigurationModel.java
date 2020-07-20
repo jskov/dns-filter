@@ -73,7 +73,7 @@ public class ConfigurationModel {
 	public Set<String> getAllowedHostNames() {
 		return allowedHostNamesReadOnly;
 	}
-	public Set<String> getWhitelistedDomainNames() {
+	public Set<String> getAllowedDomainNames() {
 		return allowedDomainNamesReadOnly;
 	}
 	

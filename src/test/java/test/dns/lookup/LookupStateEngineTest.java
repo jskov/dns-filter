@@ -25,7 +25,7 @@ import fixture.resolver.CannedModelResolver;
  */
 public class LookupStateEngineTest {
 	/**
-	 * A query for a blacklisted entry should not cause
+	 * A query for a denied entry should not cause
 	 * upstream resolve.
 	 */
 	@Test
@@ -33,11 +33,11 @@ public class LookupStateEngineTest {
 		Query q = makeTestQuery(GOOGLEADSERVICES_COM);
 		
 		CannedModelResolver resolver = new CannedModelResolver();
-		Deny blacklist = h -> h.contains("ads");
-		Allow whitelist = h -> false;
-		Block blockedlist = h -> false;
+		Deny deny = h -> h.contains("ads");
+		Allow allow = h -> false;
+		Block block = h -> false;
 
-		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
+		var sut = new LookupEngine(resolver, block, deny, allow);
 		LookupResult result = sut.lookup(q);
 		
 		assertThat(result.getState())
@@ -49,7 +49,7 @@ public class LookupStateEngineTest {
 	/*
 	 * A query for an innocent name may resolve to a chain of C-names
 	 * before ending in an A-record. Any element in the chain may be
-	 * blacklisted.
+	 * denied.
 	 * 
 	 * Use example of detectportal.firefox.com which replies
 	 * 	 detectportal.firefox.com.       11      IN      CNAME                                                    
@@ -64,11 +64,11 @@ public class LookupStateEngineTest {
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		CannedModelResolver resolver = new CannedModelResolver(reply);
-		Deny blacklist = h -> h.contains("mozaws.net");
-		Allow whitelist = h -> false;
-		Block blockedlist = h -> false;
+		Deny deny = h -> h.contains("mozaws.net");
+		Allow allow = h -> false;
+		Block block = h -> false;
 
-		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
+		var sut = new LookupEngine(resolver, block, deny, allow);
 		LookupResult result = sut.lookup(q);
 
 		assertThat(result.getState())
@@ -76,9 +76,9 @@ public class LookupStateEngineTest {
 	}
 
 	/**
-	 * A whitelisted query (or element in c-name chain) should
+	 * An allowed query (or element in c-name chain) should
 	 * return resolved IP, even if the query/chain also contains
-	 * blacklisted entries.
+	 * denied entries.
 	 * Note that a cache/upstream resolve is always needed (the
 	 * IP is needed, after all).
 	 * 
@@ -90,16 +90,16 @@ public class LookupStateEngineTest {
      *   a1089.dscd.akamai.net.  10      IN      A       104.84.152.177
 	 */
 	@Test
-	public void whitelistedEntriesShouldBeResolved() throws UnknownHostException {
+	public void allowedEntriesShouldBeResolved() throws UnknownHostException {
 		Query q = makeTestQuery(DETECTPORTAL_FIREFOX_COM);
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		CannedModelResolver resolver = new CannedModelResolver(reply);
-		Deny blacklist = h -> h.contains("mozaws.net");
-		Allow whitelist = h -> h.contains("akamai.net");
-		Block blockedlist = h -> false;
+		Deny deny = h -> h.contains("mozaws.net");
+		Allow allow = h -> h.contains("akamai.net");
+		Block block = h -> false;
 
-		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
+		var sut = new LookupEngine(resolver, block, deny, allow);
 		LookupResult result = sut.lookup(q);
 
 		assertThat(result.getState())
@@ -107,20 +107,20 @@ public class LookupStateEngineTest {
 	}
 
 	/**
-	 * Same test as whitelistedEntriesShouldBeResolved, but query
-	 * is blacklisted, overriding the white listing.
+	 * Same test as allowedEntriesShouldBeResolved, but query
+	 * is denied, overriding the allow state.
 	 */
 	@Test
-	public void blackListTrumpsWhiteListInQuery() throws UnknownHostException {
+	public void denyTrumpsAllowInQuery() throws UnknownHostException {
 		Query q = makeTestQuery(DETECTPORTAL_FIREFOX_COM);
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		CannedModelResolver resolver = new CannedModelResolver(reply);
-		Deny blacklist = h -> h.contains("firefox.com");
-		Allow whitelist = h -> h.contains("akamai.net");
-		Block blockedlist = h -> false;
+		Deny deny = h -> h.contains("firefox.com");
+		Allow allow = h -> h.contains("akamai.net");
+		Block block = h -> false;
 
-		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
+		var sut = new LookupEngine(resolver, block, deny, allow);
 		LookupResult result = sut.lookup(q);
 
 		assertThat(result.getState())
@@ -128,7 +128,7 @@ public class LookupStateEngineTest {
 	}
 	
 	/**
-	 * If query has not been affected by white list or black list,
+	 * If query has not been affected by allow or deny.
 	 * it will be checked against blocked list from external.
 	 */
 	@Test
@@ -137,11 +137,11 @@ public class LookupStateEngineTest {
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		CannedModelResolver resolver = new CannedModelResolver(reply);
-		Deny blacklist = h -> false;
-		Allow whitelist = h -> false;
-		Block blockedlist = h -> h.contains("akamai");
+		Deny deny = h -> false;
+		Allow allow = h -> false;
+		Block block = h -> h.contains("akamai");
 
-		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
+		var sut = new LookupEngine(resolver, block, deny, allow);
 		LookupResult result = sut.lookup(q);
 
 		assertThat(result.getState())
@@ -157,11 +157,11 @@ public class LookupStateEngineTest {
 		DnsReply reply = getDetectportalFirefoxChainedReply(q);
 		
 		CannedModelResolver resolver = new CannedModelResolver(reply);
-		Deny blacklist = h -> false;
-		Allow whitelist = h -> false;
-		Block blockedlist = h -> false;
+		Deny deny = h -> false;
+		Allow allow = h -> false;
+		Block block = h -> false;
 
-		var sut = new LookupEngine(resolver, blockedlist, blacklist, whitelist);
+		var sut = new LookupEngine(resolver, block, deny, allow);
 		LookupResult result = sut.lookup(q);
 		
 		assertThat(result.getState())
@@ -169,7 +169,7 @@ public class LookupStateEngineTest {
 	}
 
 	/**
-	 * All lookups (including whitelisted and blacklisted) should
+	 * All lookups (including allowed and denied) should
 	 * be cached, observing TTL.
 	 * The cache should be preferred to upstream lookup.
 	 */

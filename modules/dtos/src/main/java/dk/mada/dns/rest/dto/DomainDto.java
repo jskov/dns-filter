@@ -1,7 +1,7 @@
 package dk.mada.dns.rest.dto;
 
 /**
- * DTO for a domain blacklisted or whitelisted.
+ * DTO for a domain denied or allowed.
  */
 public class DomainDto {
 	public String domain;
