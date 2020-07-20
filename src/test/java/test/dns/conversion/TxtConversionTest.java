@@ -36,7 +36,7 @@ public class TxtConversionTest {
 		Allow allow = h -> false;
 		Block block = h -> false;
 		
-		var sut = new LookupEngine(resolver, block, deny, allow);
+		var sut = new LookupEngine(resolver, allow, deny, block);
 		LookupResult result = sut.lookup(q);
 
 		assertThat(result.getState())

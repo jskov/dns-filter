@@ -39,7 +39,7 @@ public class FilterImportIntTest {
 		Deny deny = h -> false;
 		Allow allow = h -> false;
 		
-		var sut = new LookupEngine(resolver, blockedlist, deny, allow);
+		var sut = new LookupEngine(resolver, allow, deny, blockedlist);
 		LookupResult result = sut.lookup(q);
 
 		assertThat(result.getState())

@@ -28,7 +28,7 @@ public class FilteredLookup {
 	private synchronized LookupEngine getEngine() {
 		if (engine == null) {
 			var blockedlist = fetchLists.get();
-			engine = new LookupEngine(resolver, blockedlist, denied, allowed);
+			engine = new LookupEngine(resolver, allowed, denied, blockedlist);
 		}
 		return engine;
 	}

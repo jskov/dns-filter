@@ -38,15 +38,15 @@ public class LookupEngine {
 	private static final int BLOCKED_TTL_SECONDS = 60*3;
 	
 	private final Resolver resolver;
+	private final Allow allow;
 	private final Deny deny;
 	private final Block block;
-	private final Allow allow;
 
-	public LookupEngine(Resolver resolver, Block block, Deny deny, Allow allow) {
+	public LookupEngine(Resolver resolver, Allow allow, Deny deny, Block block) {
 		this.resolver = resolver;
-		this.block = block;
-		this.deny = deny;
 		this.allow = allow;
+		this.deny = deny;
+		this.block = block;
 	}
 
 	public LookupResult lookup(Query q) {
