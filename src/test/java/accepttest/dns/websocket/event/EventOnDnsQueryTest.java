@@ -65,7 +65,7 @@ public class EventOnDnsQueryTest {
 	    
 	    
 	    String wssUrl = uri.toString().replace("https:", "wss:");
-	    URI secureUri = new URI("wss://localhost:8446/chat/event-test"); //wssUrl);
+	    URI secureUri = new URI("wss://localhost:8446/chat/event"); //wssUrl);
 	    logger.info("CONNECT TO {}", secureUri);
 //	    Thread.sleep(50_000);
 	     try(Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, createClientConfig(), secureUri)) {
@@ -109,9 +109,9 @@ public class EventOnDnsQueryTest {
 	    var config = builder.build();
 	    logger.info("Using client config {}", config);
 
-	    try (InputStream is = getClass().getResourceAsStream("/cert/keystore.jks")) {
+	    try (InputStream is = getClass().getResourceAsStream("/trustca.jks")) {
 	        logger.info("Got cert stream {}", is);
-	        config.getUserProperties().put(DefaultWebSocketClientSslProvider.SSL_CONTEXT, makeSslContextFromTrustStore(is, "secret"));
+	        config.getUserProperties().put(DefaultWebSocketClientSslProvider.SSL_CONTEXT, makeSslContextFromTrustStore(is, "changeit"));
 	    }
 	    
 	    return config;

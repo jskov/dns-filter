@@ -1,5 +1,11 @@
 ![](https://github.com/jskov/dns-filter/workflows/Build%20and%20run%20tests/badge.svg)
 
+**NOTE**
+This branch is broken - added SSL to server, and it works with everything but the java websocket client.
+The simple web websocket client works, so it must be a client problem.
+
+Also tried using the JB websocket client library, same problem. Fails to connect.
+
 
 # dns-filter
 DNS server with filtering of ad hosts/domains
