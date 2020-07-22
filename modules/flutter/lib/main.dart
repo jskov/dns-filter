@@ -1,13 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/status.dart' as status;
+import 'dart:developer' as dev;
+import 'dart:convert';
+import 'dart:io';
 
 void main() {
+  dev.log('hey there!', name: 'for.real');
+  stderr.writeln("cxc");
+
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  void websocket() {
+    dev.log('!create channel!', name: 'dk.mada.ws');
+    var channel =
+        IOWebSocketChannel.connect("ws://localhost:8080/chat/flutter");
+
+    channel.sink.add("Connected!");
+    channel.stream.listen((message) {
+      dev.log('got msg', name: 'dk.mada.ws', error: jsonEncode(message));
+      channel.sink.add("received!");
+      channel.sink.close(status.goingAway);
+    });
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    dev.log('call!', name: 'my.app.widget');
+    websocket();
+    dev.log('called!', name: 'my.app.widget');
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -26,7 +50,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Flutter 2Home Page'),
+      home: MyHomePage(title: 'Flutters Home Page'),
     );
   }
 }
