@@ -15,8 +15,7 @@ void main() {
 class MyApp extends StatelessWidget {
   void websocket() {
     dev.log('!create channel!', name: 'dk.mada.ws');
-    var channel =
-        IOWebSocketChannel.connect("ws://localhost:8080/chat/flutter");
+    var channel = IOWebSocketChannel.connect("ws://10.0.2.2:8080/chat/flutter");
 
     channel.sink.add("Connected!");
     channel.stream.listen((message) {

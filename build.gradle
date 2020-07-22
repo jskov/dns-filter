@@ -12,12 +12,12 @@ plugins {
     id 'eclipse'
     id 'java'
     id "org.openjfx.javafxplugin" version "0.0.8" apply false
-	id "io.quarkus" version "1.6.0.Final"
+	id "io.quarkus" version "1.6.1.Final"
 }
 
 ext {
 	dnsJavaVersion = "2.1.9"
-	quarkusVersion = "1.6.0.Final"	// change to 999-SNAPSHOT to test fix
+	quarkusVersion = "1.6.1.Final"	// change to 999-SNAPSHOT to test fix
 
 	successMarker = project.file("build/all-tests-passed")
 }

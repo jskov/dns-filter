@@ -49,3 +49,8 @@ curl 'http://localhost:8080/chat/client-006' -H 'Sec-WebSocket-Version: 13' -H '
 
 A simple curl on that endpoint results in 404. The headers are important.
 And they are not included by IOWebSocketChannel.
+
+
+Duh! Because localhost is the emulator's IP.
+
+Emulator sees host as 10.0.2.2
