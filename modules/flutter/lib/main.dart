@@ -70,6 +70,7 @@ class MyHomePage extends StatefulWidget {
         dev.log('collected event $e', name: 'dk.mada.ws');
         events.add(e);
 
+        dev.log("Now has ${events.length}");
         // FIXME: event added, but need to trigger setState
       }
     });
