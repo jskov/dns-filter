@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/status.dart' as status;
 import 'dart:developer' as dev;
 import 'dart:convert';
 import 'dart:io';
+
+import 'Event.dart';
 
 void main() {
   dev.log('hey there!', name: 'for.real');
@@ -135,9 +136,17 @@ class _MyHomePageState extends State<MyHomePage> {
             StreamBuilder(
               stream: widget.channel.stream,
               builder: (context, snapshot) {
+                String payload = snapshot.data;
+                String msg = payload;
+
+                if (payload.startsWith("{")) {
+                  Event e = Event.fromJson(json.decode(snapshot.data));
+                  msg = e.toString();
+                }
+
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24.0),
-                  child: Text(snapshot.hasData ? '${snapshot.data}' : ''),
+                  child: Text(snapshot.hasData ? msg : ''),
                 );
               },
             )
