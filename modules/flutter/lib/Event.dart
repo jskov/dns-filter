@@ -9,6 +9,19 @@ class Event {
 
   Event({this.hostname, this.ip, this.type});
 
+  String toString() {
+    String action;
+    switch (type) {
+      case LookupType.PASSTHROUGH:
+        action = ">";
+        break;
+      default:
+        action = "?";
+    }
+
+    return "$action $hostname : $ip";
+  }
+
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
       hostname: json['hostname'] as String,
