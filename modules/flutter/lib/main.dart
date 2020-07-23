@@ -3,7 +3,6 @@ import 'package:web_socket_channel/io.dart';
 import 'dart:developer' as dev;
 import 'dart:convert';
 import 'dart:io';
-
 import 'Event.dart';
 
 void main() {
@@ -60,8 +59,21 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+  final List<Event> events = [];
   final IOWebSocketChannel channel;
-  MyHomePage({Key key, this.title, @required this.channel}) : super(key: key);
+  MyHomePage({Key key, this.title, @required this.channel}) : super(key: key) {
+    dev.log("Adding listener to ws");
+    channel.stream.listen((event) {
+      dev.log("got '$event'");
+      if (event.startsWith("{")) {
+        var e = Event.fromJson(json.decode(event));
+        dev.log('collected event $e', name: 'dk.mada.ws');
+        events.add(e);
+
+        // FIXME: event added, but need to trigger setState
+      }
+    });
+  }
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -79,6 +91,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  /*
+  _MyHomePageState(this.channel) {
+
+        setState(() {});
+      }
+    });
+  }
+*/
+  ListTile _tile(String title, IconData icon) => ListTile(
+        title: Text(title),
+        leading: Icon(
+          icon,
+          color: Colors.blue[500],
+        ),
+      );
+
+//  final IOWebSocketChannel channel;
+
   int _counter = 6;
 
   void _incrementCounter() {
@@ -124,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Text(
               'You have pushed the this many times:',
@@ -133,6 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline5,
             ),
+            /*
             StreamBuilder(
               stream: widget.channel.stream,
               builder: (context, snapshot) {
@@ -149,7 +180,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Text(snapshot.hasData ? msg : ''),
                 );
               },
-            )
+            ),*/
+            Expanded(
+                child: ListView(
+                    children: widget.events
+                        .map((e) => _tile(e.hostname, Icons.play_arrow))
+                        .toList()))
           ],
         ),
       ),
