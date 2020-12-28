@@ -32,4 +32,8 @@ COPY --from=builder /src/build/dns-filter-${VERSION}-runner.jar /app.jar
 
 VOLUME /opt/data/dns-filter
 
+EXPOSE 8080
+EXPOSE 8053/tcp
+EXPOSE 8053/udp
+
 CMD ["java", "-jar", "/app.jar"]
