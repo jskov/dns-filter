@@ -15,10 +15,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Test pull
-        run: podman pull alpine:lastest
+        run: podman pull docker.io/library/alpine:latest
 
       - name: Test tag
-        run: podman tag alpine:lastest docker.io/jskov/test
+        run: podman tag docker.io/library/alpine:latest docker.io/jskov/test
 
       - name: Test push
         run: podman push docker.io/jskov/test
