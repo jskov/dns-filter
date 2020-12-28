@@ -4,7 +4,6 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -72,7 +71,7 @@ public class WireToModelConverter {
 		var question = message.getQuestion();
 		var header = message.getHeader();
 
-		DnsSectionAdditional additional = toAdditionalSection(message.getSectionArray(Section.ADDITIONAL));
+		DnsSectionAdditional additional = toAdditionalSection(message.getSection(Section.ADDITIONAL));
 		
 		return DnsRequests.fromWireRequest(toRequestHeader(header, additional.getSize()), DnsSections.ofQuestion(toModelRecord(question, true)), additional, wireBytes);
 	}
@@ -84,14 +83,14 @@ public class WireToModelConverter {
 		reply.flip();
 		logger.debug("toModel/r {} {}", reply.position(), reply.limit());
 		
-		return fromAnswers(message.getHeader(), message.getQuestion(), message.getSectionArray(Section.ANSWER), message.getSectionArray(Section.ADDITIONAL), reply);
+		return fromAnswers(message.getHeader(), message.getQuestion(), message.getSection(Section.ANSWER), message.getSection(Section.ADDITIONAL), reply);
 	}
 	
-	public static DnsReply fromAnswers(Header _header, Record _question, Record[] answerRecords) {
+	public static DnsReply fromAnswers(Header _header, Record _question, List<Record> answerRecords) {
 		return fromAnswers(_header, _question, answerRecords, null, null);
 	}
 
-	public static DnsReply fromAnswers(Header _header, Record _question, Record[] answerRecords, Record[] additionalRecords, ByteBuffer optWireData) {
+	public static DnsReply fromAnswers(Header _header, Record _question, List<Record> answerRecords, List<Record> additionalRecords, ByteBuffer optWireData) {
 		Header header = Objects.requireNonNull(_header, "Must provide header");
 		Record question = Objects.requireNonNull(_question, "Must provide question");
 
@@ -99,7 +98,7 @@ public class WireToModelConverter {
     	if (answerRecords == null) {
     		answers = List.of();
     	} else {
-    		answers = Arrays.stream(answerRecords)
+    		answers = answerRecords.stream()
 			    		.map(r -> toModelRecord(r, false))
 			    		.collect(toList());
     	}
@@ -109,18 +108,18 @@ public class WireToModelConverter {
 		return DnsReplies.fromAnswer(toReplyHeader(header, answerSecion.getSize(), additionalSection.getSize()), DnsSections.ofQuestion(toModelRecord(question, true)), answerSecion, additionalSection, optWireData);
 	}
 
-	private static DnsSectionAdditional toAdditionalSection(Record[] additionalRecords) {
+	private static DnsSectionAdditional toAdditionalSection(List<Record> additionalRecords) {
 		List<DnsRecord> additional;
 		if (additionalRecords == null) {
 			additional = List.of();
 		} else {
-			additional = Arrays.stream(additionalRecords)
+			additional = additionalRecords.stream()
 					.map(r -> toModelRecord(r, false))
 					.collect(toList());
 		}
 		return DnsSections.ofAdditionals(additional);
 	}
-	
+
 	private static DnsHeaderReply toReplyHeader(Header h, short ancount, short arcount) {
 		
 		logger.debug("xbill header {} : {}", h.printFlags(), h.getRcode());
@@ -185,13 +184,12 @@ public class WireToModelConverter {
 			var address = ((AAAARecord)r).getAddress();
 			return DnsRecords.aaaaRecordFrom(name, address, ttl);
 		} else if (r instanceof CNAMERecord) {
-			var alias = ((CNAMERecord)r).getAlias();
+			var alias = ((CNAMERecord)r).getName();
 			logger.debug("CRecord {} -> {}", name, alias);
 			return DnsRecords.cRecordFrom(name, DnsName.fromName(alias.toString(true)), ttl);
 		} else if (r instanceof OPTRecord) {
 			var optRec = (OPTRecord)r;
 			logger.debug("Opt record {}", optRec);
-			@SuppressWarnings("unchecked")
 			List<EDNSOption> xopts = (List<EDNSOption>)optRec.getOptions();
 			
 			short payloadSize = (short)optRec.getPayloadSize();
@@ -206,7 +204,6 @@ public class WireToModelConverter {
 		} else if (r instanceof TXTRecord) {
 			TXTRecord txtRecord = (TXTRecord)r;
 			var dnsClass = DnsClass.fromWire(r.getDClass());
-			@SuppressWarnings("unchecked")
 			List<String> txts = (List<String>)txtRecord.getStrings();
 			
 			logger.debug("TXT record {} : {}", name, txts);

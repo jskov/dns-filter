@@ -16,7 +16,7 @@ plugins {
 }
 
 ext {
-	dnsJavaVersion = "2.1.9"
+	dnsJavaVersion = "3.3.1"
 	quarkusVersion = "1.10.5.Final"	// change to 999-SNAPSHOT to test fix
 
 	successMarker = project.file("build/all-tests-passed")
@@ -59,7 +59,9 @@ dependencies {
 	testImplementation "io.quarkus:quarkus-arc-deployment:${quarkusVersion}"
 	testImplementation "io.quarkus:quarkus-undertow-deployment:${quarkusVersion}"
 	testImplementation "org.apache.logging.log4j:log4j-slf4j-impl:2.13.1"
+	
 	testImplementation "org.jboss.weld:weld-junit5:2.0.1.Final"
+	testImplementation "org.jboss.weld.se:weld-se-core:3.1.5.SP1" // override the older version referenced by weld-junit5. 4.0.0.Final
 }
 
 task makeSuccessMarker() {
