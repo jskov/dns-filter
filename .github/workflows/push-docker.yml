@@ -44,7 +44,7 @@ jobs:
           tags: jskov/test:${{ env.RELEASE_VERSION }}
           build-args: |
             VERSION=${{ env.RELEASE_VERSION }}
-            REVISION=${{ env.GITHUB_REF }}
+            REVISION=${{ env.GITHUB_SHA }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
