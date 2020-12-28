@@ -14,11 +14,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Test pull
-        run: podman pull docker.io/library/alpine:latest
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: modules/container/Containerfile
+          push: true
+          tags: docker.io/jskov/test:latest
 
-      - name: Test tag
-        run: podman tag docker.io/library/alpine:latest docker.io/jskov/test
-
-      - name: Test push
-        run: podman push docker.io/jskov/test
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
