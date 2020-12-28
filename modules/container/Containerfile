@@ -4,9 +4,11 @@ ARG VERSION=undef-version
 
 ENV GRADLE_USER_HOME=/cache/_gradle
 
+COPY . /src
+
 WORKDIR /src
 
-#RUN ls -la /src
+RUN ls -la /src
 #RUN ls -la /cache
 #RUN ls -la /cache/_gradle
 
@@ -20,7 +22,7 @@ FROM adoptopenjdk/openjdk15:jdk-15.0.1_9-alpine AS link
 
 ARG VERSION=undef-version
 
-COPY build/dns-filter-${VERSION}-runner.jar /app.jar
+COPY --from=builder /src/build/dns-filter-${VERSION}-runner.jar /app.jar
 
 VOLUME /opt/data/dns-filter
 
