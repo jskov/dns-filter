@@ -21,8 +21,12 @@ jobs:
       - name: Check Out Repo 
         uses: actions/checkout@v2
 
-      - name: Set env
+      - name: Get release tag
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      # GITHUB_SHA only defined on push
+      - name: Get revision sha
+        run: echo "RELEASE_REVISION=$(git rev-parse --long HEAD)" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
@@ -44,7 +48,7 @@ jobs:
           tags: jskov/test:${{ env.RELEASE_VERSION }}
           build-args: |
             VERSION=${{ env.RELEASE_VERSION }}
-            REVISION=${{ env.GITHUB_SHA }}
+            REVISION=${{ env.RELEASE_REVISION }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}

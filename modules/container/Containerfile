@@ -17,6 +17,9 @@ RUN ls -la /src
 
 RUN echo "Build input revision:${REVISION} version:${VERSION}"
 
+LABEL "dk.mada.git.tag"="${VERSION}" 
+LABEL "dk.mada.git.hash"="${REVISION}" 
+
 RUN ./gradlew -Prevision=${REVISION} -Pversion=${VERSION} quarkusBuild --uber-jar
 
 
