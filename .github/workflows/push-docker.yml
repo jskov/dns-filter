@@ -41,9 +41,9 @@ jobs:
           context: ./
           file: modules/container/Containerfile
           push: true
-          tags: jskov/test:${{ RELEASE_VERSION }}
+          tags: jskov/test:${{ env.RELEASE_VERSION }}
           build-args: |
-            VERSION=${{ RELEASE_VERSION }}
+            VERSION=${{ env.RELEASE_VERSION }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
