@@ -16,7 +16,7 @@ plugins {
 }
 
 ext {
-	dnsJavaVersion = "2.1.9"
+	dnsJavaVersion = "3.3.1"
 	quarkusVersion = "1.10.5.Final"	// change to 999-SNAPSHOT to test fix
 
 	successMarker = project.file("build/all-tests-passed")

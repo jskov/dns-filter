@@ -1,6 +1,7 @@
 package fixture.dns.xbill;
 
 import java.net.UnknownHostException;
+import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -53,7 +54,8 @@ public class DnfFilterLocalHostLookup {
 //    	Lookup.setPacketLogger((a, b, c, d) -> Hexer.printForDevelopment("xbill", ByteBuffer.wrap(d), Collections.emptySet()));
     	lookup.setSearchPath(new String[] {});
   
-    	Record[] res = lookup.run();
+    	Record[] resArray = lookup.run();
+    	List<Record> res = resArray == null ? List.of() : List.of(resArray); 
 
     	String absName = hostname.endsWith(".") ? hostname : (hostname + ".");
     	Name name = new Name(absName);

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.CNAMERecord;
+import org.xbill.DNS.EDNSOption;
 import org.xbill.DNS.Header;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Name;
@@ -113,7 +114,7 @@ public class ModelToWireConverter {
 			logger.warn("Cannot convert options to xbill api");
 		}
 		
-		List<Object> xbillOptions = List.of();
+		List<EDNSOption> xbillOptions = List.of();
 		
 		return new OPTRecord(payloadSize, xrcode, version, flags, xbillOptions);
 	}
