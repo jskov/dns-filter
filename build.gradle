@@ -23,7 +23,6 @@ ext {
 }
 
 group = "dk.mada.dns"
-version = "1-SNAPSHOT"
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -62,6 +61,10 @@ dependencies {
 	
 	testImplementation "org.jboss.weld:weld-junit5:2.0.1.Final"
 	testImplementation "org.jboss.weld.se:weld-se-core:3.1.5.SP1" // override the older version referenced by weld-junit5. 4.0.0.Final
+}
+
+processResources {
+	filter { it.replace("@workspace-default-version@", project.version) }
 }
 
 task makeSuccessMarker() {

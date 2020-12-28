@@ -1,5 +1,7 @@
 FROM adoptopenjdk/openjdk15:jdk-15.0.1_9-alpine
 
+ARG VERSION=undef-version
+
 ENV GRADLE_USER_HOME=/cache/_gradle
 
 WORKDIR /src
@@ -10,6 +12,6 @@ WORKDIR /src
 
 #RUN id
 
-RUN ./gradlew quarkusBuild --uber-jar
+RUN ./gradlew -Pversion=${VERSION} quarkusBuild --uber-jar
 
 

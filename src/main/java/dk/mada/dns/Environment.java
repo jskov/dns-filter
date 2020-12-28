@@ -5,6 +5,8 @@ import java.nio.file.Paths;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 
 /**
  * Environment-based configuration of the application.
@@ -27,6 +29,13 @@ public class Environment {
 	private static final String RUN_AS_USERID_ENV = System.getenv("DNS_FILTER_RUN_AS");
 	private static final int RUN_AS_USERID = RUN_AS_USERID_ENV == null ? RUN_AS_USER_DEFAULT : Integer.parseInt(RUN_AS_USERID_ENV);
 
+	@ConfigProperty(name = "dns-filter.version")
+	private String version;
+	
+	public String getVersion() {
+		return version;
+	}
+	
 	public Path getConfigDir() {
 		return CONFIG_DIR;
 	}
