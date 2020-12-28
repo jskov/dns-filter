@@ -1,0 +1,54 @@
+name: ci
+
+on:
+  push:
+#    branches: [ container ]
+    tags:
+      - "v*.*.*"
+jobs:
+  docker-build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Check Out Repo 
+        uses: actions/checkout@v2
+
+      - name: Get release tag
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      # GITHUB_SHA only defined on push
+      - name: Get revision sha
+        run: echo "RELEASE_REVISION=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: modules/container/Containerfile
+          push: true
+          tags: jskov/test:${{ env.RELEASE_VERSION }}
+          build-args: |
+            VERSION=${{ env.RELEASE_VERSION }}
+            REVISION=${{ env.RELEASE_REVISION }}
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}

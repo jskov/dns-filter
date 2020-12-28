@@ -13,6 +13,10 @@ Personal development project, not fit for general use.
 ./gradlew quarkusBuild --uber-jar
 
 
+Build in container:
+
+	VERSION=0.0.1 ./build.sh -t x
+
 ## Native
 
 Install graal 19.3, make sure it is on PATH.

@@ -1,0 +1,39 @@
+FROM adoptopenjdk/openjdk15:jdk-15.0.1_9-alpine AS builder
+
+ARG VERSION=undef-version
+ARG REVISION=undef-revision
+
+ENV GRADLE_USER_HOME=/cache/_gradle
+
+COPY . /src
+
+WORKDIR /src
+
+RUN ls -la /src
+#RUN ls -la /cache
+#RUN ls -la /cache/_gradle
+
+#RUN id
+
+RUN echo "Build input revision:${REVISION} version:${VERSION}"
+
+LABEL "dk.mada.git.tag"="${VERSION}" 
+LABEL "dk.mada.git.hash"="${REVISION}" 
+
+RUN ./gradlew -Prevision=${REVISION} -Pversion=${VERSION} quarkusBuild --uber-jar
+
+
+
+FROM adoptopenjdk/openjdk15:jdk-15.0.1_9-alpine AS link
+
+ARG VERSION=undef-version
+
+COPY --from=builder /src/build/dns-filter-${VERSION}-runner.jar /app.jar
+
+VOLUME /opt/data/dns-filter
+
+EXPOSE 8080
+EXPOSE 8053/tcp
+EXPOSE 8053/udp
+
+CMD ["java", "-jar", "/app.jar"]
