@@ -26,12 +26,12 @@ import io.quarkus.runtime.StartupEvent;
 public class Application {
 	private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
-    @Inject private DnsLookupService resolver;
-    @Inject private DnsQueryEventService websocketService;
-    @Inject private BlockedListCacher blockedListCacher;
-    @Inject private ExternalDnsGateway dnsGateway;
-    @Inject private Configuration configuration;
-    @Inject private Environment environment;
+    @Inject DnsLookupService resolver;
+    @Inject DnsQueryEventService websocketService;
+    @Inject BlockedListCacher blockedListCacher;
+    @Inject ExternalDnsGateway dnsGateway;
+    @Inject Configuration configuration;
+    @Inject Environment environment;
 
     private UDPServer server;
     

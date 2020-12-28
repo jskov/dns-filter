@@ -36,7 +36,7 @@ public class EventOnDnsQueryTest {
 	private static final Logger logger = LoggerFactory.getLogger(EventOnDnsQueryTest.class);
 	private static final LinkedBlockingDeque<DnsQueryEventDto> MESSAGES = new LinkedBlockingDeque<>();
 
-	@Inject private DnfFilterLocalHostLookup dnsFilterLookup;
+	@Inject DnfFilterLocalHostLookup dnsFilterLookup;
 	@TestHTTPResource("/chat/event-test")
 	URI uri;
 	

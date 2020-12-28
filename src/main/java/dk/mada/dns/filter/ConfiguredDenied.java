@@ -12,7 +12,7 @@ import dk.mada.dns.config.ConfigurationChangeListener;
  */
 @ApplicationScoped
 public class ConfiguredDenied extends HostDomainNameMatcher implements ConfigurationChangeListener, Deny {
-	@Inject private Configuration configuration;
+	@Inject Configuration configuration;
 	
 	public ConfiguredDenied() {
 		super("Configured denies");

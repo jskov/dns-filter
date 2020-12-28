@@ -20,7 +20,7 @@ public class WeldUnitTest {
 //	@WeldSetup
 //    public WeldInitiator weld = WeldInitiator.performDefaultDiscovery();
 	
-	@Inject private Environment env;
+	@Inject Environment env;
 	
 	@Test
 	void test() {

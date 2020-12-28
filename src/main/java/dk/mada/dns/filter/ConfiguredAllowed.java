@@ -12,7 +12,7 @@ import dk.mada.dns.config.ConfigurationChangeListener;
  */
 @ApplicationScoped
 public class ConfiguredAllowed extends HostDomainNameMatcher implements ConfigurationChangeListener, Allow {
-	@Inject private Configuration configuration;
+	@Inject Configuration configuration;
 	
 	public ConfiguredAllowed() {
 		super("Configured allows");

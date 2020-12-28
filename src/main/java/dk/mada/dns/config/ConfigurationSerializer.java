@@ -37,7 +37,7 @@ import dk.mada.dns.Environment;
 public class ConfigurationSerializer {
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationSerializer.class);
 
-	@Inject private Environment environment;
+	@Inject Environment environment;
 	
 	private static final String BLOCKED_TTL_SECONDS = "blockedTtlSeconds";
 	/** Sensible default minimal length of an entry.
