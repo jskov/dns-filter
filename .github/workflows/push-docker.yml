@@ -3,7 +3,8 @@ name: ci
 on:
   push:
     branches: [ container ]
-
+    tags:
+      - "v*.*.*"
 jobs:
   docker-build:
     runs-on: ubuntu-20.04
@@ -37,7 +38,9 @@ jobs:
           context: ./
           file: modules/container/Containerfile
           push: true
-          tags: jskov/test:latest
+          tags: jskov/test:${{ github.ref }}
+          build-args: |
+            VERSION=${{ github.ref }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
