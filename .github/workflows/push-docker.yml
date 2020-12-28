@@ -8,6 +8,14 @@ jobs:
   docker-build:
     runs-on: ubuntu-20.04
     steps:
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Check Out Repo 
         uses: actions/checkout@v2
