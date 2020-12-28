@@ -1,0 +1,15 @@
+FROM adoptopenjdk/openjdk15:jdk-15.0.1_9-alpine
+
+ENV GRADLE_USER_HOME=/cache/_gradle
+
+WORKDIR /src
+
+#RUN ls -la /src
+#RUN ls -la /cache
+#RUN ls -la /cache/_gradle
+
+#RUN id
+
+RUN ./gradlew quarkusBuild --uber-jar
+
+
