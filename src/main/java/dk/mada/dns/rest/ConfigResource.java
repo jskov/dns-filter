@@ -26,7 +26,7 @@ import static dk.mada.dns.rest.DomainToDtoMapper.*;
  */
 @Path("/config")
 public class ConfigResource {
-	@Inject private Configuration configuration;
+	@Inject Configuration configuration;
 	
 	@Path("filter")
 	@GET

@@ -34,9 +34,9 @@ public class DnsLookupService implements UDPPacketHandler {
 
 	private static final Logger logger = LoggerFactory.getLogger(DnsLookupService.class);
 
-	@Inject private DnsQueryEventService websocketEventNotifier;
-	@Inject private FilteredLookup lookup;
-	@Inject private DevelopmentDebugging devDebugging;
+	@Inject DnsQueryEventService websocketEventNotifier;
+	@Inject FilteredLookup lookup;
+	@Inject DevelopmentDebugging devDebugging;
 
 	@Override
 	public ByteBuffer process(String clientIp, ByteBuffer wireRequest) {

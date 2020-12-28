@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class Configuration {
 	private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
 	
-	@Inject private ConfigurationSerializer serializer;
+	@Inject ConfigurationSerializer serializer;
 	
 	private ConfigurationModel model;
 	private List<ConfigurationChangeListener> listeners = new ArrayList<>();

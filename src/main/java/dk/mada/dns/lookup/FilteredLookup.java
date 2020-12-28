@@ -10,10 +10,10 @@ import dk.mada.dns.resolver.DefaultResolver;
 
 @ApplicationScoped
 public class FilteredLookup {
-	@Inject private DefaultResolver resolver;
-	@Inject private BlockedListCacher fetchLists;
-	@Inject private ConfiguredDenied denied;
-	@Inject private ConfiguredAllowed allowed;
+	@Inject DefaultResolver resolver;
+	@Inject BlockedListCacher fetchLists;
+	@Inject ConfiguredDenied denied;
+	@Inject ConfiguredAllowed allowed;
 	
 	private LookupEngine engine;
 	

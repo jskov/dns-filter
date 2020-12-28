@@ -14,7 +14,7 @@ import io.quarkus.test.junit.QuarkusTest;
 @Tag("accept")
 @QuarkusTest
 public class SimpleDnsQueryTest {
-	@Inject private DnfFilterLocalHostLookup dnsFilterLookup;
+	@Inject DnfFilterLocalHostLookup dnsFilterLookup;
 
 	/**
 	 * Simple DNS query test which expects a reply
