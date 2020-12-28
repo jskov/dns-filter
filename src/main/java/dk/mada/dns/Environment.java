@@ -31,11 +31,18 @@ public class Environment {
 
 	@ConfigProperty(name = "dns-filter.version")
 	private String version;
-	
+
+	@ConfigProperty(name = "dns-filter.revision")
+	private String revision;
+
 	public String getVersion() {
 		return version;
 	}
-	
+
+	public String getRevision() {
+		return revision;
+	}
+
 	public Path getConfigDir() {
 		return CONFIG_DIR;
 	}

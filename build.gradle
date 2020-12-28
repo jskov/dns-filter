@@ -64,7 +64,11 @@ dependencies {
 }
 
 processResources {
-	filter { it.replace("@workspace-default-version@", project.version) }
+	filter {
+		 it
+		 	.replace("@workspace-default-version@", project.version)
+		 	.replace("@workspace-default-revision@", project.ext.revision)
+ 	 }
 }
 
 task makeSuccessMarker() {

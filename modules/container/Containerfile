@@ -1,6 +1,7 @@
 FROM adoptopenjdk/openjdk15:jdk-15.0.1_9-alpine AS builder
 
 ARG VERSION=undef-version
+ARG REVISION=undef-revision
 
 ENV GRADLE_USER_HOME=/cache/_gradle
 
@@ -14,7 +15,7 @@ RUN ls -la /src
 
 #RUN id
 
-RUN ./gradlew -Pversion=${VERSION} quarkusBuild --uber-jar
+RUN ./gradlew -Prevision=${REVISION} -Pversion=${VERSION} quarkusBuild --uber-jar
 
 
 

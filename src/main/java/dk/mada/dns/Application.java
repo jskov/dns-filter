@@ -36,7 +36,7 @@ public class Application {
     private UDPServer server;
     
     void onStart(@Observes StartupEvent ev) {
-        logger.info("\n======================================================\n= DNS filter {} starting...\n======================================================", environment.getVersion());
+        logger.info("\n============================================================================================================\n= DNS filter {} {} starting...\n============================================================================================================", environment.getVersion(), environment.getRevision());
         runningPrivileged();
         runningWithoutPrivileges();
     }
