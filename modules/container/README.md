@@ -3,8 +3,7 @@
 ## Prepare data folder
 
 	$ sudo mkdir -p /opt/data/services/dns-filter/
-	$ sudo chgrp root /opt/data/services/dns-filter/
-	$ sudo chmod g+wrx /opt/data/services/dns-filter/
+	$ sudo chown dns.dns /opt/data/services/dns-filter/
 
 ## Prepare/change image hash
 
