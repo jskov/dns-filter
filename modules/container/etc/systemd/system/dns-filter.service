@@ -1,0 +1,19 @@
+[Unit]
+Description=dns-filter
+Wants=network.target
+After=network-online.target
+
+[Service]
+User=jskov
+Group=root
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=on-failure
+
+ExecStart=/bin/bash -c "exec /usr/bin/podman run --log-driver=journald --log-opt tag="dns-filter" --replace --name dns-filter -i -v /opt/data/services/dns-filter:/opt/data/dns-filter:Z,rw -p 8081:8080 -p 8054:8053/udp -p 8054:8053 -t docker.io/jskov/test@$(cat /etc/sysconfig/mada/dns-filter.hash | grep -m1 sha256:)"
+ExecStop=/usr/bin/podman stop --ignore dns-filter
+ExecStopPost=/usr/bin/podman rm --ignore -f dns-filter
+#KillMode=none
+#Type=forking
+
+[Install]
+WantedBy=multi-user.target default.target

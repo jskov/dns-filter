@@ -1,0 +1,24 @@
+# Installation
+
+## Prepare data folder
+
+	$ sudo mkdir -p /opt/data/services/dns-filter/
+	$ sudo chgrp root /opt/data/services/dns-filter/
+	$ sudo chmod g+wrx /opt/data/services/dns-filter/
+
+## Prepare/change image hash
+
+	$ sudo mkdir -p /etc/sysconfig/mada/
+	$ sudo sh -c 'echo "sha256:966e8ac70845e2b47dc623f4d2d3c6953b6db6897dd32e79a2cf7a81a3d13cee" > /etc/sysconfig/mada/dns-filter.hash'
+
+## Setup service
+
+	$ sudo cp modules/container/etc/systemd/dns-filter.service /etc/systemd/system/
+	$ sudo systemctl daemon-reload
+	$ sudo start dns-filter
+
+
+## Show log
+
+	$ journalctl -f -e CONTAINER_TAG=dns-filter
+
