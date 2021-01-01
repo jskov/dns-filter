@@ -45,7 +45,7 @@ jobs:
           context: ./
           file: modules/container/Containerfile
           push: true
-          tags: jskov/test:${{ env.RELEASE_VERSION }}
+          tags: jskov/dns-filter:${{ env.RELEASE_VERSION }}
           build-args: |
             VERSION=${{ env.RELEASE_VERSION }}
             REVISION=${{ env.RELEASE_REVISION }}
