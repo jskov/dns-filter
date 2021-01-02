@@ -30,10 +30,10 @@ public class Environment {
 	private static final int RUN_AS_USERID = RUN_AS_USERID_ENV == null ? RUN_AS_USER_DEFAULT : Integer.parseInt(RUN_AS_USERID_ENV);
 
 	@ConfigProperty(name = "dns-filter.version")
-	private String version;
+	String version;
 
 	@ConfigProperty(name = "dns-filter.revision")
-	private String revision;
+	String revision;
 
 	public String getVersion() {
 		return version;
