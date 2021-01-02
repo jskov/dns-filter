@@ -31,10 +31,17 @@ public class DevelopmentDebugging {
 		ECHO
 	}
 	
+	private boolean alwaysEcho;
 	private Map<String, Action> outputForHostnames = new HashMap<>();
 	
+	public static DevelopmentDebugging echoAllRequests() {
+		var res = new DevelopmentDebugging();
+		res.alwaysEcho = true;
+		return res;
+	}
+	
 	public void devOutputWireData(String hostname, String title, ByteBuffer bb) {
-		if (isEchoOutputForHost(hostname) || isBypassForHost(hostname)) {
+		if (alwaysEcho || isEchoOutputForHost(hostname) || isBypassForHost(hostname)) {
 			Hexer.printForDevelopment(title, bb, Collections.emptySet());
 		}
 	}
