@@ -56,7 +56,7 @@ public class DnfFilterLocalHostLookup {
 	}
 
 	private DnsReply xbillDnsLookup(String hostname, DnsRecordType type) throws TextParseException, UnknownHostException {
-		int reqType = 65; // type.getWireValue();
+		int reqType = type.getWireValue();
     	Lookup lookup = new Lookup(hostname, reqType);
     	lookup.setResolver(getLocalhostResolver());
     	lookup.setCache(null);
