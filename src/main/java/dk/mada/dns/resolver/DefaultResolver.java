@@ -7,6 +7,8 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import dk.mada.dns.resolver.external.ExternalDnsGateway;
+import dk.mada.dns.service.DevelopmentDebugging;
 import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
 import dk.mada.dns.wire.model.DnsRequest;
@@ -24,6 +26,11 @@ public class DefaultResolver implements Resolver {
 	@Inject
 	public DefaultResolver(UdpNameServer nameServer) {
 		this.nameServer = nameServer;
+	}
+	
+	public static DefaultResolver externalDebugResolver() {
+		ExternalDnsGateway dnsGateway = new ExternalDnsGateway(DevelopmentDebugging.echoAllRequests());
+		return new DefaultResolver(dnsGateway);
 	}
 	
 	@Override
