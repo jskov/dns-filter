@@ -184,7 +184,7 @@ public class WireToModelConverter {
 			var address = ((AAAARecord)r).getAddress();
 			return DnsRecords.aaaaRecordFrom(name, address, ttl);
 		} else if (r instanceof CNAMERecord) {
-			var alias = ((CNAMERecord)r).getName();
+			var alias = ((CNAMERecord)r).getTarget();
 			logger.debug("CRecord {} -> {}", name, alias);
 			return DnsRecords.cRecordFrom(name, DnsName.fromName(alias.toString(true)), ttl);
 		} else if (r instanceof OPTRecord) {

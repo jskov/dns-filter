@@ -64,6 +64,7 @@ public class LookupEngine {
 		logger.debug("Got resolved {}", reply);
 
 		if (reply == null) {
+			logger.info("FAILED upstream reply for {}", name);
 			var result = new LookupResult();
 			result.setState(LookupState.FAILED);
 			return result;
@@ -143,7 +144,7 @@ public class LookupEngine {
 
 	public LookupResult makeBlockedReply(Query q, LookupState state, String blockedDueTo) {
 		var result = new LookupResult();
-		logger.info("{} is blocked due to {}", q.getRequestName(), blockedDueTo);
+		logger.info("BLOCK {} due to {}", q.getRequestName(), blockedDueTo);
 		result.setState(state);
 
 		var name = q.getRequest().getQuestion().getName();

@@ -17,9 +17,10 @@ import dk.mada.dns.lookup.LookupEngine;
 import dk.mada.dns.lookup.LookupResult;
 import dk.mada.dns.lookup.Query;
 import dk.mada.dns.resolver.Resolver;
+import dk.mada.dns.wire.model.DnsRecord;
 import dk.mada.dns.wire.model.DnsRecordA;
+import dk.mada.dns.wire.model.DnsRecordC;
 import dk.mada.dns.wire.model.DnsReply;
-import dk.mada.dns.wire.model.DnsResponseCode;
 import fixture.resolver.CannedUdpResolver;
 
 /**
@@ -49,7 +50,6 @@ import fixture.resolver.CannedUdpResolver;
  * Causing infinite recursion in clients.
  * 
  */
-//@QuarkusTest
 public class AnswerCNameNotResolvedTest {
 	@Test
 	public void doesNotResolveAnswerCTargets() {
@@ -64,22 +64,31 @@ public class AnswerCNameNotResolvedTest {
 		LookupResult result = sut.lookup(q);
 
 		DnsReply reply = result.getReply();
-		DnsResponseCode responseCode = reply.getHeader().getResponseCode();
-		
-		assertThat(responseCode)
-			.isEqualTo(DnsResponseCode.NOERR);
-		
 		List<String> txtRecord = reply.getAnswer().getRecords().stream()
-				.map(r -> r.getRecordType().name() + ":" + r.getName().getName() + (r.isA() ? (":" +((DnsRecordA)r).getAddress()) : ""))
+				.map(this::toDescription)
 				.collect(toList());
 		
 		assertThat(txtRecord)
 			.containsExactly(
-					"CNAME:reddit.map.fastly.net",
+					"CNAME:old.reddit.com:reddit.map.fastly.net",
 					"A:reddit.map.fastly.net:reddit.map.fastly.net./151.101.1.140",
 					"A:reddit.map.fastly.net:reddit.map.fastly.net./151.101.65.140",
 					"A:reddit.map.fastly.net:reddit.map.fastly.net./151.101.129.140",
 					"A:reddit.map.fastly.net:reddit.map.fastly.net./151.101.193.140"
 				);
+	}
+	
+	private String toDescription(DnsRecord r) {
+		var sb = new StringBuilder(r.getRecordType().name())
+				.append(':')
+				.append(r.getName().getName())
+				.append(':');
+				
+		if (r.isA()) {
+			sb.append(((DnsRecordA)r).getAddress().toString());
+		} else if (r.isCNAME()) {
+			sb.append(((DnsRecordC)r).getAlias().getName());
+		}
+		return sb.toString();
 	}
 }
