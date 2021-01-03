@@ -8,7 +8,9 @@
 ## Prepare/change image hash
 
 	$ sudo mkdir -p /etc/sysconfig/mada/
-	$ sudo sh -c 'echo "sha256:966e8ac70845e2b47dc623f4d2d3c6953b6db6897dd32e79a2cf7a81a3d13cee" > /etc/sysconfig/mada/dns-filter.hash'
+	$ sudo chown jskov.jskov /etc/sysconfig/mada
+	# This command echos the version into `/etc/sysconfig/mada/dns-filter.hash` and restarts the dns-filter service
+	$ dns-filter-push sha256:966e8ac70845e2b47dc623f4d2d3c6953b6db6897dd32e79a2cf7a81a3d13cee
 
 ## Setup service
 
