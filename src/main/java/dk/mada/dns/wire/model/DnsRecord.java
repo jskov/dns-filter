@@ -53,6 +53,10 @@ public class DnsRecord {
 		this.ttl = ttl;
 	}
 
+	public boolean isA() {
+		return recordType == DnsRecordType.A;
+	}
+	
 	public void ifRecordA(Consumer<DnsRecordA> c) {
 	}
 	
@@ -60,11 +64,19 @@ public class DnsRecord {
 		return Optional.empty();
 	}
 
+	public boolean isAAAA() {
+		return recordType == DnsRecordType.AAAA;
+	}
+
 	public void ifRecordAAAA(Consumer<DnsRecordAAAA> c) {
 	}
 
 	public Optional<DnsRecordAAAA> asRecordAAAA() {
 		return Optional.empty();
+	}
+
+	public boolean isCNAME() {
+		return recordType == DnsRecordType.CNAME;
 	}
 
 	public void ifRecordC(Consumer<DnsRecordC> c) {
