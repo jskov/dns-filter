@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,11 @@ public class WireToModelConverter {
 	
 	public static DnsReply replyToModel(ByteBuffer reply) {
 		try {
-			return _replyToModel(reply);
+			DnsReply model = _replyToModel(reply);
+			if (model.containsUnhandledReplyRecords()) {
+				Hexer.printForDevelopment("Unknown reply record", reply, Set.of());
+			}
+			return model;
 		} catch (Exception e) {
 			throw new IllegalStateException("Failed to convert reply to model", e);
 		}
@@ -58,7 +63,11 @@ public class WireToModelConverter {
 
 	public static DnsRequest requestToModel(ByteBuffer request) {
 		try {
-			return _requestToModel(request);
+			DnsRequest model = _requestToModel(request);
+			if (model.containsUnhandledRequestRecords()) {
+				Hexer.printForDevelopment("Unknown request record", request, Set.of());
+			}
+			return model;
 		} catch (Exception e) {
 			throw new IllegalStateException("Failed to convert request to model", e);
 		}
@@ -209,6 +218,10 @@ public class WireToModelConverter {
 			logger.debug("TXT record {} : {}", name, txts);
 			
 			return DnsRecords.txtRecordFrom(name, dnsClass, ttl, txts);
+//		} else if (r instanceof HTTPSRecord) {
+//			HTTPSRecord https = (HTTPSRecord)r;
+//			
+//			logger.info("HTTPS record {}", https.getSvcPriority());
 		}
 		
 		logger.warn("Unknown record type {} : {}", type, r.getClass());

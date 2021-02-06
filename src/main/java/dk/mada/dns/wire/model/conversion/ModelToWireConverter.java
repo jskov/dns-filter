@@ -91,6 +91,7 @@ public class ModelToWireConverter {
 			return toRecord((DnsRecordTxt)r);
 		}
 
+		logger.warn("Failed to convert {} : {}", r.getClass(), r);
 		throw new IllegalStateException("Unhandled type " + r.getClass());
 	}
 

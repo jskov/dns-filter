@@ -31,6 +31,17 @@ abstract class DnsMessage {
 				.orElseThrow(() -> new IllegalStateException("Message contains no question?!"));
 	}
 	
+	public boolean containsUnhandledRequestRecords() {
+		return questionSection.containsUnhandledRecords();
+
+	}
+
+	public boolean containsUnhandledReplyRecords() {
+		return answer.containsUnhandledRecords()
+				|| authority.containsUnhandledRecords()
+				|| additional.containsUnhandledRecords();
+	}
+
 	public DnsSectionAnswer getAnswer() {
 		return answer;
 	}
