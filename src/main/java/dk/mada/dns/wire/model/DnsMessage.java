@@ -37,9 +37,9 @@ abstract class DnsMessage {
 	}
 
 	public boolean containsUnhandledReplyRecords() {
-		return answer.containsUnhandledRecords()
-				|| authority.containsUnhandledRecords()
-				|| additional.containsUnhandledRecords();
+		return (answer != null && answer.containsUnhandledRecords())
+				|| (authority != null && authority.containsUnhandledRecords())
+				|| (additional != null && additional.containsUnhandledRecords());
 	}
 
 	public DnsSectionAnswer getAnswer() {
