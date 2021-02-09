@@ -49,18 +49,6 @@ import dk.mada.dns.wire.model.DnsSections;
 public class WireToModelConverter {
 	private static final Logger logger = LoggerFactory.getLogger(WireToModelConverter.class);
 	
-	public static DnsReply replyToModel(ByteBuffer reply) {
-		try {
-			DnsReply model = _replyToModel(reply);
-			if (model.containsUnhandledReplyRecords()) {
-				Hexer.printForDevelopment("Unknown reply record", reply, Set.of());
-			}
-			return model;
-		} catch (Exception e) {
-			throw new IllegalStateException("Failed to convert reply to model", e);
-		}
-	}
-
 	public static DnsRequest requestToModel(ByteBuffer request) {
 		try {
 			DnsRequest model = _requestToModel(request);
@@ -70,6 +58,18 @@ public class WireToModelConverter {
 			return model;
 		} catch (Exception e) {
 			throw new IllegalStateException("Failed to convert request to model", e);
+		}
+	}
+
+	public static DnsReply replyToModel(ByteBuffer reply) {
+		try {
+			DnsReply model = _replyToModel(reply);
+			if (model.containsUnhandledReplyRecords()) {
+				Hexer.printForDevelopment("Unknown reply record", reply, Set.of());
+			}
+			return model;
+		} catch (Exception e) {
+			throw new IllegalStateException("Failed to convert reply to model", e);
 		}
 	}
 
