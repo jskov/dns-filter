@@ -20,6 +20,10 @@ public abstract class DnsSection {
 		return records;
 	}
 	
+	public boolean containsUnhandledRecords() {
+		return records.stream().anyMatch(r -> r.isUnhandledRecordType());
+	}
+	
 	public short getSize() {
 		return (short)records.size();
 	}

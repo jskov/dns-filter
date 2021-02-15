@@ -102,12 +102,12 @@ public class UDPServer {
 				}
 				
 				try {
-				ByteBuffer reply = packetHandler.process(clientIp, request);
-				if (channel.isConnected()) {
-					channel.write(reply);
-				} else {
-					channel.send(reply, sa);
-				}
+					ByteBuffer reply = packetHandler.process(clientIp, request);
+					if (channel.isConnected()) {
+						channel.write(reply);
+					} else {
+						channel.send(reply, sa);
+					}
 				} catch (Exception e) {
 					request.rewind();
 					logger.warn("FIXME: bad exception handling, Failed to lookup", e);

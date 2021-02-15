@@ -8,19 +8,28 @@ public class DnsRecord {
 	private DnsRecordType recordType;
 	private DnsName name;
 	private long ttl;
+	private final boolean unhandledRecordType;
 
-	protected DnsRecord(DnsClass dnsClass, DnsRecordType recordType, DnsName name, long ttl) {
-		super();
+	private DnsRecord(DnsClass dnsClass, DnsRecordType recordType, DnsName name, long ttl, boolean unhandledRecordType) {
 		this.dnsClass = dnsClass;
 		this.recordType = recordType;
 		this.name = name;
 		this.ttl = ttl;
-	}
-	
-	public static DnsRecord unknownFrom(DnsRecordType recordType, DnsName name, long ttl) {
-		return new DnsRecord(DnsClass.IN, recordType, name, ttl);
+		this.unhandledRecordType = unhandledRecordType;
 	}
 
+	protected DnsRecord(DnsClass dnsClass, DnsRecordType recordType, DnsName name, long ttl) {
+		this(dnsClass, recordType, name, ttl, false);
+	}
+
+	public static DnsRecord unknownFrom(DnsRecordType recordType, DnsName name, long ttl) {
+		return new DnsRecord(DnsClass.IN, recordType, name, ttl, true);
+	}
+
+	public boolean isUnhandledRecordType() {
+		return unhandledRecordType;
+	}
+	
 	public DnsClass getDnsClass() {
 		return dnsClass;
 	}
@@ -104,6 +113,20 @@ public class DnsRecord {
 	}
 
 	public Optional<DnsRecordTxt> asRecordTxt() {
+		return Optional.empty();
+	}
+
+	public void ifRecordSVCB(Consumer<DnsRecordSVCB> c) {
+	}
+
+	public Optional<DnsRecordSVCB> asRecordSVCB() {
+		return Optional.empty();
+	}
+
+	public void ifRecordHttps(Consumer<DnsRecordHttps> c) {
+	}
+
+	public Optional<DnsRecordHttps> asRecordHttps() {
 		return Optional.empty();
 	}
 
