@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.xbill.DNS.ARecord;
 import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.EDNSOption;
 import org.xbill.DNS.Flags;
+import org.xbill.DNS.HTTPSRecord;
 import org.xbill.DNS.Header;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.OPTRecord;
@@ -218,10 +220,13 @@ public class WireToModelConverter {
 			logger.debug("TXT record {} : {}", name, txts);
 			
 			return DnsRecords.txtRecordFrom(name, dnsClass, ttl, txts);
-//		} else if (r instanceof HTTPSRecord) {
-//			HTTPSRecord https = (HTTPSRecord)r;
-//			
-//			logger.info("HTTPS record {}", https.getSvcPriority());
+		} else if (r instanceof HTTPSRecord) {
+			HTTPSRecord https = (HTTPSRecord)r;
+			
+			String params = https.getSvcParamKeys().stream()
+				.map(i -> https.getSvcParamValue(i).toString())
+				.collect(Collectors.joining(", "));
+			logger.info("HTTPS record {} {}", https.getSvcPriority(), params);
 		}
 		
 		logger.warn("Unknown record type {} : {}", type, r.getClass());

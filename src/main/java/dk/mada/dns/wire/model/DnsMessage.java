@@ -33,7 +33,6 @@ abstract class DnsMessage {
 	
 	public boolean containsUnhandledRequestRecords() {
 		return questionSection.containsUnhandledRecords();
-
 	}
 
 	public boolean containsUnhandledReplyRecords() {
