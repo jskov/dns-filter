@@ -2,7 +2,6 @@ package dk.mada.dns.client;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
@@ -23,7 +22,7 @@ public class Starter {
 	
 	@Inject DnsEvents dnsEvents;
 	
-	public CountDownLatch start(Stage stage) {
+	public void start(Stage stage) {
 		logger.info("Start {} with {} {}", stage, fxmlLoader, dnsEvents);
 
 		logger.info("Connect to WS server");
@@ -31,21 +30,15 @@ public class Starter {
 			.simpleListener(dnsEvents)
 			.build();
 
-		CountDownLatch guiClosed = new CountDownLatch(1);
-		
 		try (InputStream is = ClientGui.class.getResourceAsStream("ClientGui.fxml")) {
 			logger.info("Load FXML");
 			Parent root = (Parent) fxmlLoader.load(is);	
 			stage.setScene(new Scene(root, 640, 480));
 			logger.info("show");
 			stage.show();
-			
-			stage.onCloseRequestProperty().addListener(c -> guiClosed.countDown());
 		} catch (IOException e) {
 			throw new IllegalStateException("cannot load FXML login screen", e);
 		}
-
-		return guiClosed;
 
 	}
 	
