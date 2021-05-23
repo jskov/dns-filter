@@ -219,7 +219,7 @@ project (":dns-filter.android") {
 	}
 	
 	repositories {
-		jcenter()
+		mavenCentral()
 	}
 	
 	ext {
