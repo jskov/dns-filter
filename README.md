@@ -23,9 +23,48 @@ Install graal 19.3, make sure it is on PATH.
 
 	$ gu install native-image
 
-# Hooking into Linux (Fedora)
+# Hooking into Linux (Fedora 34+)
 
 This is how to (temporarily) hack/hook up the dns-filter process in Fedora so it gets used for DNS requests.
+
+## Run dns-filter from gradle
+
+	$ ./gradlew :quarkusDev
+
+Runs dns-filter on port 8053.
+
+To trigger recompile/deploy, run:
+
+	$ curl localhost:8080 > /dev/null
+
+## Run dns-filter from a service
+
+TBD
+
+## Access on localhost via Resolved
+
+Make resolved use dns-filter as its upstream server.
+
+In `/etc/systemdresolved.conf` insert (in place of any existing DNS-line):
+
+	DNS=127.0.0.1:8053
+
+Then 
+
+	sudo systemctl restart systemd-resolved
+
+
+Disable again by reverting to the old state of the file.
+
+
+## Access from other hosts on network
+
+Make firewall redirect external 53 to 8053.
+
+Note that this is removed at reset.
+
+	sudo firewall-cmd --add-forward-port=port=53:proto=udp:toport=8053
+
 
 ## Running as root
 
@@ -35,61 +74,7 @@ Run the service using port 53 requires it to be started as root.
 
 After creating the socket on port 53, it will drop its privileges and continue as user 65534 (or what is specified in environment variable DNS_FILTER_RUN_AS)
 
-## Via DnsMasq
-
-The service can also run on unprivileged ports (does not require root), but then you must redirect the DNS traffic to the service.
-
-This is how I have configured it to work on Fedora 31.
-
-## Stop libvirt
-
-Kill libvirt, which also runs dnsmasq.
-
-	$ sudo systemctl stop libvirtd.service
-
-And make sure no lingering dnsmasq process is running.
-
-### Setup dnsmasq
-
-Setup dnsmasq to pass requests first to the dns-filter, then fallback to an external server in case of failure
-
-In `/etc/resolv-dnsmasq.conf`:
-
-	# Specify timeout for dnsmasq requests                                                                                                      
-	options timeout:1
-
-In `/etc/dnsmasq.conf` add configuration:
-
-	resolv-file=/etc/resolv-dnsmasq.conf
-	strict-order
-	no-resolv
-	no-poll
-	server=1.1.1.1
-	server=127.0.0.1#8053 
- 
-## Switch resolve to localhost
-
-Edit `/etc/resolv.conf`. Comment out current nameserver and add:
-
-	nameserver 127.0.0.1
-
-Revert to old setting to disable use of dns-filter.
-
-
-## Run dns-filter from gradle
-
-	$ ./gradlew :quarkusDev
-
-Runs dns-filter on port 8053.
-
-If you need to restart the process, dnsmasq may take some time to detect it. Get its attention with a restart:
-
-	$ sudo systemctl restart dnsmasq
-
-
-To trigger recompile/deploy, run:
-
-	$ curl localhost:8080 > /dev/null
+This should not really be necessary, given the firewall redirection stuff.
 
 # Data capture for development
 
