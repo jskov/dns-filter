@@ -27,17 +27,23 @@ Install graal 19.3, make sure it is on PATH.
 
 This is how to (temporarily) hack/hook up the dns-filter process in Fedora so it gets used for DNS requests.
 
-## Running as root
+## Run dns-filter from gradle
 
-Run the service using port 53 requires it to be started as root.
+	$ ./gradlew :quarkusDev
 
-	$ DNS_FILTER_PORT_DNS=53 sudo /opt/tools/jdk-13/bin/java -jar dns-filter-$version-runner.jar
+Runs dns-filter on port 8053.
 
-After creating the socket on port 53, it will drop its privileges and continue as user 65534 (or what is specified in environment variable DNS_FILTER_RUN_AS)
+To trigger recompile/deploy, run:
 
-## Via Resolved
+	$ curl localhost:8080 > /dev/null
 
-The service can also run on unprivileged ports (does not require root), but then you must redirect the DNS traffic to the service.
+## Run dns-filter from a service
+
+TBD
+
+## Access on localhost via Resolved
+
+Make resolved use dns-filter as its upstream server.
 
 In `/etc/systemdresolved.conf` insert (in place of any existing DNS-line):
 
@@ -51,15 +57,24 @@ Then
 Disable again by reverting to the old state of the file.
 
 
-## Run dns-filter from gradle
+## Access from other hosts on network
 
-	$ ./gradlew :quarkusDev
+Make firewall redirect external 53 to 8053.
 
-Runs dns-filter on port 8053.
+Note that this is removed at reset.
 
-To trigger recompile/deploy, run:
+	sudo firewall-cmd --add-forward-port=port=53:proto=udp:toport=8053
 
-	$ curl localhost:8080 > /dev/null
+
+## Running as root
+
+Run the service using port 53 requires it to be started as root.
+
+	$ DNS_FILTER_PORT_DNS=53 sudo /opt/tools/jdk-13/bin/java -jar dns-filter-$version-runner.jar
+
+After creating the socket on port 53, it will drop its privileges and continue as user 65534 (or what is specified in environment variable DNS_FILTER_RUN_AS)
+
+This should not really be necessary, given the firewall redirection stuff.
 
 # Data capture for development
 
