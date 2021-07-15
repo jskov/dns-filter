@@ -56,6 +56,10 @@ public class Query {
 		return request;
 	}
 
+	public ByteBuffer getWireRequest() {
+		return wireRequest.asReadOnlyBuffer();
+	}
+	
 	/**
 	 * If set, the request should not be filtered - the nameserver
 	 * result should just be returned.
@@ -78,7 +82,7 @@ public class Query {
 			wireReply = reply.getOptWireReply();
 		} else {
 			logger.debug("Decoded reply: {}", reply);
-			wireReply = DnsReplies.toWireFormat(reply);
+			wireReply = DnsReplies.replyToWireFormat(this);
 		}
 	}
 
