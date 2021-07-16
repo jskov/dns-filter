@@ -25,7 +25,7 @@ import fixture.resolver.CannedUdpResolver;
 public class ChainedAnswersConversionTest {
 	/**
 	 * Test CNAME->A chain.
-	 * Also has an (empty) OPT secion.
+	 * Also has an (empty) OPT section.
 	 */
 	@Test
 	public void cnameToAConversionWorks() {
