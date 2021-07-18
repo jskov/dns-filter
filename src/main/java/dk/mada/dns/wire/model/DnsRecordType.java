@@ -9,10 +9,12 @@ public enum DnsRecordType {
 	A(1), 		// host address
 	NS(2),		// authoritative nameserver
 	CNAME(5),	// c-name, alias
+	PTR(12),	// pointer, https://datatracker.ietf.org/doc/html/rfc1035#page-12
 	MX(15),
 	TXT(16),
 	AAAA(28),	// AAAA IPV6 https://tools.ietf.org/html/rfc3596
 	OPT(41),	// OPT, https://tools.ietf.org/html/rfc6891
+	DNSKEY(48),	// https://datatracker.ietf.org/doc/html/rfc4034
 	SVCB(64),	// https://datatracker.ietf.org/doc/draft-ietf-dnsop-svcb-https/00/?include_text=1
 	HTTPS(65);  // https://datatracker.ietf.org/doc/draft-ietf-dnsop-svcb-https/00/?include_text=1
 	

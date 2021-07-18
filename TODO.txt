@@ -1,3 +1,7 @@
+:ACTIVELY:
+ requestLog: log both wire query and reply on failures
+
+
 * Browsing bbc.co.uk does not work
 
 * Timeout when contacting upstream server

@@ -25,7 +25,7 @@ import fixture.resolver.CannedUdpResolver;
 public class ChainedAnswersConversionTest {
 	/**
 	 * Test CNAME->A chain.
-	 * Also has an (empty) OPT secion.
+	 * Also has an (empty) OPT section.
 	 */
 	@Test
 	public void cnameToAConversionWorks() {
@@ -39,7 +39,9 @@ public class ChainedAnswersConversionTest {
 		var sut = new LookupEngine(resolver, allow, deny, block);
 		LookupResult result = sut.lookup(q);
 		
-		ByteBuffer bb = ModelToWireConverter.modelToWire(result.getReply());
+		q.setLookupResult(result);
+		
+		ByteBuffer bb = ModelToWireConverter.modelToWire(q);
 
 		// Not really a good test - but parsed correctly by dig
 		assertThat(bb.limit())

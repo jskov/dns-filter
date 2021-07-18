@@ -33,7 +33,7 @@ public class Configuration {
 	public void loadConfiguration() {
 		model = serializer.load();
 		
-		logger.info("Loaded configuration\n{}", getSummary());
+		logger.info("{}", getSummary());
 	}
 
     private void update() {

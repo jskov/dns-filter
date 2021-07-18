@@ -20,6 +20,8 @@ import org.xbill.DNS.Section;
 import org.xbill.DNS.TXTRecord;
 import org.xbill.DNS.TextParseException;
 
+import dk.mada.dns.lookup.Query;
+import dk.mada.dns.util.Hexer;
 import dk.mada.dns.wire.model.DnsClass;
 import dk.mada.dns.wire.model.DnsHeader;
 import dk.mada.dns.wire.model.DnsName;
@@ -36,10 +38,11 @@ import dk.mada.dns.wire.model.DnsReply;
  */
 public class ModelToWireConverter {
 	private static final Logger logger = LoggerFactory.getLogger(ModelToWireConverter.class);
-	public static ByteBuffer modelToWire(DnsReply reply) {
+	public static ByteBuffer modelToWire(Query q) {
 		try {
-			return _modelToWire(reply);
+			return _modelToWire(q.getReply());
 		} catch (IOException e) {
+			Hexer.printForDevelopment(q.getRequest());
 			throw new IllegalStateException("Failed to convert reply model to wire", e);
 		}
 	}
