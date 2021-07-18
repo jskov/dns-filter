@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk15:jdk-15.0.1_9-alpine AS builder
+FROM docker.io/library/openjdk:16-jdk-alpine3.13 AS builder
 
 ARG VERSION=undef-version
 ARG REVISION=undef-revision
@@ -20,15 +20,15 @@ RUN echo "Build input revision:${REVISION} version:${VERSION}"
 LABEL "dk.mada.git.tag"="${VERSION}" 
 LABEL "dk.mada.git.hash"="${REVISION}" 
 
-RUN ./gradlew -Prevision=${REVISION} -Pversion=${VERSION} quarkusBuild --uber-jar
+RUN ./gradlew -Prevision=${REVISION} -Pversion=${VERSION} quarkusBuild
 
 
 
-FROM adoptopenjdk/openjdk15:jdk-15.0.1_9-alpine AS link
+FROM docker.io/library/openjdk:16-jdk-alpine3.13 AS link
 
 ARG VERSION=undef-version
 
-COPY --from=builder /src/build/dns-filter-${VERSION}-runner.jar /app.jar
+COPY --from=builder /src/build/quarkus-app /app/
 
 VOLUME /opt/data/dns-filter
 
@@ -36,4 +36,4 @@ EXPOSE 8080
 EXPOSE 8053/tcp
 EXPOSE 8053/udp
 
-CMD ["java", "-jar", "/app.jar"]
+CMD ["java", "-jar", "/app/quarkus-run.jar"]
