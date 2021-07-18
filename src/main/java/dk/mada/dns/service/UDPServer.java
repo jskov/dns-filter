@@ -89,8 +89,8 @@ public class UDPServer {
 			while (channel.isOpen()) {
 				ByteBuffer request = ByteBuffer.allocate(MIN_DNS_PACKET_SIZE);
 				SocketAddress sa = channel.receive(request);
-				request.flip();
-
+				request = request.flip().asReadOnlyBuffer();
+				
 				if (!(sa instanceof InetSocketAddress)) {
 					logger.warn("Does not know IP of client - ignoring");
 					continue;

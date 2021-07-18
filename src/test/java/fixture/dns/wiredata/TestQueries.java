@@ -2,6 +2,7 @@ package fixture.dns.wiredata;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 
 import dk.mada.dns.lookup.Query;
 import dk.mada.dns.resolver.DefaultResolver;
@@ -12,7 +13,6 @@ import dk.mada.dns.wire.model.DnsName;
 import dk.mada.dns.wire.model.DnsRecords;
 import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
-import dk.mada.dns.wire.model.DnsRequests;
 
 /**
  * These data dumps directly from production log, curl interaction,
@@ -272,10 +272,6 @@ public class TestQueries {
 	
 
 	public static Query makeTestQuery(byte[] data) {
-		var req = DnsRequests.fromWireData(data);
-		
-		var query = new Query(req, "127.0.0.1");
-		return query;
+		return Query.newFromIp("127.0.0.1", ByteBuffer.wrap(data));
 	}
-
 }

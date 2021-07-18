@@ -30,7 +30,7 @@ public class SimpleDnsQueryTest {
     			assertThat(dr.asRecordA())
     				.get()
     				.extracting(ar -> ar.getAddress().getHostAddress())
-    				.isEqualTo("85.203.223.39");
+    				.isEqualTo("78.156.122.66");
     		});
     }
     

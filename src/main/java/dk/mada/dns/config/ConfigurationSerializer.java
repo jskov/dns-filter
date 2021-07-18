@@ -53,6 +53,7 @@ public class ConfigurationSerializer {
 	
 	ConfigurationModel load() {
 		Path config = getConfigFile();
+		logger.info("Load configuration from {}", config);
 		ConfigurationModel model = new ConfigurationModel();
 		if (Files.exists(config)) {
 			try (Stream<String> lines = Files.lines(config, StandardCharsets.UTF_8)) {

@@ -2,6 +2,7 @@ package dk.mada.dns.wire.model;
 
 import java.nio.ByteBuffer;
 
+import dk.mada.dns.lookup.Query;
 import dk.mada.dns.wire.model.conversion.ModelToWireConverter;
 import dk.mada.dns.wire.model.conversion.WireToModelConverter;
 
@@ -48,7 +49,7 @@ public class DnsReplies {
 		return WireToModelConverter.replyToModel(data);
 	}
 
-	public static ByteBuffer toWireFormat(DnsReply reply) {
-		return ModelToWireConverter.modelToWire(reply);
+	public static ByteBuffer replyToWireFormat(Query q) {
+		return ModelToWireConverter.modelToWire(q);
 	}
 }

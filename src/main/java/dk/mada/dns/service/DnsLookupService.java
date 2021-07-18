@@ -18,10 +18,7 @@ import dk.mada.dns.websocket.DnsQueryEventService;
 import dk.mada.dns.websocket.dto.DnsQueryEventDto;
 import dk.mada.dns.websocket.dto.EventTypeDto;
 import dk.mada.dns.wire.model.DnsRecord;
-import dk.mada.dns.wire.model.DnsReplies;
 import dk.mada.dns.wire.model.DnsReply;
-import dk.mada.dns.wire.model.DnsRequest;
-import dk.mada.dns.wire.model.DnsRequests;
 import dk.mada.dns.wire.model.DnsSection;
 
 /**
@@ -43,11 +40,8 @@ public class DnsLookupService implements UDPPacketHandler {
 		Objects.requireNonNull(clientIp);
 		Objects.requireNonNull(wireRequest);
 		
-		DnsRequest request = DnsRequests.fromWireData(wireRequest);
-		wireRequest.rewind();
-		logger.debug("Decoded request: {}", request);
-		
-		Query q = new Query(request, clientIp);
+		Query q = Query.newFromIp(clientIp, wireRequest);
+		logger.debug("Decoded request: {}", q.getRequest());
 
 		LookupResult res;
 		String queryHostname = q.getRequestName();
@@ -65,35 +59,23 @@ public class DnsLookupService implements UDPPacketHandler {
 			q.setDebugBypassRequest(devDebugging.isBypassForHost(queryHostname));
 			res = lookup.lookup(q);
 		}
-		
-		ByteBuffer replyBuffer = null;
+
 		if (res.getState() == LookupState.FAILED) {
 			logger.warn("Failed lookup");
-			replyBuffer = doFallbackUpstreamRequest(request);
-		} else if (res.getState() == LookupState.BYPASS) {
-			logger.warn("Bypass lookup");
-			replyBuffer = res.getReply().getOptWireReply();
+			throw new UnsupportedOperationException("FIXME: need to implement safe fall-back");
 		}
 		
-		if (replyBuffer == null) {
-			DnsReply reply = res.getReply();
-			logger.debug("Decoded reply: {}", reply);
-			replyBuffer = DnsReplies.toWireFormat(reply);
-		}
+		q.setLookupResult(res);
 		
-		devDebugging.devOutputWireData(queryHostname, "Filtered reply", replyBuffer);
+		devDebugging.devOutputWireData(queryHostname, "Filtered reply", q.getWireReply());
 		
 		devDebugging.stopActionForHost(queryHostname);
 
 		notifyEventListeners(clientIp, queryHostname, res.getState(), res.getReply());
 		
-		return replyBuffer;
+		return q.getWireReply();
 	}
 	
-	private ByteBuffer doFallbackUpstreamRequest(DnsRequest request) {
-		throw new UnsupportedOperationException("FIXME: need to implement safe fall-back");
-	}
-
 	private void notifyEventListeners(String client, String queryHostName, LookupState state, DnsReply reply) {
 		DnsSection answers = reply.getAnswer();
 		if (answers == null) {
